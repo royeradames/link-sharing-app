@@ -5,10 +5,22 @@ import styles from "./button.module.css"
 export type TButton = {
   children: ReactNode
   disabled?: boolean
+  variant?: "primary" | "secondary"
 }
-export default function Button({ children, disabled }: TButton) {
+export default function Button({
+  children,
+  disabled,
+  variant = "primary",
+}: TButton) {
   return (
-    <RadixButton disabled={disabled} size="4" className={styles.radix}>
+    <RadixButton
+      variant={variant === "secondary" ? "outline" : "solid"}
+      disabled={disabled}
+      size="4"
+      className={
+        variant === "primary" ? styles.radixPrimary : styles.radixSecondary
+      }
+    >
       {children}
     </RadixButton>
   )
