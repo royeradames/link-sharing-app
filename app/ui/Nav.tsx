@@ -15,9 +15,6 @@ export default function Nav({}: {}) {
     )
   }
   const iconSizeStyles = "h-5 w-5"
-
-  console.log(pathname)
-  alert(pathname)
   return (
     <nav className="flex ">
       <Link href="/links" className={linkStyles(pathname.includes("/links"))}>
