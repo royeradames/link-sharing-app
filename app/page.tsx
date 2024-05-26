@@ -11,8 +11,12 @@ export default function Home() {
       </Heading>
       <Body>Body Medium Royer Adames</Body>
       <Body size="small">Body small Royer Adames</Body>
-      <Button>Button</Button>
-      <Button disabled>Button</Button>
+      <Button>Primary Button</Button>
+      <Button disabled>Primary disable Button</Button>
+      <Button variant="secondary">Secondary Button</Button>
+      <Button variant="secondary" disabled>
+        Secondary disable Button
+      </Button>
     </main>
   )
 }
