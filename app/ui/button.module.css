@@ -1,0 +1,11 @@
+.radix{
+    /*base*/
+    --accent-9: rgba(var(--purple-rgb));
+    --cursor-button: pointer;
+    /*on hover /active */
+    --accent-10: var(--purple-hover);
+
+    /*on disable*/
+    --gray-a3: rgba(var(--purple-rgb), 0.25);
+    --gray-a8: var(--white);
+}
