@@ -2,6 +2,7 @@ import Heading from "@/app/ui/Heading"
 import Body from "@/app/ui/Body"
 import Button from "@/app/ui/Button"
 import Nav from "@/app/ui/Nav"
+import FormDemo2 from "@/app/ui/TextField"
 
 export default function Home() {
   return (
@@ -18,8 +19,9 @@ export default function Home() {
       <Button variant="secondary" disabled>
         Secondary disable Button
       </Button>
-      <Nav isLinkActive></Nav>
-      <Nav isProfileDetailsActive></Nav>
+      <Nav></Nav>
+      <Nav></Nav>
+      <FormDemo2 />
     </main>
   )
 }
