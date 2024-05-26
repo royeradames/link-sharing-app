@@ -1,6 +1,8 @@
-import type { Metadata } from "next"
 import "./globals.css"
+import "@radix-ui/themes/styles.css"
+import type { Metadata } from "next"
 import { instrumentSans } from "@/app/ui/fonts"
+import { Theme } from "@radix-ui/themes"
 
 export const metadata: Metadata = {
   title: {
@@ -20,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={instrumentSans.className}>{children}</body>
+      <body className={instrumentSans.className}>
+        <Theme>{children}</Theme>
+      </body>
     </html>
   )
 }
