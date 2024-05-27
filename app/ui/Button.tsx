@@ -1,16 +1,19 @@
 import { ReactNode } from "react"
 import { Button as RadixButton } from "@radix-ui/themes"
 import styles from "./button.module.css"
+import { clsx } from "clsx"
 
 export type TButton = {
   children: ReactNode
   disabled?: boolean
   variant?: "primary" | "secondary"
   type?: "submit" | "button" | "reset"
+  className?: string
 }
 export default function Button({
   children,
   disabled,
+  className = "",
   type = "button",
   variant = "primary",
 }: TButton) {
@@ -20,9 +23,11 @@ export default function Button({
       disabled={disabled}
       size="4"
       type={type}
-      className={
-        variant === "primary" ? styles.radixPrimary : styles.radixSecondary
-      }
+      className={clsx("", {
+        [styles.radixPrimary]: variant === "primary",
+        [styles.radixSecondary]: variant === "secondary",
+        [className]: className,
+      })}
     >
       {children}
     </RadixButton>
