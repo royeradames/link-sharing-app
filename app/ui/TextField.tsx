@@ -5,17 +5,18 @@ import { Link2Icon } from "@radix-ui/react-icons"
 import clsx from "clsx"
 import { z } from "zod"
 import Button from "@/app/ui/Button"
+import { Control } from "react-hook-form"
 
 // Define a single schema for the text field
-const textFieldSchema = z.object({
-  textField: z.string().min(1, "Text Field is required"),
-})
+const textFieldSchema = z.string().min(1, "Text Field is required")
+
 type FormState = {
   textField: string
 }
 
 type TextFieldProps = {
   name: string
+  control: Control<any>
   value: string
   placeholder: string
   state: "empty" | "filled" | "active" | "error"
@@ -88,9 +89,7 @@ const FormDemo = () => {
       const formattedErrors = result.error.format()
       const newErrors: { [key: string]: string } = {}
       for (const [key, value] of Object.entries(formattedErrors)) {
-        if (value && typeof value === "object" && "_errors" in value) {
-          newErrors[key] = value._errors.join(", ")
-        }
+        newErrors[key] = value.join(", ")
       }
       setErrors(newErrors)
     } else {
