@@ -1,15 +1,13 @@
-"use client"
 import React from "react"
-import * as Form from "@radix-ui/react-form"
 import { Link2Icon } from "@radix-ui/react-icons"
 import clsx from "clsx"
 import { z } from "zod"
-import Button from "@/app/ui/Button"
-import { FieldErrors, useForm, UseFormRegister } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { FieldErrors, UseFormRegister } from "react-hook-form"
+import Body from "@/app/ui/Body"
 
-// Define a single schema for the text field
-export const TextFieldSchema = z.string().min(1, "Text Field is required")
+export const TextFieldSchema = z
+  .string()
+  .min(1, { message: "Please check again" })
 
 export type TextFieldProps = {
   name: string
@@ -48,40 +46,13 @@ export const TextField = ({
         placeholder={placeholder}
         {...register(name)}
       />
+
+      {errors[name]?.message && (
+        <Body
+          size="small"
+          className="text-red w-max"
+        >{`${errors[name]?.message}`}</Body>
+      )}
     </div>
   )
 }
-
-const formSchema = z.object({
-  textField: TextFieldSchema,
-})
-const FormDemo = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      textField: "",
-    },
-  })
-  const onSubmit = (data: any) => console.log(data)
-  console.log(errors.textField?.message)
-  return (
-    <Form.Root className="w-[300px] p-4" onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="text-xl font-semibold mb-4">Text Field</h2>
-      <TextField
-        register={register}
-        errors={errors}
-        name="textField"
-        placeholder="Text Field"
-      />
-      <Form.Submit asChild>
-        <Button>Post question</Button>
-      </Form.Submit>
-    </Form.Root>
-  )
-}
-
-export default FormDemo

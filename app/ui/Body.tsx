@@ -18,6 +18,7 @@ export default function Body({
       className={clsx("font-regular leading-[150%]", {
         "text-base": size === "medium",
         "text-xs": size === "small",
+        [className]: className,
       })}
       id={id}
     >

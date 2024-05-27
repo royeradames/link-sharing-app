@@ -2,7 +2,7 @@ import Heading from "@/app/ui/Heading"
 import Body from "@/app/ui/Body"
 import Button from "@/app/ui/Button"
 import Nav from "@/app/ui/Nav"
-import FormDemo from "@/app/ui/TextField"
+import { FormDemo } from "@/app/ui/FormDemo"
 
 export default function Home() {
   return (
