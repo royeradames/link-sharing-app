@@ -24,7 +24,10 @@ export const FormDemo = () => {
   const onSubmit = (data: any) => console.log(data)
   console.log(errors.textField?.message)
   return (
-    <Form.Root className="w-full p-4" onSubmit={handleSubmit(onSubmit)}>
+    <Form.Root
+      className="w-full p-4 flex flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <h2 className="text-xl font-semibold mb-4">Text Field</h2>
       <TextField
         register={register}
