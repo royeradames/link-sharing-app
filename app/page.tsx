@@ -2,7 +2,7 @@ import Heading from "@/app/ui/Heading"
 import Body from "@/app/ui/Body"
 import Button from "@/app/ui/Button"
 import Nav from "@/app/ui/Nav"
-import FormDemo2 from "@/app/ui/TextField"
+import FormDemo from "@/app/ui/TextField"
 
 export default function Home() {
   return (
@@ -21,7 +21,7 @@ export default function Home() {
       </Button>
       <Nav></Nav>
       <Nav></Nav>
-      <FormDemo2 />
+      <FormDemo />
     </main>
   )
 }

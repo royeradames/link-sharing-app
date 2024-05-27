@@ -4,21 +4,37 @@ import * as Form from "@radix-ui/react-form"
 import { Link2Icon } from "@radix-ui/react-icons"
 import clsx from "clsx"
 import { z } from "zod"
+import Button from "@/app/ui/Button"
 
+// Define a single schema for the text field
 const textFieldSchema = z.object({
-  textFieldEmpty: z.string().min(1, "Text Field Empty is required"),
-  textFieldFilled: z.string().min(1, "Text Field Empty is required"),
-  textFieldActive: z.string().min(1, "Text Field Empty is required"),
-  textFieldError: z.string().min(1, "Text Field Empty is required"),
+  textField: z.string().min(1, "Text Field is required"),
 })
+type FormState = {
+  textField: string
+}
 
 type TextFieldProps = {
+  name: string
+  value: string
   placeholder: string
   state: "empty" | "filled" | "active" | "error"
   message?: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onFocus: () => void
+  onBlur: () => void
 }
 
-const TextField = ({ placeholder, state, message }: TextFieldProps) => {
+const TextField = ({
+  name,
+  value,
+  placeholder,
+  state,
+  message,
+  onChange,
+  onFocus,
+  onBlur,
+}: TextFieldProps) => {
   const inputClass = clsx(
     "flex items-center gap-2 border rounded-lg py-2.5 px-4 text-base font-semibold",
     {
@@ -31,10 +47,7 @@ const TextField = ({ placeholder, state, message }: TextFieldProps) => {
   )
 
   return (
-    <Form.Field
-      className="mb-4"
-      name={placeholder.toLowerCase().replace(/ /g, "-")}
-    >
+    <Form.Field className="mb-4" name={name}>
       <Form.Label className="sr-only">{placeholder}</Form.Label>
       <Form.Control asChild>
         <div className={inputClass}>
@@ -42,7 +55,10 @@ const TextField = ({ placeholder, state, message }: TextFieldProps) => {
           <input
             className="flex-1 bg-transparent focus:outline-none"
             placeholder={placeholder}
-            readOnly={state !== "active"}
+            value={value}
+            onChange={onChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
           />
         </div>
       </Form.Control>
@@ -56,61 +72,60 @@ const TextField = ({ placeholder, state, message }: TextFieldProps) => {
 }
 
 const FormDemo = () => {
-  const [formState, setFormState] = useState({
-    textFieldEmpty: "",
-    textFieldFilled: "Pre-filled value",
-    textFieldActive: "",
-    textFieldError: "",
-  })
+  const [formState, setFormState] = useState<FormState>({ textField: "" })
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [focus, setFocus] = useState<boolean>(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState({ ...formState, [e.target.name]: e.target.value })
+    setErrors({})
+  }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-
     const result = textFieldSchema.safeParse(formState)
     if (!result.success) {
       const formattedErrors = result.error.format()
       const newErrors: { [key: string]: string } = {}
       for (const [key, value] of Object.entries(formattedErrors)) {
-        if (Array.isArray(value)) {
-          newErrors[key] = value.join(", ")
-        } else if (value && typeof value === "object" && "_errors" in value) {
+        if (value && typeof value === "object" && "_errors" in value) {
           newErrors[key] = value._errors.join(", ")
         }
       }
       setErrors(newErrors)
     } else {
       console.log("Form submitted successfully:", formState)
+      setErrors({})
+    }
+  }
+
+  const determineState = () => {
+    if (errors.textField) {
+      return "error"
+    } else if (focus) {
+      return "active"
+    } else if (formState.textField) {
+      return "filled"
+    } else {
+      return "empty"
     }
   }
 
   return (
     <Form.Root className="w-[300px] p-4" onSubmit={handleSubmit}>
-      <h2 className="text-xl font-semibold mb-4">Text Field</h2>{" "}
+      <h2 className="text-xl font-semibold mb-4">Text Field</h2>
       <TextField
-        placeholder="Text Field Empty"
-        state={errors.textFieldEmpty ? "error" : "empty"}
-        message={errors.textFieldEmpty}
-      />
-      <TextField
-        placeholder="Text Field Filled"
-        state={errors.textFieldFilled ? "error" : "filled"}
-        message={errors.textFieldFilled}
-      />
-      <TextField
-        placeholder="Text Field Active"
-        state={errors.textFieldActive ? "error" : "active"}
-        message={errors.textFieldActive}
-      />
-      <TextField
-        placeholder="Text Field Error"
-        state={errors.textFieldError ? "error" : "error"}
-        message={errors.textFieldError}
+        name="textField"
+        value={formState.textField}
+        placeholder="Text Field"
+        state={determineState()}
+        message={errors.textField}
+        onChange={handleChange}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
       />
       <Form.Submit asChild>
-        <button className="box-border w-full text-violet11 shadow-blackA4 hover:bg-mauve3 inline-flex h-[35px] items-center justify-center rounded-[4px] bg-white px-[15px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[10px]">
-          Post question
-        </button>
+        <Button>Post question</Button>
       </Form.Submit>
     </Form.Root>
   )
