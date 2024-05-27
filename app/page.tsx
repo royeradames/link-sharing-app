@@ -7,6 +7,7 @@ import FormDemo from "@/app/ui/TextField"
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col gap-8 items-center p-24">
+      <FormDemo />
       <Heading as="h1">Royer Adames</Heading>
       <Heading as="h1" size="small">
         Royer Adames
@@ -21,7 +22,6 @@ export default function Home() {
       </Button>
       <Nav></Nav>
       <Nav></Nav>
-      <FormDemo />
     </main>
   )
 }
