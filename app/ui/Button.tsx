@@ -6,10 +6,12 @@ export type TButton = {
   children: ReactNode
   disabled?: boolean
   variant?: "primary" | "secondary"
+  type?: "submit" | "button" | "reset"
 }
 export default function Button({
   children,
   disabled,
+  type = "button",
   variant = "primary",
 }: TButton) {
   return (
@@ -17,6 +19,7 @@ export default function Button({
       variant={variant === "secondary" ? "outline" : "solid"}
       disabled={disabled}
       size="4"
+      type={type}
       className={
         variant === "primary" ? styles.radixPrimary : styles.radixSecondary
       }
