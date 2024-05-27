@@ -25,15 +25,16 @@ export const TextField = ({
   return (
     <div
       className={clsx(
-        "flex items-center gap-2 border rounded-lg py-2.5 px-4 text-base font-semibold  focus-within:border-purple-500 focus-within:outline-none focus-within:ring-2 ",
+        "flex items-center gap-2  rounded-lg py-2.5 px-4 text-base font-semibold  focus-within:outline-none focus-within:ring-2 ring-offset-2 border  hover:cursor-pointer hover:shadow hover:shadow-purple/25 hover:border-purple ",
         {
-          "border-gray-300 text-black focus-within:ring-purple-500  ":
+          "border-gray-300 text-black hover:caret-purple focus-within:border-purple focus-within:ring-purple":
             !errors[name]?.message,
-          "border-red text-red focus-within:ring-red ": errors[name]?.message,
+          "border-red text-red hover:caret-red focus-within:border-red focus-within:ring-red":
+            errors[name]?.message,
         }
       )}
     >
-      <Link2Icon className="h-5 w-5 text-grey" />
+      <Link2Icon aria-hidden className="h-5 w-5 text-grey" />
 
       <input
         className={clsx(
@@ -47,12 +48,14 @@ export const TextField = ({
         {...register(name)}
       />
 
-      {errors[name]?.message && (
-        <Body
-          size="small"
-          className="text-red w-max"
-        >{`${errors[name]?.message}`}</Body>
-      )}
+      <div aria-live="polite">
+        {errors[name]?.message && (
+          <Body size="small" className="text-red w-max">
+            <span className="sr-only">Error</span>
+            <span>{` ${errors[name]?.message}`}</span>
+          </Body>
+        )}
+      </div>
     </div>
   )
 }
