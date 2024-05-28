@@ -3,7 +3,7 @@ import { Link2Icon } from "@radix-ui/react-icons"
 import clsx from "clsx"
 import { z } from "zod"
 import { FieldErrors, UseFormRegister } from "react-hook-form"
-import Body from "@/app/ui/Body"
+import Text from "@/app/ui/Text"
 
 export const TextFieldSchema = z
   .string()
@@ -46,14 +46,21 @@ export const InputField = ({
         )}
         placeholder={placeholder}
         {...register(name)}
+        aria-describedby="errorsId"
       />
 
-      <div aria-live="polite">
+      <div>
         {errors[name]?.message && (
-          <Body size="small" className="text-red w-max">
+          <Text
+            id="errorsId"
+            aria-hidden="true"
+            size="small"
+            className="text-red w-max"
+            as="p"
+          >
             <span className="sr-only">Error</span>
             <span>{` ${errors[name]?.message}`}</span>
-          </Body>
+          </Text>
         )}
       </div>
     </div>
