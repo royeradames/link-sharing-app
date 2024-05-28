@@ -14,12 +14,14 @@ export type TextFieldProps = {
   placeholder: string
   register: UseFormRegister<any>
   errors: FieldErrors<any>
+  id: string
 }
 
 export const InputField = ({
   register,
   errors,
   name,
+  id,
   placeholder,
 }: TextFieldProps) => {
   return (
@@ -47,6 +49,7 @@ export const InputField = ({
         placeholder={placeholder}
         {...register(name)}
         aria-describedby="errorsId"
+        id={id}
       />
 
       <div>
