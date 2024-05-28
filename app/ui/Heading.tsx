@@ -16,8 +16,6 @@ export default function Heading({
   size = "medium",
 }: THeading) {
   const Heading = as
-  const headingStyles =
-    size === "medium" ? "font-bold text-[32px] leading-[150%]" : ""
   return (
     <Heading
       id={id}
