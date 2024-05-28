@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as Form from "@radix-ui/react-form"
 import Button from "@/app/ui/Button"
 import React from "react"
-import { TextField, TextFieldSchema } from "@/app/ui/TextField"
+import { InputField, TextFieldSchema } from "@/app/ui/InputField"
 
 export const formSchema = z.object({
   textField: TextFieldSchema,
@@ -29,7 +29,7 @@ export const FormDemo = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-xl font-semibold mb-4">Text Field</h2>
-      <TextField
+      <InputField
         register={register}
         errors={errors}
         name="textField"

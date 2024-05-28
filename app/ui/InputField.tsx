@@ -16,7 +16,7 @@ export type TextFieldProps = {
   errors: FieldErrors<any>
 }
 
-export const TextField = ({
+export const InputField = ({
   register,
   errors,
   name,
