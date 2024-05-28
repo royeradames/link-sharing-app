@@ -14,12 +14,8 @@ export function Dropdown2(props: TDropDown2) {
   const { options, value = "", onChange } = props
   // incorrect css doesn't load with part-[]
   // you are not notify in any way
-
-  /*
-    background-color: var(--sl-input-background-color-focus);
-    border-color: var(--sl-input-border-color-focus);
-    box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-input-focus-ring-color);
-   */
+  // you can overwrite with tailwind classes and attribute and state on and off the elements
+  // for some reason I cannot reach the svg part
   return (
     <SlSelect
       placeholder={value}
@@ -32,6 +28,9 @@ export function Dropdown2(props: TDropDown2) {
         part-[combobox]:open:shadow
         part-[combobox]:open:shadow-purple/25
         part-[combobox]:open:border-purple
+        part-[combobox]:focus-within:shadow
+        part-[combobox]:focus-within:shadow-purple/25
+        part-[combobox]:focus-within:border-purple
         part-[expand-icon]:text-purple
       "
     >
