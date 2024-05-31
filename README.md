@@ -35,6 +35,26 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## previous demo page
+
+```tsx
+ <FormDemo />
+<Heading as="h1">Royer Adames</Heading>
+<Heading as="h1" size="small">
+  Royer Adames
+</Heading>
+<Text>Body Medium Royer Adames</Text>
+<Text size="small">Body small Royer Adames</Text>
+<Button>Primary Button</Button>
+<Button disabled>Primary disable Button</Button>
+<Button variant="secondary">Secondary Button</Button>
+<Button variant="secondary" disabled>
+  Secondary disable Button
+</Button>
+<Nav></Nav>
+<Nav></Nav>
+```
+
 ## First translate to css then tailwind 
 
 Due to it being more support for css and having to use arbitrary values
