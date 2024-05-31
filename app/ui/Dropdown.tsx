@@ -1,12 +1,9 @@
 "use client"
-import {
-  SlOption,
-  SlSelect,
-} from "@/node_modules/@shoelace-style/shoelace/cdn/react"
+import { SlOption, SlSelect } from "@shoelace-style/shoelace/dist/react"
 import { GitHubLogoIcon, Link2Icon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { formSchema } from "@/app/ui/FormDemo"
+import { formSchema } from "@/app/demos/FormDemo"
 import Text from "@/app/ui/Text"
 import React from "react"
 import { Button } from "@radix-ui/themes"

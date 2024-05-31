@@ -41,6 +41,20 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## Fix sl npm package imports
+
+Just make sure you are importing from dist instead of cdn
+
+```tsx
+//do
+import { SlButton, SlSelect } from "@shoelace-style/shoelace/dist/react"
+//don't
+import { SlButton, SlSelect } from "@shoelace-style/shoelace/cdn/react"
+
+```
+
+Also solves the issues with the SlIcon.
+
 ## Loading icon svg
 
 https://github.com/shoelace-style/shoelace/discussions/2043
