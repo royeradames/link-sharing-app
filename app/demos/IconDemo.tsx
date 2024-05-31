@@ -1,12 +1,6 @@
 "use client"
-import React from "react"
+import { SlIcon } from "@shoelace-style/shoelace/dist/react"
 
-// @ts-ignore
-import { SlIcon } from "@shoelace-style/shoelace/cdn/react"
-// import { SlIcon } from "@/node_modules/@shoelace-style/shoelace/cdn/react"
-// import { SlIcon } from "@/node_modules/shoelace-style/shoelace/cdn/react"
-
-// https://shoelace.style/getting-started/installation/#setting-the-base-path
 export default function IconDemo() {
   function handleLoad() {
     console.log("loaded")
