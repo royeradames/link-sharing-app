@@ -6,7 +6,7 @@ import {
 import { GitHubLogoIcon, Link2Icon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { formSchema } from "@/app/ui/FormDemo"
+import { formSchema } from "@/app/demos/FormDemo"
 import Text from "@/app/ui/Text"
 import React from "react"
 import { Button } from "@radix-ui/themes"
