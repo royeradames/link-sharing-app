@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack: (config) => {
-    config.resolve.alias['@shoelace-style/shoelace/cdn/react'] = path.resolve(__dirname, 'node_modules/@shoelace-style/shoelace/cdn/react');
+    config.resolve.alias['@shoelace-style/shoelace/dist/react'] = path.resolve(__dirname, 'node_modules/@shoelace-style/shoelace/dist/react');
     return config;
   },
 }
