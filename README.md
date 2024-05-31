@@ -53,6 +53,8 @@ import { SlButton, SlSelect } from "@shoelace-style/shoelace/cdn/react"
 
 ```
 
+Also solves the issues with the SlIcon.
+
 ## Loading icon svg
 
 https://github.com/shoelace-style/shoelace/discussions/2043
