@@ -3,6 +3,7 @@ import "@radix-ui/themes/styles.css"
 import type { Metadata } from "next"
 import { instrumentSans } from "@/app/ui/fonts"
 import { Theme } from "@radix-ui/themes"
+import "@shoelace-style/shoelace/dist/themes/light.css"
 
 export const metadata: Metadata = {
   title: {

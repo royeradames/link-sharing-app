@@ -9,6 +9,7 @@
 
 
   --purple-rgb: 99, 60, 255;
+  --purple-light: rgba(99, 60, 255, 0.25);
   --purple: #633CFF;
   --purple-hover: #BEADFF;
   --light-purple: #EFEBFF;

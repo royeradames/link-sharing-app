@@ -1,3 +1,4 @@
+import plugin from "tailwindcss/plugin"
 import type { Config } from "tailwindcss"
 
 const config: Config = {
@@ -26,6 +27,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ matchVariant, e }) {
+      matchVariant("part", value => `&::part(${value})`)
+    }),
+  ],
 }
 export default config
