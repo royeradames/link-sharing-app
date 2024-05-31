@@ -35,6 +35,10 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## First translate to css then tailwind 
+
+Due to it being more support for css and having to use arbitrary values
+
 ## Dropdown
 
 ### tailwind using ::part
