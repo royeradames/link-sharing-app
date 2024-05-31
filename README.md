@@ -1,5 +1,11 @@
 # Issues
 
+## Imports of sl elements are causing issues
+
+If I'm able to copy and paste the elements into my project then I would have full access to them. That and the working solution for svg assets will be good enough for me to work. I can manually add them to my project. They would still be more than good enough and I can add the fixes I need. So they can work like a template more than anything else.
+
+This means that every time I can the latest one I could be getting a improve one with bug fixes included or I can continue to use my old implementations. The main advantage is that I don't have to created from scratch for every new project, and things are standardized. 
+
 ## How can we change the select current option without using css variables in tailwind? #2042
 
 https://github.com/shoelace-style/shoelace/discussions/2042
@@ -34,6 +40,10 @@ export default function IconText(){
 
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
+
+## Loading icon svg
+
+https://github.com/shoelace-style/shoelace/discussions/2043
 
 ## previous demo page
 

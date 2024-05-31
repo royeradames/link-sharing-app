@@ -24,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={instrumentSans.className}>
+        <h1>Royer</h1>
         <Theme>{children}</Theme>
       </body>
     </html>
