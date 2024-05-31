@@ -11,12 +11,12 @@ import Text from "@/app/ui/Text"
 import React from "react"
 import { Button } from "@radix-ui/themes"
 
-export type TDropDown2 = {
+export type TDropDown = {
   options: { value: string; label: string }[]
   value?: string
   onChange: (event: any) => void
 }
-export function Dropdown2(props: TDropDown2) {
+export function Dropdown(props: TDropDown) {
   const { options, value = "", onChange } = props
 
   const {
