@@ -97,7 +97,8 @@ export function Button({
         {
           "[&::part(base)]:border-none [&::part(base)]:bg-purple [&::part(base)]:text-white  [&::part(base):active]:bg-purple-hover [&[disabled]::part(base)]:bg-purple/25":
             variant === "primary",
-          [styles.radixSecondary]: variant === "secondary",
+          "[&::part(base)]:border-purple [&::part(base)]:text-purple [&::part(base):active]:bg-light-purple [&[disabled]::part(base)]:opacity-25 [&::part(base)]:bg-white":
+            variant === "secondary",
           [className]: className,
         }
       )}
