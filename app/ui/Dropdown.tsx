@@ -68,7 +68,6 @@ export function Dropdown(props: TDropDown) {
       >
         <div slot="prefix">
           <SlIcon name="link-45deg" aria-hidden className="h-5 w-5 text-grey" />
-          <SlIcon name="alarm" aria-hidden className="h-5 w-5 text-grey" />
         </div>
 
         {options.map((option, i: number) => (
