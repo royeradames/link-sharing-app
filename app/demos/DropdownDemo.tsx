@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react"
-import { Dropdown } from "@/app/ui/Dropdown"
+import { Dropdown } from "@/app/ui/components/Dropdown"
 
 export default function DropdownDemo() {
   const [selectedValue, setSelectedValue] = useState("")

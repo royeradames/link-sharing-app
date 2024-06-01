@@ -4,7 +4,7 @@ import { SlImportDemo } from "@/app/demos/SlImportDemo"
 import { FormDemo } from "@/app/demos/FormDemo"
 import dynamic from "next/dynamic"
 import React from "react"
-import { Button } from "@/app/ui/Button"
+import { Button } from "@/app/ui/components/Button"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
 
 const SlTab = dynamic(

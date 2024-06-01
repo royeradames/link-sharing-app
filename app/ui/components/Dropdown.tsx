@@ -2,10 +2,10 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/app/demos/FormDemo"
-import Text from "@/app/ui/Text"
+import Text from "@/app/ui/components/Text"
 import React from "react"
 import dynamic from "next/dynamic"
-import { Button } from "@/app/ui/Button"
+import { Button } from "@/app/ui/components/Button"
 
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
