@@ -7,7 +7,10 @@ import {
   setBasePath,
 } from "@shoelace-style/shoelace/dist/utilities/base-path.js"
 
-setBasePath("/@shoelace-style/shoelace/dist")
+setBasePath(
+  "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/'"
+)
+// setBasePath("/@shoelace-style/shoelace/dist")
 console.log(getBasePath())
 
 export const metadata: Metadata = {
