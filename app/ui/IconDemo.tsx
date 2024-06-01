@@ -1,11 +1,12 @@
 "use client"
-import React from "react"
+import dynamic from "next/dynamic"
 
-// @ts-ignore
-import { SlIcon } from "@shoelace-style/shoelace/cdn/react"
-// import { SlIcon } from "@/node_modules/@shoelace-style/shoelace/cdn/react"
-// import { SlIcon } from "@/node_modules/shoelace-style/shoelace/cdn/react"
-
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 // https://shoelace.style/getting-started/installation/#setting-the-base-path
 export default function IconDemo() {
   function handleLoad() {

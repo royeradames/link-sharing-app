@@ -1,5 +1,4 @@
 "use client"
-import { SlOption, SlSelect } from "@shoelace-style/shoelace/dist/react"
 import { GitHubLogoIcon, Link2Icon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -7,7 +6,20 @@ import { formSchema } from "@/app/demos/FormDemo"
 import Text from "@/app/ui/Text"
 import React from "react"
 import { Button } from "@radix-ui/themes"
+import dynamic from "next/dynamic"
 
+const SlOption = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlOption),
+  {
+    ssr: false,
+  }
+)
+const SlSelect = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlSelect),
+  {
+    ssr: false,
+  }
+)
 export type TDropDown = {
   options: { value: string; label: string }[]
   value?: string
