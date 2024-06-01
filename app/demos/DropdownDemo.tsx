@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from "react"
-import { Dropdown } from "@/app/ui/Dropdown"
+import { Dropdown } from "@/app/ui/components/DropdownOld"
 
 export default function DropdownDemo() {
   const [selectedValue, setSelectedValue] = useState("")
@@ -17,7 +17,7 @@ export default function DropdownDemo() {
   return (
     <Dropdown
       options={options}
-      value="Dropdown Field Active"
+      placeholder="DropdownOld Field Active"
       onChange={handleSelectChange}
     />
   )

@@ -3,9 +3,9 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import React from "react"
-import { InputField, TextFieldSchema } from "@/app/ui/InputField"
-import Text from "@/app/ui/Text"
-import { Button } from "@/app/ui/Button"
+import { InputField, TextFieldSchema } from "@/app/ui/components/InputField"
+import Text from "@/app/ui/components/Text"
+import { Button } from "@/app/ui/components/Button"
 
 export const formSchema = z.object({
   textField: TextFieldSchema,

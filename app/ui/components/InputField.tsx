@@ -2,7 +2,7 @@ import React from "react"
 import clsx from "clsx"
 import { z } from "zod"
 import { FieldErrors, UseFormRegister } from "react-hook-form"
-import Text from "@/app/ui/Text"
+import Text from "@/app/ui/components/Text"
 import dynamic from "next/dynamic"
 
 const SlIcon = dynamic(
