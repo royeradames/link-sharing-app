@@ -6,6 +6,7 @@ import dynamic from "next/dynamic"
 import React from "react"
 import { Button } from "@/app/ui/components/Button"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
+import { AllMenuList } from "@/app/ui/components/AllMenuList"
 
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),
@@ -33,8 +34,15 @@ const SlTabPanel = dynamic(
 )
 
 export function DemoGroup() {
+  function handleMenuListChange(value: unknown) {
+    console.log(value)
+  }
+
   return (
     <SlTabGroup placement="start" className="mt-2">
+      <SlTab slot="nav" panel="AllMenuList">
+        AllMenuList
+      </SlTab>
       <SlTab slot="nav" panel="ImageUpload">
         ImageUpload
       </SlTab>
@@ -54,6 +62,9 @@ export function DemoGroup() {
         ButtonDemo
       </SlTab>
 
+      <SlTabPanel name="AllMenuList">
+        <AllMenuList onChange={handleMenuListChange} />
+      </SlTabPanel>
       <SlTabPanel name="ImageUpload">
         <ImageUpload />
       </SlTabPanel>

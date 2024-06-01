@@ -292,7 +292,7 @@ https://github.com/shoelace-style/shoelace/discussions/2043
 
 Due to it being more support for css and having to use arbitrary values
 
-## Dropdown
+## DropdownOld
 
 ### tailwind using ::part
 
@@ -306,7 +306,7 @@ With plugin (for tailwind config)
 ```
 plugins: [
     plugin(function ({ matchVariant, e }) {
-    matchVariant("part", value => `&::part(${value})`)
+    matchVariant("part", placeholder => `&::part(${placeholder})`)
     }),
 ],
 ```
@@ -326,7 +326,7 @@ Learn: We can style other elements base on other elements props. [Tailwind addit
 // aria-selected:after:text-purple
 <SlOption
   key={i}
-  value={option.value}
+  placeholder={option.placeholder}
   className="
             part-[checked-icon]:hidden
             part-[base]:[--sl-color-primary-600:none]
