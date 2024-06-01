@@ -2,22 +2,6 @@
   "name": "link-sharing-app",
   "version": "0.1.0",
   "private": true,
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@shoelace-style/shoelace/*": [
-        "cdn/react/*"
-      ]
-    },
-    "typeRoots": [
-      "./node_modules/@types",
-      "./cdn/react"
-    ]
-  },
-  "include": [
-    "src",
-    "cdn/react"
-  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

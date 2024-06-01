@@ -1,5 +1,27 @@
 # Issues
 
+## 404 on .svg. Next js tries to get them from the public file
+
+cannot fix it with 
+
+```tsx
+// @ts-ignore
+// import { setBasePath } from "@shoelace-style/shoelace/cdn/utilities/base-path.js"
+import {
+  getBasePath,
+  setBasePath,
+} from "@shoelace-style/shoelace/dist/utilities/base-path.js"
+// import { setBasePath } from "@shoelace-style/shoelace/dist/assets/icons"
+
+setBasePath("/@shoelace-style/shoelace/dist")
+console.log(getBasePath())
+// setBasePath("@/node_modules/@shoelace-style/shoelace/dist")
+// setBasePath("@shoelace-style/shoelace/dist")
+// setBasePath("https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/")
+```
+
+https://shoelace.style/getting-started/installation/#setting-the-base-path
+
 ## Imports of sl elements are causing issues
 
 If I'm able to copy and paste the elements into my project then I would have full access to them. That and the working solution for svg assets will be good enough for me to work. I can manually add them to my project. They would still be more than good enough and I can add the fixes I need. So they can work like a template more than anything else.
@@ -35,12 +57,40 @@ export default function IconText(){
 
 # Interesting
 
+## package json settings 
+```json
+"compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shoelace-style/shoelace/*": [
+        "dist/react/*"
+      ]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./dist/react"
+    ]
+  },
+  "include": [
+    "src",
+    "dist/react"
+  ],
+```
+
 ## Interesting way to style for ::part
 `<sl-option class="&[aria-selected=“true”]:[&::part(base)]:bg-blue-500"></sl-option>`
 
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## for now I'm getting 404 on images and I cannot set the base path to the correct path
+
+I have to manually add the svg to next.js
+
+I can get the images from the npm package assets icons
+```tsx
+import "@shoelace-style/shoelace/dist/assets/icons"
+```
 ## setting font family
 
 next.js way doesn't work due to the shadow dom but it can get all other normal tags.
