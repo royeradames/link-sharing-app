@@ -41,6 +41,21 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## The correct way to import shoelace component is next.js
+
+> SlTab can be replace with the React name of the sl element
+```tsx
+const SlTab = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlTab),
+  {
+    ssr: false,
+  }
+)
+```
+
+> Avoid build issues.
+https://github.com/shoelace-style/shoelace/discussions/2047
+https://nextjs.org/docs/pages/building-your-application/optimizing/lazy-loading#with-no-ssr
 ## Fix sl npm package imports
 
 Just make sure you are importing from dist instead of cdn
