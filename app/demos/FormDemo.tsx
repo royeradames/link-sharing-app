@@ -3,7 +3,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Form from "@radix-ui/react-form"
-import Button from "@/app/ui/Button"
+import { ButtonRadix } from "@/app/ui/ButtonRadix"
 import React from "react"
 import { InputField, TextFieldSchema } from "@/app/ui/InputField"
 import Text from "@/app/ui/Text"
@@ -43,7 +43,7 @@ export const FormDemo = () => {
         id="textField"
       />
       <Form.Submit asChild>
-        <Button>Post question</Button>
+        <ButtonRadix>Post question</ButtonRadix>
       </Form.Submit>
     </Form.Root>
   )

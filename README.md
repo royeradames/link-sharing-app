@@ -41,6 +41,112 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## setting font family
+
+next.js way doesn't work due to the shadow dom but it can get all other normal tags.
+
+Components need font family need to overwritten by :part or css variable
+
+`[&::part(base)]:font-instrument-sans`
+
+```css
+:root body {
+    --sl-font-sans: 'Instrument Sans', "sans-serif";
+}
+```
+https://shoelace.style/tokens/typography/
+## best way to style sl-elements?
+
+With tailwind and [] to run css
+
+When the css variables become state and style name bound then they would be the best. Right now there name doesn't match what they do. Make it hard to look back at it again and know what its changing. Also not all properties have css variables.
+
+```tsx
+
+// css variables are not well enough implemented to only use them
+// they are not state and style specific
+// some styles don't even have css variables
+// the css variables don't let you know what they do so it's hard to maintain
+// tailwind is not enough. I need to have the :not so that active classes don't activate when the button is disabled. I don't seem to be able to do that with default tailwind but I can do it with css
+// this none helpful css variables names makes styling to hard. I'm keeping tailwind easier name, and I'm just going to overwrite everything. I have to find a solution for :not
+// solution: [&:not(:disabled)]:
+// its extremely difficult to chain state like :active:enable
+// it appears that the buttons are not enable they are using classes instead
+
+/*
+     background-color: var(--sl-color-primary-600);
+   border-color: var(--sl-color-primary-600);
+   color: var(--sl-color-neutral-0);
+   border-radius: var(--sl-input-border-radius-large);
+
+       height: auto;
+   min-height: var(--sl-input-height-large);
+   font-size: var(--sl-button-font-size-large);
+   line-height: calc(var(--sl-input-height-large) - var(--sl-input-border-width) * 2);
+
+
+.button--standard.button--primary {
+   background-color: var(--sl-color-primary-600);
+   border-color: var(--sl-color-primary-600);
+   color: var(--sl-color-neutral-0);
+}
+
+   .button--standard.button--primary:active:not(.button--disabled) {
+   background-color: #43386c;
+   border-color: var(--sl-color-primary-600);
+   color: var(--sl-color-neutral-0);
+
+   .button--standard.button--primary:hover:not(.button--disabled) {
+   background-color: var(--sl-color-primary-500);
+   border-color: var(--sl-color-primary-500);
+   color: var(--sl-color-neutral-0);
+}
+
+[&::part(base):active:not(.button--disabled)]:bg-purple-hover
+[&::part(base):active:enabled]:bg-purple-hover
+}
+  */
+// export function Button({
+//   children,
+//   disabled,
+//   className = "",
+//   type = "button",
+//   variant = "primary",
+//   size = "large",
+// }: TButton) {
+//
+//   return (
+//     <SlButton
+//       variant="primary"
+//       disabled={disabled}
+//       outline={variant === "secondary"}
+//       size={size}
+//       type={type}
+//       className={clsx(
+//         "[--sl-input-border-radius-large:0.5rem] [--sl-color-primary-600:var(--purple)] [----sl-color-neutral-0:var(--white)] [--sl-color-primary-500:var(--purple)] group [&::part(base):active]:bg-purple-hover [&::part(base):disabled]:bg-purple",
+//         {
+//           "  ": variant === "primary",
+//           [styles.radixSecondary]: variant === "secondary",
+//           [className]: className,
+//         }
+//       )}
+//     >
+//       {children}
+//     </SlButton>
+//   )
+// }
+
+// note that using tailwind classes over overwritting css variables is causing the functionality to break. so the dynamic classes are completely overwritting and its making me having to remake more styles that I normally want. When it comes to handling the states like hover active and disabled
+```
+
+## For some reason the sl-button are not activating the :enable
+
+run the disabled style base on the sl-button disabled attribute
+
+`[&[disabled]::part(base)]:bg-purple/25`
+
+https://github.com/shoelace-style/shoelace/discussions/2049
+
 ## The correct way to import shoelace component is next.js
 
 > SlTab can be replace with the React name of the sl element
@@ -84,12 +190,12 @@ https://github.com/shoelace-style/shoelace/discussions/2043
 </Heading>
 <Text>Body Medium Royer Adames</Text>
 <Text size="small">Body small Royer Adames</Text>
-<Button>Primary Button</Button>
-<Button disabled>Primary disable Button</Button>
-<Button variant="secondary">Secondary Button</Button>
-<Button variant="secondary" disabled>
-  Secondary disable Button
-</Button>
+<ButtonRadix>Primary ButtonRadix</ButtonRadix>
+<ButtonRadix disabled>Primary disable ButtonRadix</ButtonRadix>
+<ButtonRadix variant="secondary">Secondary ButtonRadix</ButtonRadix>
+<ButtonRadix variant="secondary" disabled>
+  Secondary disable ButtonRadix
+</ButtonRadix>
 <Nav></Nav>
 <Nav></Nav>
 ```
