@@ -9,19 +9,25 @@ const SlIcon = dynamic(
     ssr: false,
   }
 )
+
 export function ImageUpload() {
   const [isImageUpload, setIsImageUpload] = useState(false)
   const [imgUrl, setImgUrl] = useState("")
+
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
-    const { value } = input.target
-    if (!value) {
+    const file = input.target.files?.[0]
+    if (!file) {
       setIsImageUpload(false)
       setImgUrl("")
+      return
     }
-    console.log("value.target.value")
-    console.log(value)
-    setIsImageUpload(true)
-    setImgUrl(value)
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImgUrl(reader.result as string)
+      setIsImageUpload(true)
+    }
+    reader.readAsDataURL(file)
   }
 
   return (
@@ -32,13 +38,16 @@ export function ImageUpload() {
       >
         <div
           className={clsx(
-            "flex flex-col justify-center items-center rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px] ",
+            "flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
             {
-              "bg-light-purple": !isImageUpload,
               "text-white bg-dark-grey/25": isImageUpload,
-              "": imgUrl,
             }
           )}
+          style={{
+            backgroundImage: imgUrl ? `url(${imgUrl})` : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
           <SlIcon
             aria-hidden={true}
@@ -58,19 +67,21 @@ export function ImageUpload() {
             {isImageUpload ? "Change Image" : "+ Upload Image"}
           </span>
         </div>
-        <p className="text-dark-grey text-base font-normal leading-[150%]">
-          Image {isImageUpload ? "" : "Not"} Uploaded
-        </p>
+        <div>
+          <p className="text-dark-grey text-base font-normal leading-[150%]">
+            Image {isImageUpload ? "" : "Not"} Uploaded
+          </p>
+          <input
+            aria-hidden={true}
+            className="opacity-0 h-1 w-1"
+            type="file"
+            id="image_uploads"
+            name="image_uploads"
+            accept=".jpg, .jpeg, .png"
+            onChange={handleImage}
+          ></input>
+        </div>
       </label>
-      <input
-        aria-hidden={true}
-        className="opacity-0 h-0"
-        type="file"
-        id="image_uploads"
-        name="image_uploads"
-        accept=".jpg, .jpeg, .png"
-        onChange={value => handleImage(value)}
-      ></input>
     </section>
   )
 }
