@@ -5,6 +5,7 @@ import { FormDemo } from "@/app/demos/FormDemo"
 import dynamic from "next/dynamic"
 import React from "react"
 import { Button } from "@/app/ui/Button"
+import { ImageUpload } from "@/app/ui/components/ImageUpload"
 
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),
@@ -34,6 +35,9 @@ const SlTabPanel = dynamic(
 export function DemoGroup() {
   return (
     <SlTabGroup placement="start" className="mt-2">
+      <SlTab slot="nav" panel="ImageUpload">
+        ImageUpload
+      </SlTab>
       <SlTab slot="nav" panel="DropdownDemo">
         DropdownDemo
       </SlTab>
@@ -50,6 +54,9 @@ export function DemoGroup() {
         ButtonDemo
       </SlTab>
 
+      <SlTabPanel name="ImageUpload">
+        <ImageUpload />
+      </SlTabPanel>
       <SlTabPanel name="DropdownDemo">
         <DropdownDemo />
       </SlTabPanel>
