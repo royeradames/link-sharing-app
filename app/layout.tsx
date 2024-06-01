@@ -2,6 +2,13 @@ import "@shoelace-style/shoelace/dist/themes/light.css"
 import type { Metadata } from "next"
 import { instrumentSans } from "@/app/ui/fonts"
 import "./globals.css"
+import {
+  getBasePath,
+  setBasePath,
+} from "@shoelace-style/shoelace/dist/utilities/base-path.js"
+
+setBasePath("/@shoelace-style/shoelace/dist")
+console.log(getBasePath())
 
 export const metadata: Metadata = {
   title: {
