@@ -41,6 +41,20 @@ export default function IconText(){
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## setting font family
+
+next.js way doesn't work due to the shadow dom but it can get all other normal tags.
+
+Components need font family need to overwritten by :part or css variable
+
+`[&::part(base)]:font-instrument-sans`
+
+```css
+:root body {
+    --sl-font-sans: 'Instrument Sans', "sans-serif";
+}
+```
+https://shoelace.style/tokens/typography/
 ## best way to style sl-elements?
 
 With tailwind and [] to run css

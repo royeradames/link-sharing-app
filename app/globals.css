@@ -2,12 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root body{
+  --sl-font-sans: 'Instrument Sans',  "sans-serif";
+
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-
-
+}
+:root {
   --purple-rgb: 99, 60, 255;
   --purple-light: rgba(99, 60, 255, 0.25);
   --purple: #633CFF;
@@ -39,8 +41,4 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+

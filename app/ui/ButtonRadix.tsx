@@ -3,7 +3,6 @@ import { Button as RadixButton } from "@radix-ui/themes"
 import styles from "./button.module.css"
 import { clsx } from "clsx"
 import dynamic from "next/dynamic"
-import { instrumentSans } from "@/app/ui/fonts"
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlButton),
@@ -75,6 +74,8 @@ export function ButtonRadix({
 }
 
 [--sl-input-font-family:'__Instrument_Sans_8f8cb2','__Instrument_Sans_Fallback_8f8cb2']
+[&::part(base)]:[${instrumentSans.style}]
+[&::part(base)]:font-instrument-sans
  */
 export function Button({
   children,
@@ -92,7 +93,7 @@ export function Button({
       size={size}
       type={type}
       className={clsx(
-        `[&::part(base)]:[${instrumentSans.style}] [--sl-input-font-family:'Instrument Sans'] [&::part(base)]:rounded-lg `,
+        ` [&::part(base)]:rounded-lg [&::part(base)]:font-semibold [&::part(base)]:text-[1rem]`,
         {
           "[&::part(base)]:border-none [&::part(base)]:bg-purple [&::part(base)]:text-white  [&::part(base):active]:bg-purple-hover [&[disabled]::part(base)]:bg-purple/25":
             variant === "primary",
