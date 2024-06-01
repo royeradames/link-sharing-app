@@ -4,14 +4,8 @@ import { SlImportDemo } from "@/app/demos/SlImportDemo"
 import { FormDemo } from "@/app/demos/FormDemo"
 import dynamic from "next/dynamic"
 import React from "react"
-import { Button, ButtonRadix } from "@/app/ui/ButtonRadix"
+import { Button } from "@/app/ui/ButtonRadix"
 
-const SlButton = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlButton),
-  {
-    ssr: false,
-  }
-)
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),
   {
@@ -70,16 +64,6 @@ export function DemoGroup() {
       </SlTabPanel>
       <SlTabPanel name="ButtonDemo">
         <div className="flex flex-col gap-4">
-          <ButtonRadix>ButtonRadix</ButtonRadix>
-          <ButtonRadix disabled>ButtonRadix</ButtonRadix>
-          <ButtonRadix variant="secondary">ButtonRadix</ButtonRadix>
-          <ButtonRadix variant="secondary" disabled>
-            ButtonRadix
-          </ButtonRadix>
-          <SlButton variant="primary" disabled>
-            Primary
-          </SlButton>
-
           <Button variant="primary">Button</Button>
           <Button variant="primary">Second Primary Button</Button>
           <Button variant="primary" disabled>

@@ -1,6 +1,4 @@
 import { ReactNode } from "react"
-import { Button as RadixButton } from "@radix-ui/themes"
-import styles from "./button.module.css"
 import { clsx } from "clsx"
 import dynamic from "next/dynamic"
 
@@ -18,65 +16,7 @@ export type TButton = {
   className?: string
   size?: "small" | "medium" | "large"
 }
-export function ButtonRadix({
-  children,
-  disabled,
-  className = "",
-  type = "button",
-  variant = "primary",
-}: TButton) {
-  return (
-    <RadixButton
-      variant={variant === "secondary" ? "outline" : "solid"}
-      disabled={disabled}
-      size="4"
-      type={type}
-      className={clsx("", {
-        [styles.radixPrimary]: variant === "primary",
-        [styles.radixSecondary]: variant === "secondary",
-        [className]: className,
-      })}
-    >
-      {children}
-    </RadixButton>
-  )
-}
 
-/*
-.button--large {
-    height: auto;
-    min-height: var(--sl-input-height-large);
-    font-size: var(--sl-button-font-size-large);
-    line-height: calc(var(--sl-input-height-large) - var(--sl-input-border-width) * 2);
-    border-radius: var(--sl-input-border-radius-large);
-}
-
-.button {
-    display: inline-flex;
-    align-items: stretch;
-    justify-content: center;
-    width: 100%;
-    border-style: solid;
-    border-width: var(--sl-input-border-width);
-    font-family: var(--sl-input-font-family);
-    font-weight: var(--sl-font-weight-semibold);
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    white-space: nowrap;
-    vertical-align: middle;
-    padding: 0;
-    transition: var(--sl-transition-x-fast) background-color,
-      var(--sl-transition-x-fast) color,
-      var(--sl-transition-x-fast) border,
-      var(--sl-transition-x-fast) box-shadow;
-    cursor: inherit;
-}
-
-[--sl-input-font-family:'__Instrument_Sans_8f8cb2','__Instrument_Sans_Fallback_8f8cb2']
-[&::part(base)]:[${instrumentSans.style}]
-[&::part(base)]:font-instrument-sans
- */
 export function Button({
   children,
   disabled,

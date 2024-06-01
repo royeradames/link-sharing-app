@@ -3,10 +3,10 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Form from "@radix-ui/react-form"
-import { ButtonRadix } from "@/app/ui/ButtonRadix"
 import React from "react"
 import { InputField, TextFieldSchema } from "@/app/ui/InputField"
 import Text from "@/app/ui/Text"
+import { Button } from "@/app/ui/ButtonRadix"
 
 export const formSchema = z.object({
   textField: TextFieldSchema,
@@ -43,7 +43,7 @@ export const FormDemo = () => {
         id="textField"
       />
       <Form.Submit asChild>
-        <ButtonRadix>Post question</ButtonRadix>
+        <Button>Post question</Button>
       </Form.Submit>
     </Form.Root>
   )
