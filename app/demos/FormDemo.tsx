@@ -2,11 +2,10 @@
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as Form from "@radix-ui/react-form"
-import { ButtonRadix } from "@/app/ui/ButtonRadix"
 import React from "react"
 import { InputField, TextFieldSchema } from "@/app/ui/InputField"
 import Text from "@/app/ui/Text"
+import { Button } from "@/app/ui/Button"
 
 export const formSchema = z.object({
   textField: TextFieldSchema,
@@ -24,7 +23,7 @@ export const FormDemo = () => {
   })
   const onSubmit = (data: any) => console.log(data)
   return (
-    <Form.Root
+    <form
       className="w-full p-4 flex flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -42,9 +41,9 @@ export const FormDemo = () => {
         placeholder="Text Field"
         id="textField"
       />
-      <Form.Submit asChild>
-        <ButtonRadix>Post question</ButtonRadix>
-      </Form.Submit>
-    </Form.Root>
+      <div>
+        <Button>Post question</Button>
+      </div>
+    </form>
   )
 }

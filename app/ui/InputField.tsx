@@ -1,10 +1,16 @@
 import React from "react"
-import { Link2Icon } from "@radix-ui/react-icons"
 import clsx from "clsx"
 import { z } from "zod"
 import { FieldErrors, UseFormRegister } from "react-hook-form"
 import Text from "@/app/ui/Text"
+import dynamic from "next/dynamic"
 
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 export const TextFieldSchema = z
   .string()
   .min(1, { message: "Please check again" })
@@ -36,7 +42,7 @@ export const InputField = ({
         }
       )}
     >
-      <Link2Icon aria-hidden className="h-5 w-5 text-grey" />
+      <SlIcon name="link-45deg" aria-hidden className="h-5 w-5 text-grey" />
 
       <input
         className={clsx(
