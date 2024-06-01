@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={instrumentSans.className}>
+      <body className={instrumentSans.className} style={instrumentSans.style}>
         <h1>Royer</h1>
         <Theme>{children}</Theme>
       </body>
