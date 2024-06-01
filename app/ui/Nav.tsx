@@ -1,9 +1,15 @@
 "use client"
 import Link from "next/link"
 import { clsx } from "clsx"
-import { AvatarIcon, Link2Icon } from "@radix-ui/react-icons"
 import { usePathname } from "next/navigation"
+import dynamic from "next/dynamic"
 
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 export default function Nav({}: {}) {
   const pathname = usePathname()
   const linkStyles = (isActive: boolean) => {
@@ -18,14 +24,14 @@ export default function Nav({}: {}) {
   return (
     <nav className="flex ">
       <Link href="/links" className={linkStyles(pathname.includes("/links"))}>
-        <Link2Icon className={iconSizeStyles} />
+        <SlIcon name="link-45deg" className={iconSizeStyles} />
         Links
       </Link>
       <Link
         href="/profile-details"
         className={linkStyles(pathname.includes("/profile-details"))}
       >
-        <AvatarIcon className={iconSizeStyles} /> Profile Details
+        <SlIcon name="person-circle" className={iconSizeStyles} />
       </Link>
     </nav>
   )

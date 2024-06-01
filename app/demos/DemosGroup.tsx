@@ -4,7 +4,7 @@ import { SlImportDemo } from "@/app/demos/SlImportDemo"
 import { FormDemo } from "@/app/demos/FormDemo"
 import dynamic from "next/dynamic"
 import React from "react"
-import { Button } from "@/app/ui/ButtonRadix"
+import { Button } from "@/app/ui/Button"
 
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),

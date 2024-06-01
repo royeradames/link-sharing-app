@@ -1,13 +1,18 @@
 "use client"
-import { GitHubLogoIcon, Link2Icon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/app/demos/FormDemo"
 import Text from "@/app/ui/Text"
 import React from "react"
-import { Button } from "@radix-ui/themes"
 import dynamic from "next/dynamic"
+import { Button } from "@/app/ui/Button"
 
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 const SlOption = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlOption),
   {
@@ -62,7 +67,7 @@ export function Dropdown(props: TDropDown) {
       "
       >
         <div slot="prefix">
-          <Link2Icon aria-hidden className="h-5 w-5 text-grey" />
+          <SlIcon name="link-45deg" aria-hidden className="h-5 w-5 text-grey" />
         </div>
 
         {options.map((option, i: number) => (
@@ -82,7 +87,7 @@ export function Dropdown(props: TDropDown) {
             "
           >
             <div slot="prefix">
-              <GitHubLogoIcon></GitHubLogoIcon>
+              <SlIcon name="github" />
             </div>
             {option.label}
             <div slot="suffix" className=" hidden group-aria-selected:inline">
