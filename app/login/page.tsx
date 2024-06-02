@@ -1,6 +1,13 @@
 "use client"
 import React from "react"
+import { Logo } from "@/app/ui/components/Logo"
 
 export default function Page() {
-  return <h1 className="text-purple">Login</h1>
+  return (
+    <div className="flex justify-center items-center">
+      <section>
+        <Logo />
+      </section>
+    </div>
+  )
 }
