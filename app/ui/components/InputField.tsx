@@ -16,6 +16,7 @@ export const TextFieldSchema = z
   .min(1, { message: "Please check again" })
 
 export type TextFieldProps = {
+  iconName?: string
   name: string
   placeholder: string
   register: UseFormRegister<any>
@@ -28,6 +29,7 @@ export const InputField = ({
   errors,
   name,
   id,
+  iconName = "link-45deg",
   placeholder,
 }: TextFieldProps) => {
   return (
@@ -42,15 +44,11 @@ export const InputField = ({
         }
       )}
     >
-      <SlIcon name="link-45deg" aria-hidden className="h-5 w-5 text-grey" />
+      <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
 
       <input
         className={clsx(
-          "flex-1 bg-transparent focus:outline-none font-regular leading-[150%] text-base placeholder:font-regular placeholder:leading-[150%] placeholder:text-base",
-          {
-            "placeholder-gray-500": !errors[name]?.message,
-            "placeholder-red": errors[name]?.message,
-          }
+          "flex-1 bg-transparent focus:outline-none font-regular leading-[150%] text-base placeholder:font-regular placeholder:leading-[150%] placeholder:text-base placeholder:opacity-50 placeholder-dark-grey placeholder:font-normal"
         )}
         placeholder={placeholder}
         {...register(name)}

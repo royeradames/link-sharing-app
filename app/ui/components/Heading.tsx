@@ -19,7 +19,7 @@ export default function Heading({
   return (
     <Heading
       id={id}
-      className={clsx("font-bold leading-[150%]", {
+      className={clsx("font-bold leading-[150%] text-dark-grey", {
         "text-[32px]": size === "medium",
         "text-[16px]": size === "small",
         [className]: !!className,
