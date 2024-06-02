@@ -6,7 +6,6 @@ import {
   getBasePath,
   setBasePath,
 } from "@shoelace-style/shoelace/dist/utilities/base-path.js"
-import { Header } from "@/app/ui/components/Header"
 
 setBasePath("/@shoelace-style/shoelace/dist")
 console.log(getBasePath())
@@ -30,7 +29,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={instrumentSans.className} style={instrumentSans.style}>
-        <Header />
         {children}
       </body>
     </html>

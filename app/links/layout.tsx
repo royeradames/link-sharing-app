@@ -1,7 +1,14 @@
+import { Header } from "@/app/ui/components/Header"
+
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <section>{children}</section>
+  return (
+    <main>
+      <Header />
+      {children}
+    </main>
+  )
 }
