@@ -1,13 +1,13 @@
 "use client"
-import DropdownDemo from "@/app/demos/DropdownDemo"
-import IconDemo from "@/app/demos/IconDemo"
-import { SlImportDemo } from "@/app/demos/SlImportDemo"
-import { FormDemo } from "@/app/demos/FormDemo"
+import DropdownDemo from "@/app/ui/demos/DropdownDemo"
+import IconDemo from "@/app/ui/demos/IconDemo"
+import { SlImportDemo } from "@/app/ui/demos/SlImportDemo"
+import { FormDemo } from "@/app/ui/demos/FormDemo"
 import dynamic from "next/dynamic"
 import { Button } from "@/app/ui/components/Button"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
 import { AllMenuList } from "@/app/ui/components/AllMenuList"
-import { PreviewListDemo } from "@/app/demos/PreviewListDemo"
+import { PreviewListDemo } from "@/app/ui/demos/PreviewListDemo"
 
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),

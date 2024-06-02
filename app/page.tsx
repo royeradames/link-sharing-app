@@ -1,6 +1,6 @@
 "use client"
 import React from "react"
-import { PreviewListDemo } from "@/app/demos/PreviewListDemo"
+import { PreviewListDemo } from "@/app/ui/demos/PreviewListDemo"
 
 export default function Home() {
   return (
