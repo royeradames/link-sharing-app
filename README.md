@@ -255,8 +255,8 @@ https://github.com/shoelace-style/shoelace/discussions/2049
 
 > SlTab can be replace with the React name of the sl element
 ```tsx
-const SlTab = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlTab),
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
   {
     ssr: false,
   }

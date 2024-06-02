@@ -26,14 +26,14 @@ export default function Nav({}: {}) {
     <nav className="flex ">
       <Link href="/links" className={linkStyles(pathname.includes("/links"))}>
         <SlIcon name="link-45deg" className={iconSizeStyles} />
-        Links
+        <span className="hidden sm:inline">Links</span>
       </Link>
       <Link
         href="/profile-details"
         className={linkStyles(pathname.includes("/profile-details"))}
       >
         <SlIcon name="user-circle" className={iconSizeStyles} />
-        Profile Details
+        <span className="hidden sm:inline">Profile Details</span>
       </Link>
     </nav>
   )
