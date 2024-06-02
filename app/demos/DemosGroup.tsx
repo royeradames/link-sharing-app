@@ -1,12 +1,13 @@
+"use client"
 import DropdownDemo from "@/app/demos/DropdownDemo"
 import IconDemo from "@/app/demos/IconDemo"
 import { SlImportDemo } from "@/app/demos/SlImportDemo"
 import { FormDemo } from "@/app/demos/FormDemo"
 import dynamic from "next/dynamic"
-import React from "react"
 import { Button } from "@/app/ui/components/Button"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
 import { AllMenuList } from "@/app/ui/components/AllMenuList"
+import { PreviewListDemo } from "@/app/demos/PreviewListDemo"
 
 const SlTab = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),
@@ -40,6 +41,9 @@ export function DemoGroup() {
 
   return (
     <SlTabGroup placement="start" className="mt-2">
+      <SlTab slot="nav" panel="PreviewListButton">
+        PreviewListButton
+      </SlTab>
       <SlTab slot="nav" panel="AllMenuList">
         AllMenuList
       </SlTab>
@@ -62,6 +66,9 @@ export function DemoGroup() {
         ButtonDemo
       </SlTab>
 
+      <SlTabPanel name="PreviewList">
+        <PreviewListDemo />
+      </SlTabPanel>
       <SlTabPanel name="AllMenuList">
         <AllMenuList onChange={handleMenuListChange} />
       </SlTabPanel>
