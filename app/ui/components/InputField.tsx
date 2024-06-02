@@ -48,7 +48,7 @@ export const InputField = ({
 
       <input
         className={clsx(
-          "flex-1 bg-transparent focus:outline-none font-regular leading-[150%] text-base placeholder:font-regular placeholder:leading-[150%] placeholder:text-base placeholder:opacity-50 placeholder-dark-grey placeholder:font-normal"
+          "font-normal flex-1 bg-transparent focus:outline-none font-regular leading-[150%] text-base placeholder:font-regular placeholder:leading-[150%] placeholder:text-base placeholder:opacity-50 placeholder-dark-grey placeholder:font-normal"
         )}
         placeholder={placeholder}
         {...register(name)}

@@ -15,6 +15,7 @@ export type TButton = {
   type?: "submit" | "button" | "reset"
   className?: string
   size?: "small" | "medium" | "large"
+  loading?: boolean
 }
 
 export function Button({
@@ -24,6 +25,7 @@ export function Button({
   type = "button",
   variant = "primary",
   size = "large",
+  loading,
 }: TButton) {
   return (
     <SlButton
@@ -32,6 +34,7 @@ export function Button({
       outline={variant === "secondary"}
       size={size}
       type={type}
+      loading={loading}
       className={clsx(
         ` [&::part(base)]:rounded-lg [&::part(base)]:font-semibold [&::part(base)]:text-[1rem]`,
         {
