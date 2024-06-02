@@ -57,6 +57,20 @@ export default function IconText(){
 
 # Interesting
 
+## Editing links is much nicer and easier than editing sl-buttons
+
+sl-button has many moving pieces. I didn't like that padding didn't work as expected. So I don't know how to manually increase the size without the size property.
+
+Link works great with tailwind but I have to write all functionality from scratch.
+
+The best case for me would be if sl-button had local css variables with state that could be overwritten dynamically. 
+
+I'm noticing the limited value sl-elements bring. So far:
+- a select that I can style
+- a button with 90% of its functionality and styles finish. Now it just needs branding.
+
+Styling with ::part is harder to read than normal css classes.
+
 ## package json settings 
 ```json
 "compilerOptions": {
@@ -82,6 +96,8 @@ export default function IconText(){
 
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
+
+
 
 ## for now I'm getting 404 on images and I cannot set the base path to the correct path
 
