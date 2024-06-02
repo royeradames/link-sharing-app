@@ -125,7 +125,7 @@ Components need font family need to overwritten by :part or css variable
     white-space: nowrap;
     vertical-align: middle;
     padding: 0;
-    transition: var(--sl-transition-x-fast) background-color,
+    transition: var(--sl-transition-x-fast) styles-color,
       var(--sl-transition-x-fast) color,
       var(--sl-transition-x-fast) border,
       var(--sl-transition-x-fast) box-shadow;
@@ -162,7 +162,7 @@ When the css variables become state and style name bound then they would be the 
 // it appears that the buttons are not enable they are using classes instead
 
 /*
-     background-color: var(--sl-color-primary-600);
+     styles-color: var(--sl-color-primary-600);
    border-color: var(--sl-color-primary-600);
    color: var(--sl-color-neutral-0);
    border-radius: var(--sl-input-border-radius-large);
@@ -174,18 +174,18 @@ When the css variables become state and style name bound then they would be the 
 
 
 .button--standard.button--primary {
-   background-color: var(--sl-color-primary-600);
+   styles-color: var(--sl-color-primary-600);
    border-color: var(--sl-color-primary-600);
    color: var(--sl-color-neutral-0);
 }
 
    .button--standard.button--primary:active:not(.button--disabled) {
-   background-color: #43386c;
+   styles-color: #43386c;
    border-color: var(--sl-color-primary-600);
    color: var(--sl-color-neutral-0);
 
    .button--standard.button--primary:hover:not(.button--disabled) {
-   background-color: var(--sl-color-primary-500);
+   styles-color: var(--sl-color-primary-500);
    border-color: var(--sl-color-primary-500);
    color: var(--sl-color-neutral-0);
 }

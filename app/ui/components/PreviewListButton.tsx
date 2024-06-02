@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic"
 import { clsx } from "clsx"
+import Link from "next/link"
 
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
@@ -7,34 +8,54 @@ const SlIcon = dynamic(
     ssr: false,
   }
 )
-const SlButton = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlButton),
-  {
-    ssr: false,
-  }
-)
 
 export type TPreviewList = {
-  options: { background: string; label: string; iconName: string }
+  options: {
+    styles: { base: string; icon?: string; logo?: string; text?: string }
+    label: string
+    iconName: string
+  }
+  href: string
 }
-export function PreviewListButton({ options }: TPreviewList) {
+export function PreviewList({
+  options: { styles, label, iconName },
+  href,
+}: TPreviewList) {
   return (
-    <SlButton
-      className={clsx(
-        "[&::part(base)]:w-52 [&::part(base)]:rounded-lg [&::part(base)]:justify-start [&::part(prefix)]:flex-grow-0 [&::part(label)]:flex-grow-0 [&::part(suffix)]:flex-1 [&::part(suffix)]:justify-start [&::part(suffix)]:flex-row-reverse",
-        {
-          [options.background]: options.background,
-        }
-      )}
-      size="large"
+    <Link
+      id="base"
+      href={href}
+      className={clsx("flex gap-3 p-4 items-center rounded-lg", {
+        [styles.base]: styles.base,
+      })}
     >
       <SlIcon
-        name={options.iconName}
-        className="text-white"
-        slot="prefix"
+        id="logo"
+        name={iconName}
+        className={clsx("text-white flex-grow-0", {
+          [styles.logo || ""]: styles.logo,
+        })}
       ></SlIcon>
-      <span className="text-white">{options.label}</span>
-      <SlIcon name="arrow-right" className="text-white" slot="suffix" />
-    </SlButton>
+      <span
+        id="text"
+        className={clsx(" flex-grow-0", {
+          [`${styles.text}`]: styles.text,
+          "text-white": !styles.text,
+        })}
+      >
+        {label}
+      </span>
+      <div className="flex-1 flex justify-start flex-row-reverse">
+        <SlIcon
+          id="icon"
+          name="arrow-right"
+          className={clsx("", {
+            [styles.icon || ""]: styles.icon,
+            "text-white": !styles.icon,
+          })}
+          slot="suffix"
+        />
+      </div>
+    </Link>
   )
 }

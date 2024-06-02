@@ -4,10 +4,7 @@
 
 :root body{
   --sl-font-sans: 'Instrument Sans',  "sans-serif";
-
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: white;
 }
 :root {
   --purple-rgb: 99, 60, 255;
