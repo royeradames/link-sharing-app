@@ -2,11 +2,13 @@ import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
 import { AllMenuList } from "@/app/ui/components/AllMenuList"
 
-export function LinkForm({ orderNumber = 0 }: { orderNumber: number }) {
-  function handleRemove() {
-    alert("remove")
-  }
-
+export function LinkForm({
+  orderNumber = 0,
+  onRemove,
+}: {
+  orderNumber: number
+  onRemove: () => void
+}) {
   function handlePlatFormChange() {
     //   todo: on click push a
   }
@@ -22,7 +24,7 @@ export function LinkForm({ orderNumber = 0 }: { orderNumber: number }) {
         </Heading>
         <button
           className="text-grey text-base font-normal leading-[150%]"
-          onClick={handleRemove}
+          onClick={onRemove}
         >
           Remove
         </button>
