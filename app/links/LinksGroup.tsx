@@ -94,7 +94,6 @@ function isItemData(data: Record<string | symbol, unknown>): data is ItemData {
 }
 
 const containerStyles = xcss({
-  maxWidth: "400px",
   borderWidth: "border.width",
   borderStyle: "solid",
   borderColor: "color.border",
@@ -154,13 +153,6 @@ const listItemPreviewStyles = xcss({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-})
-
-const itemLabelStyles = xcss({
-  flexGrow: 1,
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
 })
 
 function ListItem({
@@ -283,7 +275,7 @@ function ListItem({
             ref={dragHandleRef}
             label={`Reorder ${item.form.name}`}
           />
-          <Box xcss={itemLabelStyles}>
+          <Box>
             <ItemForm
               orderNumber={index + 1}
               onRemove={() => handleRemove(item.id)}
@@ -291,7 +283,6 @@ function ListItem({
             />
           </Box>
         </Grid>
-        {/*{closestEdge && <DropIndicator edge={closestEdge} gap="1px" />}*/}
       </Box>
       {draggableState.type === "preview" &&
         ReactDOM.createPortal(
