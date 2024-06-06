@@ -23,7 +23,6 @@ import {
   extractClosestEdge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
-import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import {
   draggable,
@@ -33,7 +32,7 @@ import {
 import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview"
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
 import { reorder } from "@atlaskit/pragmatic-drag-and-drop/reorder"
-import { Box, Grid, Stack, xcss } from "@atlaskit/primitives"
+import { Box, Stack, xcss } from "@atlaskit/primitives"
 import { token } from "@atlaskit/tokens"
 
 type CleanupFn = () => void
@@ -124,18 +123,6 @@ type DraggableState =
 
 const idleState: DraggableState = { type: "idle" }
 const draggingState: DraggableState = { type: "dragging" }
-
-const listItemContainerStyles = xcss({
-  position: "relative",
-  backgroundColor: "elevation.surface",
-  borderWidth: "border.width.0",
-  borderBottomWidth: token("border.width", "1px"),
-  borderStyle: "solid",
-  borderColor: "color.border",
-  ":last-of-type": {
-    borderWidth: "border.width.0",
-  },
-})
 
 const listItemStyles = xcss({
   position: "relative",
@@ -258,34 +245,27 @@ function ListItem({
     )
   }, [instanceId, item, index, registerItem])
 
-  const ItemForm = item.form
+  const LinkFormFomArray = item.form
   return (
     <Fragment>
-      <Box ref={ref} xcss={listItemContainerStyles}>
-        <Grid
-          alignItems="center"
-          columnGap="space.050"
-          templateColumns="auto 1fr auto"
-          xcss={[
-            listItemStyles,
-            draggableState.type === "dragging" && listItemDisabledStyles,
-          ]}
-        >
-          <DragHandleButton
-            ref={dragHandleRef}
-            label={`Reorder ${item.form.name}`}
-          />
-          <Box>
-            <ItemForm
-              orderNumber={index + 1}
-              onRemove={() => handleRemove(item.id)}
-              edge={closestEdge}
-            />
-          </Box>
-        </Grid>
+      <Box
+        ref={ref}
+        xcss={[
+          listItemStyles,
+          draggableState.type === "dragging" && listItemDisabledStyles,
+        ]}
+      >
+        <LinkFormFomArray
+          orderNumber={index + 1}
+          onRemove={() => handleRemove(item.id)}
+          edge={closestEdge}
+          name={item.form.name}
+          dragHandleRef={dragHandleRef}
+        />
       </Box>
       {draggableState.type === "preview" &&
         ReactDOM.createPortal(
+          // todo: make the preview item match the curren item without crashing
           <Box xcss={listItemPreviewStyles}>{item.form.name}</Box>,
           draggableState.container
         )}
@@ -415,15 +395,18 @@ export function LinksGroup() {
         </div>
       )}
       {!!LinkFromGroup.length && (
-        <Stack xcss={containerStyles}>
-          {LinkFromGroup.map((item, index) => (
-            <ListItem
-              key={item.id}
-              item={item}
-              index={index}
-              handleRemove={handleRemove}
-            />
-          ))}
+        <Stack>
+          {/*<Stack xcss={containerStyles}>*/}
+          <div className="flex flex-col gap-2">
+            {LinkFromGroup.map((item, index) => (
+              <ListItem
+                key={item.id}
+                item={item}
+                index={index}
+                handleRemove={handleRemove}
+              />
+            ))}
+          </div>
         </Stack>
       )}
     </ListContext.Provider>
