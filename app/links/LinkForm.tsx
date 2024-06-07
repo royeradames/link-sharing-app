@@ -5,6 +5,10 @@ import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { DropIndicator } from "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box"
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
 import { RefObject } from "react"
+import { InputField } from "@/app/ui/components/InputField"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { formSchema } from "@/app/ui/demos/FormDemo"
 
 export function LinkForm({
   orderNumber = 0,
@@ -19,12 +23,22 @@ export function LinkForm({
   name: string
   dragHandleRef: RefObject<HTMLButtonElement>
 }) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      textField: "",
+    },
+  })
   function handlePlatFormChange() {
     //   todo: on click push a
   }
 
   return (
-    <section>
+    <section className="flex flex-col justify-center items-stretch gap-3 self-stretch bg-light-grey p-5 rounded-xl">
       <header className="flex justify-between items-start self-stretch">
         <Heading
           as="h2"
@@ -41,11 +55,23 @@ export function LinkForm({
           Remove
         </button>
       </header>
-      <div>
+      <div className="text-left">
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
         <AllMenuList onChange={handlePlatFormChange} />
+      </div>
+      <div className="text-left">
+        <Text as="label" htmlFor="link">
+          Link
+        </Text>
+        <InputField
+          name="link"
+          placeholder="e.g. https://www.github.com/johnappleseed"
+          register={register}
+          errors={errors}
+          id="link"
+        />
       </div>
     </section>
   )
