@@ -29,7 +29,7 @@ export const InputField = ({
   errors,
   name,
   id,
-  iconName = "links-45deg",
+  iconName = "link-45deg",
   placeholder,
 }: TextFieldProps) => {
   return (
