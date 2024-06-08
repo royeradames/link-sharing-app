@@ -3,11 +3,11 @@ import React from "react"
 import { Logo } from "@/app/ui/components/Logo"
 import Text from "@/app/ui/components/Text"
 import Heading from "@/app/ui/components/Heading"
-import { InputField } from "@/app/ui/components/InputField"
+import { InputField } from "@/app/ui/inputs/InputField"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Button } from "@/app/ui/components/Button"
+import { Button } from "@/app/ui/inputs/Button"
 import Link from "next/link"
 
 const formSchema = z.object({

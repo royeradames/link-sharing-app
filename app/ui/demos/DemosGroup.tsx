@@ -4,9 +4,9 @@ import IconDemo from "@/app/ui/demos/IconDemo"
 import { SlImportDemo } from "@/app/ui/demos/SlImportDemo"
 import { FormDemo } from "@/app/ui/demos/FormDemo"
 import dynamic from "next/dynamic"
-import { Button } from "@/app/ui/components/Button"
+import { Button } from "@/app/ui/inputs/Button"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
-import { AllMenuList } from "@/app/ui/components/AllMenuList"
+import { AllMenuList } from "@/app/ui/inputs/AllMenuList"
 import { PreviewListDemo } from "@/app/ui/demos/PreviewListDemo"
 
 const SlTab = dynamic(

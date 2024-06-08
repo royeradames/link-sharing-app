@@ -1,7 +1,7 @@
 "use client"
 import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
-import { Button } from "@/app/ui/components/Button"
+import { Button } from "@/app/ui/inputs/Button"
 import {
   DragableListItem,
   getItemRegistry,

@@ -1,5 +1,5 @@
 "use client"
-import { Button } from "@/app/ui/components/Button"
+import { Button } from "@/app/ui/inputs/Button"
 import Nav from "@/app/ui/components/Nav"
 import { Logo } from "@/app/ui/components/Logo"
 import dynamic from "next/dynamic"
