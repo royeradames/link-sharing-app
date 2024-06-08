@@ -27,14 +27,16 @@ export function CustomizeLinks() {
   const { handleSubmit, fields, append, remove, move } = useLinksFormContext()
   const handleAddNewLink = () => {
     append({
-      platform: "",
-      link: "",
+      platform: "Test",
+      link: "google@test.com",
     })
   }
 
   console.log(fields)
   const onSubmit = (data: LinksSchemaType) => {
+    console.log("onSubmit")
     console.log(data)
+    console.log(fields)
   }
 
   const reorderItem = useCallback(
@@ -109,17 +111,17 @@ export function CustomizeLinks() {
     }
   }, [reorderItem, getListLength])
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-lg"
-    >
-      <div className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
-        <Heading as="h1">Customize your links</Heading>
-        <Text as="p">
-          Add/edit/remove links below and then share all your profiles with the
-          world!
-        </Text>
-        <ListContext.Provider value={contextValue}>
+    <ListContext.Provider value={contextValue}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-lg"
+      >
+        <div className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
+          <Heading as="h1">Customize your links</Heading>
+          <Text as="p">
+            Add/edit/remove links below and then share all your profiles with
+            the world!
+          </Text>
           <Button variant="secondary" onClick={handleAddNewLink}>
             + Add new link
           </Button>
@@ -137,15 +139,15 @@ export function CustomizeLinks() {
               ))}
             </div>
           )}
-        </ListContext.Provider>
-      </div>
+        </div>
 
-      <Button
-        className="p-3 border-t border-borders rounded-b-lg"
-        type="submit"
-      >
-        Save
-      </Button>
-    </form>
+        <Button
+          className="p-3 border-t border-borders rounded-b-lg"
+          type="submit"
+        >
+          Save
+        </Button>
+      </form>
+    </ListContext.Provider>
   )
 }
