@@ -1,6 +1,5 @@
 import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
-import { AllMenuList } from "@/app/ui/inputs/AllMenuList"
 import { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { DropIndicator } from "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box"
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
@@ -9,6 +8,7 @@ import { InputField } from "@/app/ui/inputs/InputField"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/app/ui/demos/FormDemo"
+import { SelectPlatformInput } from "@/app/ui/inputs/SelectPlatformInput"
 
 export function LinkForm({
   index = 0,
@@ -31,10 +31,6 @@ export function LinkForm({
       textField: "",
     },
   })
-  function handlePlatFormChange() {
-    //   todo: on click push a
-  }
-
   return (
     <section className="flex flex-col justify-center items-stretch gap-3 self-stretch bg-light-grey p-5 rounded-xl">
       <header className="flex justify-between items-start self-stretch">
@@ -60,8 +56,10 @@ export function LinkForm({
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
-        {/*name links.${index}.platform*/}
-        <AllMenuList onChange={handlePlatFormChange} />
+        <SelectPlatformInput
+          name={`links.${index}.platform`}
+          register={register}
+        />
       </div>
       <div className="text-left">
         <Text as="label" htmlFor="link">

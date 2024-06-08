@@ -1,5 +1,4 @@
 import { Select, TDropDown } from "@/app/ui/inputs/Select"
-import { SlChangeEvent } from "@shoelace-style/shoelace"
 import { UseFormRegister } from "react-hook-form"
 
 const options: TDropDown["options"] = [
@@ -67,22 +66,15 @@ const options: TDropDown["options"] = [
 ]
 
 export type TAllMenuList = {
-  onChange: (value: string) => void
-  register: UseFormRegister<any>
   name: string
+  register: UseFormRegister<any>
 }
-export function AllMenuList(props: TAllMenuList) {
-  const { onChange } = props
-  function handleChange(event: SlChangeEvent) {
-    const target = event.target as HTMLSelectElement
-    onChange(target.value)
-  }
+export function SelectPlatformInput(props: TAllMenuList) {
   return (
     <Select
       name={props.name}
       register={props.register}
       options={options}
-      onChange={handleChange}
     ></Select>
   )
 }

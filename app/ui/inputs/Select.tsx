@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import dynamic from "next/dynamic"
-import { SlChangeEvent } from "@shoelace-style/shoelace"
+import { UseFormRegister } from "react-hook-form"
 
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
@@ -25,14 +25,15 @@ const SlSelect = dynamic(
 export type TDropDown = {
   options: { value: string; label: string; iconName?: string }[]
   placeholder?: string
-  onChange: (event: SlChangeEvent) => void
+  name: string
+  register: UseFormRegister<any>
 }
-export function Dropdown(props: TDropDown) {
-  const { options, placeholder = "", onChange } = props
+export function Select(props: TDropDown) {
+  const { options, placeholder = "" } = props
   return (
     <SlSelect
       placeholder={placeholder}
-      onSlChange={onChange}
+      {...props.register(props.name)}
       className="
         w-full
         [&::part(combobox)]:hover:shadow
