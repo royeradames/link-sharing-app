@@ -1,5 +1,5 @@
-import { CustomizeLinks } from "@/app/links/CustomizeLinks"
-import { LinksFormProvider } from "@/app/links/LinksFormProvider"
+import { CustomizeLinks } from "@/app/links/components/CustomizeLinks"
+import { LinksFormProvider } from "@/app/links/components/LinksFormProvider"
 // import { FormProvider } from "react-hook-form"
 // import { FormProvider } from "@/app/links/FormProvider"
 

@@ -8,11 +8,11 @@ import {
   ListContext,
   ListContextValue,
   ListItem,
-} from "@/app/links/LinksItem"
+} from "@/app/links/components/LinksItem"
 import {
   LinksSchemaType,
   useLinksFormContext,
-} from "@/app/links/LinksFormProvider"
+} from "@/app/links/components/LinksFormProvider"
 import { useCallback, useEffect, useMemo } from "react"
 import {
   Edge,
@@ -21,7 +21,7 @@ import {
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import Image from "next/image"
-import { LinkForm } from "@/app/links/LinkForm"
+import { LinkForm } from "@/app/links/components/LinkForm"
 
 export function CustomizeLinks() {
   const onSubmit = (data: LinksSchemaType) => {
