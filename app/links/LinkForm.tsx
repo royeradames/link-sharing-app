@@ -20,7 +20,7 @@ export function LinkForm({
   orderNumber: number
   onRemove: () => void
   edge: Edge | null
-  name: string
+  name: number
   dragHandleRef: RefObject<HTMLButtonElement>
 }) {
   const {
@@ -59,6 +59,7 @@ export function LinkForm({
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
+        {/*name links.${orderNumber}.platform*/}
         <AllMenuList onChange={handlePlatFormChange} />
       </div>
       <div className="text-left">
@@ -66,7 +67,7 @@ export function LinkForm({
           Link
         </Text>
         <InputField
-          name="link"
+          name={`links.${orderNumber}.link`}
           placeholder="e.g. https://www.github.com/johnappleseed"
           register={register}
           errors={errors}
