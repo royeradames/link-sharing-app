@@ -3,12 +3,11 @@ import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
 import { Button } from "@/app/ui/components/Button"
 import { LinksGroup } from "@/app/links/LinksGroup"
-import { useFormContext } from "@/app/links/FormProvider"
-import { SubmitHandler } from "react-hook-form"
+import { LinksSchemaType, useFormContext } from "@/app/links/FormProvider"
 
 export function CustomizeLinks() {
   const { handleSubmit, fields } = useFormContext()
-  const onSubmit: SubmitHandler<any> = data => {
+  const onSubmit = (data: LinksSchemaType) => {
     console.log(data)
   }
   return (
@@ -25,7 +24,10 @@ export function CustomizeLinks() {
         <LinksGroup fields={fields} />
       </div>
 
-      <Button className="p-3 border-t border-borders rounded-b-lg" disabled>
+      <Button
+        className="p-3 border-t border-borders rounded-b-lg"
+        type="submit"
+      >
         Save
       </Button>
     </form>

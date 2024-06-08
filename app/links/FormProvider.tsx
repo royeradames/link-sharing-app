@@ -14,11 +14,11 @@ const LinksSchema = z.object({
   ),
 })
 
-type LinksSchemaType = z.infer<typeof LinksSchema>
+export type LinksSchemaType = z.infer<typeof LinksSchema>
 
-interface FormContextType extends UseFormReturn<LinksSchemaType> {
-  fields: ReturnType<typeof useFieldArray>["fields"]
-}
+interface FormContextType
+  extends UseFormReturn<LinksSchemaType>,
+    ReturnType<typeof useFieldArray<LinksSchemaType>> {}
 
 const FormContext = createContext<FormContextType | undefined>(undefined)
 
@@ -36,17 +36,17 @@ export const FormProvider: React.FC<{ children: ReactNode }> = ({
   const methods = useForm<LinksSchemaType>({
     resolver: zodResolver(LinksSchema),
     defaultValues: {
-      links: [],
+      links: [] as LinksSchemaType["links"],
     },
   })
 
-  const { fields } = useFieldArray({
+  const fieldArrayMethods = useFieldArray<LinksSchemaType>({
     control: methods.control,
     name: "links",
   })
 
   return (
-    <FormContext.Provider value={{ ...methods, fields }}>
+    <FormContext.Provider value={{ ...methods, ...fieldArrayMethods }}>
       {children}
     </FormContext.Provider>
   )
