@@ -3,10 +3,13 @@ import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
 import { Button } from "@/app/ui/components/Button"
 import { LinksGroup } from "@/app/links/LinksGroup"
-import { LinksSchemaType, useFormContext } from "@/app/links/FormProvider"
+import {
+  LinksSchemaType,
+  useLinksFormContext,
+} from "@/app/links/LinksFormProvider"
 
 export function CustomizeLinks() {
-  const { handleSubmit, fields } = useFormContext()
+  const { handleSubmit, fields } = useLinksFormContext()
   const onSubmit = (data: LinksSchemaType) => {
     console.log(data)
   }
@@ -21,7 +24,7 @@ export function CustomizeLinks() {
           Add/edit/remove links below and then share all your profiles with the
           world!
         </Text>
-        <LinksGroup fields={fields} />
+        <LinksGroup />
       </div>
 
       <Button

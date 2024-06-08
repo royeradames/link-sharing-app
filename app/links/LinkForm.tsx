@@ -11,16 +11,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { formSchema } from "@/app/ui/demos/FormDemo"
 
 export function LinkForm({
-  orderNumber = 0,
+  index = 0,
   onRemove,
   edge,
-  name,
   dragHandleRef,
 }: {
-  orderNumber: number
+  index: number
   onRemove: () => void
   edge: Edge | null
-  name: number
   dragHandleRef: RefObject<HTMLButtonElement>
 }) {
   const {
@@ -45,8 +43,11 @@ export function LinkForm({
           className="text-[color:var(--Grey,#737373)] text-base font-bold leading-[150%] flex gap-2 items-center"
         >
           {edge && <DropIndicator edge={edge} gap="1px" />}{" "}
-          <DragHandleButton ref={dragHandleRef} label={`Reorder ${name}`} />{" "}
-          Link #{orderNumber}
+          <DragHandleButton
+            ref={dragHandleRef}
+            label={`Reorder Link ${index + 1}`}
+          />
+          Link #{index + 1}
         </Heading>
         <button
           className="text-grey text-base font-normal leading-[150%]"
@@ -59,7 +60,7 @@ export function LinkForm({
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
-        {/*name links.${orderNumber}.platform*/}
+        {/*name links.${index}.platform*/}
         <AllMenuList onChange={handlePlatFormChange} />
       </div>
       <div className="text-left">
@@ -67,7 +68,7 @@ export function LinkForm({
           Link
         </Text>
         <InputField
-          name={`links.${orderNumber}.link`}
+          name={`links.${index}.link`}
           placeholder="e.g. https://www.github.com/johnappleseed"
           register={register}
           errors={errors}

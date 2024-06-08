@@ -22,15 +22,15 @@ interface FormContextType
 
 const FormContext = createContext<FormContextType | undefined>(undefined)
 
-export const useFormContext = () => {
+export const useLinksFormContext = () => {
   const context = useContext(FormContext)
   if (!context) {
-    throw new Error("useFormContext must be used within a FormProvider")
+    throw new Error("useLinksFormContext must be used within a FormProvider")
   }
   return context
 }
 
-export const FormProvider: React.FC<{ children: ReactNode }> = ({
+export const LinksFormProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const methods = useForm<LinksSchemaType>({

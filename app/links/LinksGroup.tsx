@@ -14,7 +14,6 @@ import {
   useRef,
   useState,
 } from "react"
-import { v4 } from "uuid"
 import ReactDOM from "react-dom"
 import invariant from "tiny-invariant"
 import {
@@ -31,9 +30,8 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview"
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
-import { reorder } from "@atlaskit/pragmatic-drag-and-drop/reorder"
-import { Box, Stack, xcss } from "@atlaskit/primitives"
 import { token } from "@atlaskit/tokens"
+import { useLinksFormContext } from "@/app/links/LinksFormProvider"
 
 type CleanupFn = () => void
 
@@ -92,11 +90,18 @@ function isItemData(data: Record<string | symbol, unknown>): data is ItemData {
   return data[itemKey] === true
 }
 
-const containerStyles = xcss({
-  borderWidth: "border.width",
-  borderStyle: "solid",
-  borderColor: "color.border",
-})
+type DraggableState =
+  | { type: "idle" }
+  | { type: "preview"; container: HTMLElement }
+  | { type: "dragging" }
+
+const idleState: DraggableState = { type: "idle" }
+const draggingState: DraggableState = { type: "dragging" }
+
+const listItemStyles = "relative p-4"
+const listItemDisabledStyles = "opacity-40"
+const listItemPreviewStyles =
+  "py-1 px-4 rounded-lg bg-gray-100 max-w-[360px] whitespace-nowrap overflow-hidden text-ellipsis"
 
 function getItemRegistry() {
   const registry = new Map<string, HTMLElement>()
@@ -115,32 +120,6 @@ function getItemRegistry() {
 
   return { register, getElement }
 }
-
-type DraggableState =
-  | { type: "idle" }
-  | { type: "preview"; container: HTMLElement }
-  | { type: "dragging" }
-
-const idleState: DraggableState = { type: "idle" }
-const draggingState: DraggableState = { type: "dragging" }
-
-const listItemStyles = xcss({
-  position: "relative",
-  padding: "space.100",
-})
-
-const listItemDisabledStyles = xcss({ opacity: 0.4 })
-
-const listItemPreviewStyles = xcss({
-  paddingBlock: "space.050",
-  paddingInline: "space.100",
-  borderRadius: "border.radius.100",
-  backgroundColor: "elevation.surface.overlay",
-  maxWidth: "360px",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-})
 
 function ListItem({
   item,
@@ -248,25 +227,20 @@ function ListItem({
   const LinkFormFomArray = item.form
   return (
     <Fragment>
-      <Box
+      <div
         ref={ref}
-        xcss={[
-          listItemStyles,
-          draggableState.type === "dragging" && listItemDisabledStyles,
-        ]}
+        className={`${listItemStyles} ${draggableState.type === "dragging" ? listItemDisabledStyles : ""}`}
       >
         <LinkFormFomArray
-          orderNumber={index + 1}
+          index={index}
           onRemove={() => handleRemove(item.id)}
           edge={closestEdge}
-          name={item.form.name}
           dragHandleRef={dragHandleRef}
         />
-      </Box>
+      </div>
       {draggableState.type === "preview" &&
         ReactDOM.createPortal(
-          // todo: make the preview item match the curren item without crashing
-          <Box xcss={listItemPreviewStyles}>{item.form.name}</Box>,
+          <div className={listItemPreviewStyles}>{item.form.name}</div>,
           draggableState.container
         )}
     </Fragment>
@@ -274,21 +248,12 @@ function ListItem({
 }
 
 export function LinksGroup() {
-  const [LinkFromGroup, setLinkFromGroup] = useState<LinkItem[]>([])
+  const { fields, append, remove, move } = useLinksFormContext()
 
   const handleAddNewLink = () => {
-    setLinkFromGroup(current => [
-      ...current,
-      {
-        form: LinkForm,
-        id: v4(),
-      },
-    ])
-  }
-
-  const handleRemove = (id: string | number) => {
-    setLinkFromGroup(current => {
-      return current.filter(item => item.id !== id)
+    append({
+      platform: "",
+      link: "",
     })
   }
 
@@ -313,15 +278,9 @@ export function LinksGroup() {
         return
       }
 
-      setLinkFromGroup(listState =>
-        reorder({
-          list: listState,
-          startIndex,
-          finishIndex,
-        })
-      )
+      move(startIndex, finishIndex)
     },
-    []
+    [move]
   )
 
   useEffect(() => {
@@ -341,7 +300,7 @@ export function LinksGroup() {
           return
         }
 
-        const indexOfTarget = LinkFromGroup.findIndex(
+        const indexOfTarget = fields.findIndex(
           item => item.id === targetData.item.id
         )
         if (indexOfTarget < 0) {
@@ -357,12 +316,9 @@ export function LinksGroup() {
         })
       },
     })
-  }, [LinkFromGroup, reorderItem])
+  }, [fields, reorderItem])
 
-  const getListLength = useCallback(
-    () => LinkFromGroup.length,
-    [LinkFromGroup.length]
-  )
+  const getListLength = useCallback(() => fields.length, [fields.length])
 
   const contextValue: ListContextValue = useMemo(() => {
     return {
@@ -378,8 +334,8 @@ export function LinksGroup() {
       <Button variant="secondary" onClick={handleAddNewLink}>
         + Add new link
       </Button>
-      {!LinkFromGroup.length && (
-        <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch [background:var(--Light-Grey,#FAFAFA)] p-5 rounded-xl">
+      {!fields.length && (
+        <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch bg-gray-100 p-5 rounded-xl">
           <Image
             src="assets/get-starter-illustration.svg"
             alt="Getting starter"
@@ -394,20 +350,17 @@ export function LinksGroup() {
           </Text>
         </div>
       )}
-      {!!LinkFromGroup.length && (
-        <Stack>
-          {/*<Stack xcss={containerStyles}>*/}
-          <div className="flex flex-col gap-2">
-            {LinkFromGroup.map((item, index) => (
-              <ListItem
-                key={item.id}
-                item={item}
-                index={index}
-                handleRemove={handleRemove}
-              />
-            ))}
-          </div>
-        </Stack>
+      {!!fields.length && (
+        <div className="flex flex-col gap-2">
+          {fields.map((item, index) => (
+            <ListItem
+              key={item.id}
+              item={{ form: LinkForm, id: item.id }}
+              index={index}
+              handleRemove={() => remove(index)}
+            />
+          ))}
+        </div>
       )}
     </ListContext.Provider>
   )
