@@ -1,16 +1,10 @@
 "use client"
-import { Button } from "@/app/ui/components/Button"
-import Image from "next/image"
-import Heading from "@/app/ui/components/Heading"
-import Text from "@/app/ui/components/Text"
 import { LinkForm } from "@/app/links/LinkForm"
 import {
   createContext,
   Fragment,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react"
@@ -21,23 +15,20 @@ import {
   type Edge,
   extractClosestEdge,
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
-import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import {
   draggable,
   dropTargetForElements,
-  monitorForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { pointerOutsideOfPreview } from "@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview"
 import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
 import { token } from "@atlaskit/tokens"
-import { useLinksFormContext } from "@/app/links/LinksFormProvider"
 
-type CleanupFn = () => void
+export type CleanupFn = () => void
 
-type ItemEntry = { itemId: string; element: HTMLElement }
+export type ItemEntry = { itemId: string; element: HTMLElement }
 
-type ListContextValue = {
+export type ListContextValue = {
   getListLength: () => number
   registerItem: (entry: ItemEntry) => CleanupFn
   reorderItem: (args: {
@@ -48,7 +39,7 @@ type ListContextValue = {
   instanceId: symbol
 }
 
-const ListContext = createContext<ListContextValue | null>(null)
+export const ListContext = createContext<ListContextValue | null>(null)
 
 function useListContext() {
   const listContext = useContext(ListContext)
@@ -56,13 +47,13 @@ function useListContext() {
   return listContext
 }
 
-type LinkItem = {
+export type LinkItem = {
   form: typeof LinkForm
   id: string | number
 }
 
 const itemKey = Symbol("item")
-type ItemData = {
+export type ItemData = {
   [itemKey]: true
   item: LinkItem
   index: number
@@ -86,11 +77,13 @@ function getItemData({
   }
 }
 
-function isItemData(data: Record<string | symbol, unknown>): data is ItemData {
+export function isItemData(
+  data: Record<string | symbol, unknown>
+): data is ItemData {
   return data[itemKey] === true
 }
 
-type DraggableState =
+export type DraggableState =
   | { type: "idle" }
   | { type: "preview"; container: HTMLElement }
   | { type: "dragging" }
@@ -103,7 +96,7 @@ const listItemDisabledStyles = "opacity-40"
 const listItemPreviewStyles =
   "py-1 px-4 rounded-lg bg-gray-100 max-w-[360px] whitespace-nowrap overflow-hidden text-ellipsis"
 
-function getItemRegistry() {
+export function getItemRegistry() {
   const registry = new Map<string, HTMLElement>()
 
   function register({ itemId, element }: ItemEntry) {
@@ -121,7 +114,7 @@ function getItemRegistry() {
   return { register, getElement }
 }
 
-function ListItem({
+export function ListItem({
   item,
   index,
   handleRemove,
@@ -244,124 +237,5 @@ function ListItem({
           draggableState.container
         )}
     </Fragment>
-  )
-}
-
-export function LinksGroup() {
-  const { fields, append, remove, move } = useLinksFormContext()
-
-  const handleAddNewLink = () => {
-    append({
-      platform: "",
-      link: "",
-    })
-  }
-
-  const reorderItem = useCallback(
-    ({
-      startIndex,
-      indexOfTarget,
-      closestEdgeOfTarget,
-    }: {
-      startIndex: number
-      indexOfTarget: number
-      closestEdgeOfTarget: Edge | null
-    }) => {
-      const finishIndex = getReorderDestinationIndex({
-        startIndex,
-        closestEdgeOfTarget,
-        indexOfTarget,
-        axis: "vertical",
-      })
-
-      if (finishIndex === startIndex) {
-        return
-      }
-
-      move(startIndex, finishIndex)
-    },
-    [move]
-  )
-
-  useEffect(() => {
-    return monitorForElements({
-      canMonitor({ source }) {
-        return isItemData(source.data)
-      },
-      onDrop({ location, source }) {
-        const target = location.current.dropTargets[0]
-        if (!target) {
-          return
-        }
-
-        const sourceData = source.data
-        const targetData = target.data
-        if (!isItemData(sourceData) || !isItemData(targetData)) {
-          return
-        }
-
-        const indexOfTarget = fields.findIndex(
-          item => item.id === targetData.item.id
-        )
-        if (indexOfTarget < 0) {
-          return
-        }
-
-        const closestEdgeOfTarget = extractClosestEdge(targetData)
-
-        reorderItem({
-          startIndex: sourceData.index,
-          indexOfTarget,
-          closestEdgeOfTarget,
-        })
-      },
-    })
-  }, [fields, reorderItem])
-
-  const getListLength = useCallback(() => fields.length, [fields.length])
-
-  const contextValue: ListContextValue = useMemo(() => {
-    return {
-      registerItem: getItemRegistry().register,
-      reorderItem,
-      instanceId: Symbol("instance-id"),
-      getListLength,
-    }
-  }, [reorderItem, getListLength])
-
-  return (
-    <ListContext.Provider value={contextValue}>
-      <Button variant="secondary" onClick={handleAddNewLink}>
-        + Add new link
-      </Button>
-      {!fields.length && (
-        <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch bg-gray-100 p-5 rounded-xl">
-          <Image
-            src="assets/get-starter-illustration.svg"
-            alt="Getting starter"
-            width={124.766}
-            height={80}
-          />
-          <Heading as="h2">Let’s get you started</Heading>
-          <Text as="p">
-            Use the “Add new link” button to get started. Once you have more
-            than one link, you can reorder and edit them. We’re here to help you
-            share your profiles with everyone!
-          </Text>
-        </div>
-      )}
-      {!!fields.length && (
-        <div className="flex flex-col gap-2">
-          {fields.map((item, index) => (
-            <ListItem
-              key={item.id}
-              item={{ form: LinkForm, id: item.id }}
-              index={index}
-              handleRemove={() => remove(index)}
-            />
-          ))}
-        </div>
-      )}
-    </ListContext.Provider>
   )
 }

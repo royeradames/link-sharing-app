@@ -2,17 +2,111 @@
 import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
 import { Button } from "@/app/ui/components/Button"
-import { LinksGroup } from "@/app/links/LinksGroup"
+import {
+  getItemRegistry,
+  isItemData,
+  ListContext,
+  ListContextValue,
+  ListItem,
+} from "@/app/links/LinksItem"
 import {
   LinksSchemaType,
   useLinksFormContext,
 } from "@/app/links/LinksFormProvider"
+import { useCallback, useEffect, useMemo } from "react"
+import {
+  Edge,
+  extractClosestEdge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import Image from "next/image"
+import { LinkForm } from "@/app/links/LinkForm"
 
 export function CustomizeLinks() {
-  const { handleSubmit, fields } = useLinksFormContext()
   const onSubmit = (data: LinksSchemaType) => {
     console.log(data)
   }
+  const { handleSubmit, fields, append, remove, move } = useLinksFormContext()
+
+  const handleAddNewLink = () => {
+    append({
+      platform: "",
+      link: "",
+    })
+  }
+
+  const reorderItem = useCallback(
+    ({
+      startIndex,
+      indexOfTarget,
+      closestEdgeOfTarget,
+    }: {
+      startIndex: number
+      indexOfTarget: number
+      closestEdgeOfTarget: Edge | null
+    }) => {
+      const finishIndex = getReorderDestinationIndex({
+        startIndex,
+        closestEdgeOfTarget,
+        indexOfTarget,
+        axis: "vertical",
+      })
+
+      if (finishIndex === startIndex) {
+        return
+      }
+
+      move(startIndex, finishIndex)
+    },
+    [move]
+  )
+
+  useEffect(() => {
+    return monitorForElements({
+      canMonitor({ source }) {
+        return isItemData(source.data)
+      },
+      onDrop({ location, source }) {
+        const target = location.current.dropTargets[0]
+        if (!target) {
+          return
+        }
+
+        const sourceData = source.data
+        const targetData = target.data
+        if (!isItemData(sourceData) || !isItemData(targetData)) {
+          return
+        }
+
+        const indexOfTarget = fields.findIndex(
+          item => item.id === targetData.item.id
+        )
+        if (indexOfTarget < 0) {
+          return
+        }
+
+        const closestEdgeOfTarget = extractClosestEdge(targetData)
+
+        reorderItem({
+          startIndex: sourceData.index,
+          indexOfTarget,
+          closestEdgeOfTarget,
+        })
+      },
+    })
+  }, [fields, reorderItem])
+
+  const getListLength = useCallback(() => fields.length, [fields.length])
+
+  const contextValue: ListContextValue = useMemo(() => {
+    return {
+      registerItem: getItemRegistry().register,
+      reorderItem,
+      instanceId: Symbol("instance-id"),
+      getListLength,
+    }
+  }, [reorderItem, getListLength])
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -24,7 +118,39 @@ export function CustomizeLinks() {
           Add/edit/remove links below and then share all your profiles with the
           world!
         </Text>
-        <LinksGroup />
+        <ListContext.Provider value={contextValue}>
+          <Button variant="secondary" onClick={handleAddNewLink}>
+            + Add new link
+          </Button>
+          {!fields.length && (
+            <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch bg-gray-100 p-5 rounded-xl">
+              <Image
+                src="assets/get-starter-illustration.svg"
+                alt="Getting starter"
+                width={124.766}
+                height={80}
+              />
+              <Heading as="h2">Let’s get you started</Heading>
+              <Text as="p">
+                Use the “Add new link” button to get started. Once you have more
+                than one link, you can reorder and edit them. We’re here to help
+                you share your profiles with everyone!
+              </Text>
+            </div>
+          )}
+          {!!fields.length && (
+            <div className="flex flex-col gap-2">
+              {fields.map((item, index) => (
+                <ListItem
+                  key={item.id}
+                  item={{ form: LinkForm, id: item.id }}
+                  index={index}
+                  handleRemove={() => remove(index)}
+                />
+              ))}
+            </div>
+          )}
+        </ListContext.Provider>
       </div>
 
       <Button
