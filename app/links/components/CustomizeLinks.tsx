@@ -3,12 +3,12 @@ import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
 import { Button } from "@/app/ui/components/Button"
 import {
+  DragableListItem,
   getItemRegistry,
   isItemData,
   ListContext,
   ListContextValue,
-  ListItem,
-} from "@/app/links/components/LinksItem"
+} from "@/app/links/components/DragableLinksItem"
 import {
   LinksSchemaType,
   useLinksFormContext,
@@ -20,8 +20,8 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import Image from "next/image"
 import { LinkForm } from "@/app/links/components/LinkForm"
+import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
 
 export function CustomizeLinks() {
   const onSubmit = (data: LinksSchemaType) => {
@@ -122,26 +122,12 @@ export function CustomizeLinks() {
           <Button variant="secondary" onClick={handleAddNewLink}>
             + Add new link
           </Button>
-          {!fields.length && (
-            <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch bg-gray-100 p-5 rounded-xl">
-              <Image
-                src="assets/get-starter-illustration.svg"
-                alt="Getting starter"
-                width={124.766}
-                height={80}
-              />
-              <Heading as="h2">Let’s get you started</Heading>
-              <Text as="p">
-                Use the “Add new link” button to get started. Once you have more
-                than one link, you can reorder and edit them. We’re here to help
-                you share your profiles with everyone!
-              </Text>
-            </div>
-          )}
+
+          <NoLinkMessage />
           {!!fields.length && (
             <div className="flex flex-col gap-2">
               {fields.map((item, index) => (
-                <ListItem
+                <DragableListItem
                   key={item.id}
                   item={{ form: LinkForm, id: item.id }}
                   index={index}

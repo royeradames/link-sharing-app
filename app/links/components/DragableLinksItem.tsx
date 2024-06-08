@@ -114,7 +114,7 @@ export function getItemRegistry() {
   return { register, getElement }
 }
 
-export function ListItem({
+export function DragableListItem({
   item,
   index,
   handleRemove,
