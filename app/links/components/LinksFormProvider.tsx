@@ -8,8 +8,8 @@ import { z } from "zod"
 const LinksSchema = z.object({
   links: z.array(
     z.object({
-      platform: z.string(),
-      link: z.string().url(),
+      platform: z.string().min(1, { message: "Platform is required." }),
+      link: z.string().url().min(1, { message: "Link is required." }),
     })
   ),
 })
@@ -35,9 +35,6 @@ export const LinksFormProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const methods = useForm<LinksSchemaType>({
     resolver: zodResolver(LinksSchema),
-    defaultValues: {
-      links: [] as LinksSchemaType["links"],
-    },
   })
 
   const fieldArrayMethods = useFieldArray<LinksSchemaType>({

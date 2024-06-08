@@ -24,16 +24,17 @@ import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
 
 export function CustomizeLinks() {
-  const onSubmit = (data: LinksSchemaType) => {
-    console.log(data)
-  }
   const { handleSubmit, fields, append, remove, move } = useLinksFormContext()
-
   const handleAddNewLink = () => {
     append({
       platform: "",
       link: "",
     })
+  }
+
+  console.log(fields)
+  const onSubmit = (data: LinksSchemaType) => {
+    console.log(data)
   }
 
   const reorderItem = useCallback(
