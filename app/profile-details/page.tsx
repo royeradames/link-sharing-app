@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
+import { ImageUpload } from "@/app/ui/components/ImageUpload"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
@@ -62,6 +63,12 @@ export default function Page() {
           Add your details to create a personal touch to your profile.
         </Text>
 
+        <section
+          aria-label="user-details"
+          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
+        >
+          <ImageUpload />
+        </section>
         <section
           aria-label="user-details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
