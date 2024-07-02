@@ -32,6 +32,7 @@ export default function Page() {
   const onSubmit = async (value: unknown) => {
     console.log("value")
     console.log(value)
+    alert(value)
     // Simulate an async operation
     await new Promise(resolve => setTimeout(resolve, 2000))
   }
