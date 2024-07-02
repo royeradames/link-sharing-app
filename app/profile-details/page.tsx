@@ -9,6 +9,8 @@ import { z } from "zod"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
+  lastName: z.string().min(1, { message: "Can’t be empty" }),
+  email: z.string().email().optional().or(z.literal("")),
 })
 
 type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
@@ -39,11 +41,11 @@ export default function Page() {
           aria-label="user-details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl"
         >
-          <div className="flex items-center gap-4 self-stretch">
+          <div className="flex flex-col justify-center items-start gap-1 self-stretch md:flex-row md:gap-4 md:items-center">
             <Text
               as="label"
               htmlFor="firstName"
-              className="w-60 text-[color:var(--Grey,#737373)] [font-family:'Instrument_Sans'] text-base font-normal leading-[150%]"
+              className=" text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
             >
               First name*
             </Text>
@@ -54,6 +56,41 @@ export default function Page() {
               register={formMethods.register}
               errors={formMethods.formState.errors}
               id="firstName"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center items-start gap-1 self-stretch md:flex-row md:gap-4 md:items-center">
+            <Text
+              as="label"
+              htmlFor="lastName"
+              className=" text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+            >
+              Last name*
+            </Text>
+            <InputField
+              iconName=""
+              name="lastName"
+              placeholder="e.g. Appleseed"
+              register={formMethods.register}
+              errors={formMethods.formState.errors}
+              id="lastName"
+            />
+          </div>
+          <div className="flex flex-col justify-center items-start gap-1 self-stretch md:flex-row md:gap-4 md:items-center">
+            <Text
+              as="label"
+              htmlFor="email"
+              className=" text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+            >
+              Email
+            </Text>
+            <InputField
+              iconName=""
+              name="email"
+              placeholder="e.g. email@example.com"
+              register={formMethods.register}
+              errors={formMethods.formState.errors}
+              id="email"
             />
           </div>
         </section>
