@@ -14,7 +14,7 @@ export function TextField({
       <Text
         as="label"
         htmlFor="firstName"
-        className=" text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+        className="w-full text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
       >
         {label}
       </Text>

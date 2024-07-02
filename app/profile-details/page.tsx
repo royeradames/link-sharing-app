@@ -64,7 +64,7 @@ export default function Page() {
 
         <section
           aria-label="user-details"
-          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl"
+          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
           {userDetailsFields.map((fieldProperties, index) => (
             <TextField
