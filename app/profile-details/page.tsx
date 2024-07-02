@@ -1,33 +1,69 @@
+"use client"
 import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
+import { InputField } from "@/app/ui/inputs/InputField"
 import { Button } from "@/app/ui/inputs/Button"
-import Image from "next/image"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 
+const ProfileDetailsFormSchema = z.object({
+  firstName: z.string().min(1, { message: "Can’t be empty" }),
+})
+
+type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
 export default function Page() {
-  return (
-    <section className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center">
-      <Heading as="h1">Customize your links</Heading>
-      <Text as="p">
-        Add/edit/remove links below and then share all your profiles with the
-        world!
-      </Text>
-      <Button variant="secondary">+ Add new link</Button>
-      <div className="flex flex-col justify-center items-center gap-3 flex-[1_0_0] self-stretch [background:var(--Light-Grey,#FAFAFA)] p-5 rounded-xl">
-        <Image
-          src="assets/get-starter-illustration.svg"
-          alt="Getting starter"
-          width={124.766}
-          height={80}
-        />
-        <Heading as="h2">Let’s get you started</Heading>
-        <Text as="p">
-          Use the “Add new link” button to get started. Once you have more than
-          one link, you can reorder and edit them. We’re here to help you share
-          your profiles with everyone!
-        </Text>
-      </div>
+  const formMethods = useForm<ProfileDetailsFormValues>({
+    resolver: zodResolver(ProfileDetailsFormSchema),
+  })
 
-      <Button disabled>Save</Button>
-    </section>
+  function onSubmit(formValues: ProfileDetailsFormValues) {
+    console.log(formValues)
+    alert(JSON.stringify(formValues))
+  }
+
+  return (
+    <article aria-label="Profile Details">
+      <form
+        onSubmit={formMethods.handleSubmit(onSubmit)}
+        className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center"
+      >
+        <Heading as="h1" id="page-heading">
+          Profile Details
+        </Heading>
+        <Text as="p">
+          Add your details to create a personal touch to your profile.
+        </Text>
+
+        <section
+          aria-label="user-details"
+          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl"
+        >
+          <div className="flex items-center gap-4 self-stretch">
+            <Text
+              as="label"
+              htmlFor="firstName"
+              className="w-60 text-[color:var(--Grey,#737373)] [font-family:'Instrument_Sans'] text-base font-normal leading-[150%]"
+            >
+              First name*
+            </Text>
+            <InputField
+              iconName=""
+              name="firstName"
+              placeholder="e.g. John"
+              register={formMethods.register}
+              errors={formMethods.formState.errors}
+              id="firstName"
+            />
+          </div>
+        </section>
+
+        <div className="border-t border-borders flex flex-col items-end gap-2 self-stretch px-10 py-6">
+          <Button variant="primary" type="submit">
+            Save
+          </Button>
+        </div>
+      </form>
+    </article>
   )
 }
