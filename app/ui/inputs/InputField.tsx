@@ -44,7 +44,9 @@ export const InputField = ({
         }
       )}
     >
-      <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
+      {iconName && (
+        <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
+      )}
 
       <input
         className={clsx(
