@@ -30,7 +30,7 @@ export function ImageUpload({ id, name }: { id: string; name: string }) {
     }
     reader.readAsDataURL(file)
   }
-  function handleDivClick() {
+  function openInput() {
     inputRef.current?.click()
   }
   return (
@@ -43,9 +43,9 @@ export function ImageUpload({ id, name }: { id: string; name: string }) {
           return
         }
         key.preventDefault()
-        handleDivClick()
+        openInput()
       }}
-      onClick={handleDivClick}
+      onClick={openInput}
       className={clsx(
         "cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
         {
