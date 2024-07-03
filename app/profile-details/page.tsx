@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
-import { ImageUpload } from "@/app/ui/components/ImageUpload"
+import { InputImageUpload } from "@/app/ui/components/InputImageUpload"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
@@ -65,20 +65,26 @@ export default function Page() {
         </Text>
 
         <section aria-label="User Image">
-          {/*<div className="flex items-center gap-8 self-stretch ">*/}
-          <Text
-            as="label"
-            className="w-full text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
-            htmlFor="profile-picture"
-          >
-            Profile picture
-          </Text>
-          <ImageUpload
-            id="profile-picture"
-            name="profilePicture"
-            description="Image must be below 1024x1024px. Use PNG or JPG format."
-          />
-          {/*</div>*/}
+          <div className="flex flex-col items-center gap-8 self-stretch sm:flex-row">
+            <Text
+              as="label"
+              className="w-full text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+              htmlFor="profile-picture"
+            >
+              Profile picture
+            </Text>
+            <InputImageUpload
+              id="profile-picture"
+              name="profilePicture"
+              describedBy="profile-picture-description"
+            />
+            <p
+              id="profile-picture-description"
+              className="text-dark-grey text-base font-normal leading-[150%]"
+            >
+              Image must be below 1024x1024px. Use PNG or JPG format.
+            </p>
+          </div>
         </section>
         <section
           aria-label="user-details"
