@@ -70,7 +70,13 @@ export default function Page() {
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
           <ImageUpload1 id="profile-image" name="profileImage" />
-          <ImageUpload id="profile-image" name="profileImage" />
+          <ImageUpload
+            id="profile-image"
+            name="profileImage"
+            onImageUpload={value => {
+              alert(`onImageUpload: ${value}`)
+            }}
+          />
         </section>
         <section
           aria-label="user-details"

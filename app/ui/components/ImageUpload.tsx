@@ -1,6 +1,6 @@
 "use client"
 import dynamic from "next/dynamic"
-import { ChangeEvent, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { clsx } from "clsx"
 
 const SlIcon = dynamic(
@@ -10,10 +10,24 @@ const SlIcon = dynamic(
   }
 )
 
-export function ImageUpload({ id, name }: { id: string; name: string }) {
+export function ImageUpload({
+  id,
+  name,
+  onImageUpload,
+}: {
+  id: string
+  name: string
+  onImageUpload?: (isImageUploaded: boolean) => void
+}) {
   const [isImageUpload, setIsImageUpload] = useState(false)
   const [imgUrl, setImgUrl] = useState("")
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (onImageUpload) {
+      onImageUpload(isImageUpload)
+    }
+  }, [isImageUpload, onImageUpload])
 
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
     const file = input.target.files?.[0]
