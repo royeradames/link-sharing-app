@@ -1,6 +1,6 @@
 "use client"
 import dynamic from "next/dynamic"
-import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { clsx } from "clsx"
 
 const SlIcon = dynamic(
@@ -13,21 +13,15 @@ const SlIcon = dynamic(
 export function ImageUpload({
   id,
   name,
-  onImageUpload,
+  description,
 }: {
   id: string
   name: string
-  onImageUpload?: (isImageUploaded: boolean) => void
+  description?: string
 }) {
   const [isImageUpload, setIsImageUpload] = useState(false)
   const [imgUrl, setImgUrl] = useState("")
   const inputRef = useRef<HTMLInputElement | null>(null)
-
-  useEffect(() => {
-    if (onImageUpload) {
-      onImageUpload(isImageUpload)
-    }
-  }, [isImageUpload, onImageUpload])
 
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
     const file = input.target.files?.[0]
@@ -49,6 +43,7 @@ export function ImageUpload({
   }
   return (
     <div
+      className="flex items-center gap-8 self-stretch cursor-pointer"
       tabIndex={0}
       onKeyDown={key => {
         const keysThatActivateAInput =
@@ -60,43 +55,53 @@ export function ImageUpload({
         openInput()
       }}
       onClick={openInput}
-      className={clsx(
-        "cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
-        {
-          "text-white bg-dark-grey/25": isImageUpload,
-        }
-      )}
-      style={{
-        backgroundImage: imgUrl ? `url(${imgUrl})` : "none",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
     >
-      <SlIcon
-        aria-hidden={true}
-        name="card-image"
-        className={clsx("w-10 h-10 mb-2 text-purple", {
-          "text-white": isImageUpload,
-        })}
-      />
-      <span
-        className={clsx("text-purple text-base font-semibold leading-[150%]", {
-          "text-white": isImageUpload,
-        })}
+      <div
+        className={clsx(
+          "flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
+          {
+            "text-white bg-dark-grey/25": isImageUpload,
+          }
+        )}
+        style={{
+          backgroundImage: imgUrl ? `url(${imgUrl})` : "none",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
-        {isImageUpload ? "Change Image" : "+ Upload Image"}
-      </span>
-      <input
-        ref={inputRef}
-        aria-hidden={true}
-        className="opacity-0 h-1 w-1"
-        type="file"
-        id={id}
-        name={name}
-        accept=".jpg, .jpeg, .png"
-        onChange={handleImage}
-        tabIndex={-1}
-      ></input>
+        <SlIcon
+          aria-hidden={true}
+          name="card-image"
+          className={clsx("w-10 h-10 mb-2 text-purple", {
+            "text-white": isImageUpload,
+          })}
+        />
+        <span
+          className={clsx(
+            "text-purple text-base font-semibold leading-[150%]",
+            {
+              "text-white": isImageUpload,
+            }
+          )}
+        >
+          {isImageUpload ? "Change Image" : "+ Upload Image"}
+        </span>
+        <input
+          ref={inputRef}
+          aria-hidden={true}
+          className="opacity-0 h-1 w-1"
+          type="file"
+          id={id}
+          name={name}
+          accept=".jpg, .jpeg, .png"
+          onChange={handleImage}
+          tabIndex={-1}
+        ></input>
+      </div>
+      <p className="text-dark-grey text-base font-normal leading-[150%]">
+        {!description && `Image ${isImageUpload ? "" : "Not"} Uploaded`}
+        {description && description}
+      </p>
     </div>
   )
 }

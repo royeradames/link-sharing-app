@@ -69,14 +69,19 @@ export default function Page() {
           aria-label="user-details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
+          <div className="flex items-center gap-8 self-stretch ">
+            <ImageUpload
+              id="profile-image"
+              name="profileImage"
+              description="Image must be below 1024x1024px. Use PNG or JPG format."
+            />
+          </div>
+        </section>
+        <section
+          aria-label="user-details"
+          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
+        >
           <ImageUpload1 id="profile-image" name="profileImage" />
-          <ImageUpload
-            id="profile-image"
-            name="profileImage"
-            onImageUpload={value => {
-              alert(`onImageUpload: ${value}`)
-            }}
-          />
         </section>
         <section
           aria-label="user-details"
