@@ -1,6 +1,6 @@
 "use client"
 import dynamic from "next/dynamic"
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { clsx } from "clsx"
 
 const SlIcon = dynamic(
@@ -10,9 +10,10 @@ const SlIcon = dynamic(
   }
 )
 
-export function ImageUpload() {
+export function ImageUpload({ id, name }: { id: string; name: string }) {
   const [isImageUpload, setIsImageUpload] = useState(false)
   const [imgUrl, setImgUrl] = useState("")
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
     const file = input.target.files?.[0]
@@ -32,10 +33,7 @@ export function ImageUpload() {
 
   return (
     <section>
-      <label
-        htmlFor="image_uploads"
-        className="flex items-center gap-8 self-stretch cursor-pointer"
-      >
+      <div className="flex items-center gap-8 self-stretch cursor-pointer">
         <div
           className={clsx(
             "flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
@@ -75,13 +73,13 @@ export function ImageUpload() {
             aria-hidden={true}
             className="opacity-0 h-1 w-1"
             type="file"
-            id="image_uploads"
-            name="image_uploads"
+            id={id}
+            name={name}
             accept=".jpg, .jpeg, .png"
             onChange={handleImage}
           ></input>
         </div>
-      </label>
+      </div>
     </section>
   )
 }
