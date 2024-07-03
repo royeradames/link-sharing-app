@@ -7,11 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
+import { ImageUpload2 } from "@/app/ui/components/ImageUpload2"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
   lastName: z.string().min(1, { message: "Can’t be empty" }),
   email: z.string().email().optional().or(z.literal("")),
+  profileImage: z.string().min(1, { message: "Can’t be empty" }),
 })
 
 type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
@@ -67,7 +69,8 @@ export default function Page() {
           aria-label="user-details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
-          <ImageUpload />
+          <ImageUpload id="profile-image" name="profileImage" />
+          <ImageUpload2 id="profile-image" name="profileImage" />
         </section>
         <section
           aria-label="user-details"
