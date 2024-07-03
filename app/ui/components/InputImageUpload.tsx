@@ -83,7 +83,7 @@ export function InputImageUpload({
       <input
         ref={inputRef}
         aria-hidden={true}
-        className="opacity-0 h-1 w-1"
+        className="sr-only"
         type="file"
         id={id}
         name={name}
