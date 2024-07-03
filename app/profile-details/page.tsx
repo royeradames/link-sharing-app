@@ -65,10 +65,10 @@ export default function Page() {
         </Text>
 
         <section aria-label="User Image">
-          <div className="flex flex-col items-center gap-8 self-stretch sm:flex-row">
+          <div className="flex flex-col gap-8 self-stretch sm:flex-row sm:items-center">
             <Text
               as="label"
-              className="w-full text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+              className="w-full text-grey font-normal leading-[150%] md:w-60 text-base"
               htmlFor="profile-picture"
             >
               Profile picture
