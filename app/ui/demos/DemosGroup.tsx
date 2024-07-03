@@ -5,7 +5,7 @@ import { SlImportDemo } from "@/app/ui/demos/SlImportDemo"
 import { FormDemo } from "@/app/ui/demos/FormDemo"
 import dynamic from "next/dynamic"
 import { Button } from "@/app/ui/inputs/Button"
-import { ImageUpload } from "@/app/ui/components/ImageUpload"
+import { ImageUpload1 } from "@/app/ui/components/ImageUpload1"
 import { PreviewListDemo } from "@/app/ui/demos/PreviewListDemo"
 
 const SlTab = dynamic(
@@ -72,7 +72,7 @@ export function DemoGroup() {
         {/*<AllMenuList onChange={handleMenuListChange} />*/}
       </SlTabPanel>
       <SlTabPanel name="ImageUpload">
-        <ImageUpload />
+        <ImageUpload1 />
       </SlTabPanel>
       <SlTabPanel name="DropdownDemo">
         <DropdownDemo />

@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
+import { ImageUpload1 } from "@/app/ui/components/ImageUpload1"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
-import { ImageUpload2 } from "@/app/ui/components/ImageUpload2"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
@@ -69,8 +69,8 @@ export default function Page() {
           aria-label="user-details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
+          <ImageUpload1 id="profile-image" name="profileImage" />
           <ImageUpload id="profile-image" name="profileImage" />
-          <ImageUpload2 id="profile-image" name="profileImage" />
         </section>
         <section
           aria-label="user-details"
