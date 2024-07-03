@@ -55,7 +55,7 @@ export function InputImageUpload({
       }}
       onClick={openInput}
       className={clsx(
-        "cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
+        "flex-shrink-0 cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
         {
           "text-white bg-dark-grey/25": isImageUpload,
         }
