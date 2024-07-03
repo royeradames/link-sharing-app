@@ -6,14 +6,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
-import { ImageUpload1 } from "@/app/ui/components/ImageUpload1"
 import { ImageUpload } from "@/app/ui/components/ImageUpload"
 
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
   lastName: z.string().min(1, { message: "Can’t be empty" }),
   email: z.string().email().optional().or(z.literal("")),
-  profileImage: z.string().min(1, { message: "Can’t be empty" }),
+  profilePicture: z.string().min(1, { message: "Can’t be empty" }),
 })
 
 type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
@@ -65,23 +64,21 @@ export default function Page() {
           Add your details to create a personal touch to your profile.
         </Text>
 
-        <section
-          aria-label="user-details"
-          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
-        >
-          <div className="flex items-center gap-8 self-stretch ">
-            <ImageUpload
-              id="profile-image"
-              name="profileImage"
-              description="Image must be below 1024x1024px. Use PNG or JPG format."
-            />
-          </div>
-        </section>
-        <section
-          aria-label="user-details"
-          className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
-        >
-          <ImageUpload1 id="profile-image" name="profileImage" />
+        <section aria-label="User Image">
+          {/*<div className="flex items-center gap-8 self-stretch ">*/}
+          <Text
+            as="label"
+            className="w-full text-grey text-xs font-normal leading-[150%] md:w-60 md:text-base"
+            htmlFor="profile-picture"
+          >
+            Profile picture
+          </Text>
+          <ImageUpload
+            id="profile-picture"
+            name="profilePicture"
+            description="Image must be below 1024x1024px. Use PNG or JPG format."
+          />
+          {/*</div>*/}
         </section>
         <section
           aria-label="user-details"

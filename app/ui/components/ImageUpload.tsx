@@ -43,7 +43,7 @@ export function ImageUpload({
   }
   return (
     <div
-      className="flex items-center gap-8 self-stretch cursor-pointer"
+      className="flex flex-col items-center gap-8 self-stretch cursor-pointer sm:flex-row"
       tabIndex={0}
       onKeyDown={key => {
         const keysThatActivateAInput =
@@ -98,10 +98,11 @@ export function ImageUpload({
           tabIndex={-1}
         ></input>
       </div>
-      <p className="text-dark-grey text-base font-normal leading-[150%]">
-        {!description && `Image ${isImageUpload ? "" : "Not"} Uploaded`}
-        {description && description}
-      </p>
+      {description && (
+        <p className="text-dark-grey text-base font-normal leading-[150%]">
+          {description}
+        </p>
+      )}
     </div>
   )
 }
