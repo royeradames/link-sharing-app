@@ -75,11 +75,17 @@ export default function Page() {
           Add your details to create a personal touch to your profile.
         </Text>
 
-        <section aria-label="User Image">
-          <div className="flex flex-col gap-8  sm:flex-row sm:items-center">
+        <section
+          aria-label="User image"
+          className="bg-light-grey p-5 rounded-xl text-left"
+        >
+          <h2 className="sr-only" id="user-image">
+            User Image
+          </h2>
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
             <Text
               as="label"
-              className="w-full text-grey font-normal leading-[150%] text-base text-left md:w-60"
+              className="w-full text-grey font-normal leading-[150%] text-base  md:w-60"
               htmlFor="profile-picture"
             >
               Profile picture
@@ -93,16 +99,19 @@ export default function Page() {
             />
             <p
               id="profile-picture-description"
-              className="text-grey text-base font-normal leading-[150%] text-left"
+              className="text-grey text-base font-normal leading-[150%] "
             >
               Image must be below 1024x1024px. Use PNG or JPG format.
             </p>
           </div>
         </section>
         <section
-          aria-label="user-details"
+          aria-label="User details"
           className="flex flex-col justify-center items-center gap-3 self-stretch bg-light-grey p-5 rounded-xl text-left"
         >
+          <h2 className="sr-only" id="user-details">
+            User Details
+          </h2>
           {userDetailsFields.map((fieldProperties, index) => (
             <TextField
               key={index}
