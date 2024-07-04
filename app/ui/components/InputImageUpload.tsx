@@ -1,7 +1,7 @@
-"use client"
 import dynamic from "next/dynamic"
-import { ChangeEvent, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { clsx } from "clsx"
+import { UseFormRegister } from "react-hook-form"
 
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
@@ -11,18 +11,30 @@ const SlIcon = dynamic(
 )
 
 export function InputImageUpload({
+  register,
   id,
   name,
   describedBy,
+  setValue,
 }: {
   id: string
   name: string
   describedBy?: string
+  register: UseFormRegister<any>
+  setValue: any
 }) {
   const [isImageUpload, setIsImageUpload] = useState(false)
   const [imgUrl, setImgUrl] = useState("")
   const inputRef = useRef<HTMLInputElement | null>(null)
 
+  /**
+   * handling image upload.
+   * In the end, I will be going with saving the string because I can use that string has with the css url to render the image.
+   * https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+   */
+  useEffect(() => {
+    setValue(name, imgUrl)
+  }, [imgUrl, name])
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
     const file = input.target.files?.[0]
     if (!file) {
@@ -31,6 +43,7 @@ export function InputImageUpload({
       return
     }
 
+    setValue(name, file)
     const reader = new FileReader()
     reader.onloadend = () => {
       setImgUrl(reader.result as string)
@@ -55,7 +68,7 @@ export function InputImageUpload({
       }}
       onClick={openInput}
       className={clsx(
-        "flex-shrink-0 cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
+        "w-[21.5rem] h-[12.1rem] flex-shrink-0 cursor-pointer flex flex-col justify-center items-center bg-light-purple rounded-xl pl-[39px] pr-[38px] pt-[61px] pb-[60px]",
         {
           "text-white bg-dark-grey/25": isImageUpload,
         }
@@ -81,16 +94,16 @@ export function InputImageUpload({
         {isImageUpload ? "Change Image" : "+ Upload Image"}
       </span>
       <input
-        ref={inputRef}
         aria-hidden={true}
         className="sr-only"
         type="file"
         id={id}
-        name={name}
         accept=".jpg, .jpeg, .png"
-        onChange={handleImage}
         tabIndex={-1}
         aria-describedby={describedBy}
+        {...register(name)}
+        ref={inputRef}
+        onChange={handleImage}
       ></input>
     </div>
   )

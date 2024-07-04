@@ -1,7 +1,7 @@
 import React from "react"
 import clsx from "clsx"
 import { z } from "zod"
-import { FieldErrors, UseFormRegister } from "react-hook-form"
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"
 import Text from "@/app/ui/components/Text"
 import dynamic from "next/dynamic"
 
@@ -19,7 +19,7 @@ export type TextFieldProps = {
   iconName?: string
   name: string
   placeholder: string
-  register: UseFormRegister<any>
+  register: UseFormRegister<FieldValues>
   errors: FieldErrors<any>
   id: string
 }

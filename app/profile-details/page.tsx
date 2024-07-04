@@ -8,14 +8,50 @@ import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
 import { InputImageUpload } from "@/app/ui/components/InputImageUpload"
 
+const userDetailsFields: {
+  label: string
+  name: string
+  placeholder: string
+  id: string
+}[] = [
+  {
+    label: "First name*",
+    name: "firstName",
+    placeholder: "e.g. John",
+    id: "firstName",
+  },
+  {
+    label: "Last name*",
+    name: "lastName",
+    placeholder: "e.g. Appleseed",
+    id: "lastName",
+  },
+  {
+    label: "Email",
+    name: "email",
+    placeholder: "e.g. email@example.com",
+    id: "email",
+  },
+]
+
+const fileSchema = z.instanceof(File).refine(
+  file => {
+    const validTypes = ["image/jpeg", "image/png"]
+    return validTypes.includes(file.type)
+  },
+  {
+    message: "Only .jpg, .jpeg, and .png files are accepted",
+  }
+)
+
 const ProfileDetailsFormSchema = z.object({
   firstName: z.string().min(1, { message: "Can’t be empty" }),
   lastName: z.string().min(1, { message: "Can’t be empty" }),
   email: z.string().email().optional().or(z.literal("")),
-  profilePicture: z.string().min(1, { message: "Can’t be empty" }),
+  profilePicture: z.string().optional(),
 })
 
-type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
+export type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
 export default function Page() {
   const formMethods = useForm<ProfileDetailsFormValues>({
     resolver: zodResolver(ProfileDetailsFormSchema),
@@ -26,31 +62,6 @@ export default function Page() {
     alert(JSON.stringify(formValues))
   }
 
-  const userDetailsFields: {
-    label: string
-    name: string
-    placeholder: string
-    id: string
-  }[] = [
-    {
-      label: "First name*",
-      name: "firstName",
-      placeholder: "e.g. John",
-      id: "firstName",
-    },
-    {
-      label: "Last name*",
-      name: "lastName",
-      placeholder: "e.g. Appleseed",
-      id: "lastName",
-    },
-    {
-      label: "Email",
-      name: "email",
-      placeholder: "e.g. email@example.com",
-      id: "email",
-    },
-  ]
   return (
     <article aria-label="Profile Details">
       <form
@@ -65,10 +76,10 @@ export default function Page() {
         </Text>
 
         <section aria-label="User Image">
-          <div className="flex flex-col gap-8 self-stretch sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-8  sm:flex-row sm:items-center">
             <Text
               as="label"
-              className="w-full text-grey font-normal leading-[150%] md:w-60 text-base"
+              className="w-full text-grey font-normal leading-[150%] text-base text-left md:w-60"
               htmlFor="profile-picture"
             >
               Profile picture
@@ -77,10 +88,12 @@ export default function Page() {
               id="profile-picture"
               name="profilePicture"
               describedBy="profile-picture-description"
+              register={formMethods.register}
+              setValue={formMethods.setValue}
             />
             <p
               id="profile-picture-description"
-              className="text-dark-grey text-base font-normal leading-[150%]"
+              className="text-grey text-base font-normal leading-[150%] text-left"
             >
               Image must be below 1024x1024px. Use PNG or JPG format.
             </p>
@@ -101,11 +114,18 @@ export default function Page() {
         </section>
 
         <div className="border-t border-borders flex flex-col items-end gap-2 self-stretch px-10 py-6">
-          <Button variant="primary" type="submit">
+          <Button
+            variant="primary"
+            type="submit"
+            onClick={() =>
+              console.log(JSON.stringify(formMethods.formState.errors))
+            }
+          >
             Save
           </Button>
         </div>
       </form>
+      {}
     </article>
   )
 }
