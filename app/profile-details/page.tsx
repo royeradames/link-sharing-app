@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
 import { InputImageUpload } from "@/app/ui/components/InputImageUpload"
+import { LivePreview } from "@/app/ui/components/LivePreview"
 
 const userDetailsFields: {
   label: string
@@ -63,7 +64,10 @@ export default function Page() {
   }
 
   return (
-    <article aria-label="Profile Details">
+    <article aria-label="Profile Details" className="flex flex-wrap">
+      <div className="bg-white flex items-center justify-center">
+        <LivePreview />
+      </div>
       <form
         onSubmit={formMethods.handleSubmit(onSubmit)}
         className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center"
