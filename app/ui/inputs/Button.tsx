@@ -1,3 +1,4 @@
+"use client"
 import { ReactNode } from "react"
 import { clsx } from "clsx"
 import dynamic from "next/dynamic"
@@ -16,6 +17,7 @@ export type TButton = {
   className?: string
   size?: "small" | "medium" | "large"
   loading?: boolean
+  onClick?: () => void
 }
 
 export function Button({
@@ -26,7 +28,11 @@ export function Button({
   variant = "primary",
   size = "large",
   loading,
+  ...props
 }: TButton) {
+  function handleClick() {
+    console.log("handleClick")
+  }
   return (
     <SlButton
       variant="primary"
@@ -35,6 +41,7 @@ export function Button({
       size={size}
       type={type}
       loading={loading}
+      onClick={props.onClick}
       className={clsx(
         ` [&::part(base)]:rounded-lg [&::part(base)]:font-semibold [&::part(base)]:text-[1rem]`,
         {

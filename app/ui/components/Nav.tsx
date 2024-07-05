@@ -3,6 +3,7 @@ import Link from "next/link"
 import { clsx } from "clsx"
 import { usePathname } from "next/navigation"
 import dynamic from "next/dynamic"
+import React from "react"
 
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
@@ -25,13 +26,14 @@ export default function Nav({}: {}) {
     <nav className="flex ">
       <Link href="/links" className={linkStyles(pathname.includes("/links"))}>
         <SlIcon name="link-45deg" className={iconSizeStyles} />
-        Links
+        <span className="hidden sm:inline">Links</span>
       </Link>
       <Link
         href="/profile-details"
         className={linkStyles(pathname.includes("/profile-details"))}
       >
-        <SlIcon name="person-circle" className={iconSizeStyles} />
+        <SlIcon name="user-circle" className={iconSizeStyles} />
+        <span className="hidden sm:inline">Profile Details</span>
       </Link>
     </nav>
   )

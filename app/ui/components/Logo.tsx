@@ -15,6 +15,7 @@ export function Logo() {
         alt="dev links"
         height={26.25}
         width={135}
+        className="hidden md:inline-block"
       />
     </div>
   )

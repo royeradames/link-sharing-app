@@ -1,7 +1,7 @@
 import React from "react"
 import clsx from "clsx"
 import { z } from "zod"
-import { FieldErrors, UseFormRegister } from "react-hook-form"
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"
 import Text from "@/app/ui/components/Text"
 import dynamic from "next/dynamic"
 
@@ -19,7 +19,7 @@ export type TextFieldProps = {
   iconName?: string
   name: string
   placeholder: string
-  register: UseFormRegister<any>
+  register: UseFormRegister<FieldValues>
   errors: FieldErrors<any>
   id: string
 }
@@ -35,7 +35,7 @@ export const InputField = ({
   return (
     <div
       className={clsx(
-        "flex items-center gap-2  rounded-lg py-2.5 px-4 text-base font-semibold  focus-within:outline-none focus-within:ring-2 ring-offset-2 border  hover:cursor-pointer hover:shadow hover:shadow-purple/25 hover:border-purple ",
+        "w-full flex items-center gap-2  rounded-lg py-2.5 px-4 text-base font-semibold  focus-within:outline-none focus-within:ring-2 ring-offset-2 border  hover:cursor-pointer hover:shadow hover:shadow-purple/25 hover:border-purple ",
         {
           "border-gray-300 text-black hover:caret-purple focus-within:border-purple focus-within:ring-purple":
             !errors[name]?.message,
@@ -44,7 +44,9 @@ export const InputField = ({
         }
       )}
     >
-      <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
+      {iconName && (
+        <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
+      )}
 
       <input
         className={clsx(

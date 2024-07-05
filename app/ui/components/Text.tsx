@@ -1,5 +1,6 @@
 import { clsx } from "clsx"
 import { DetailedHTMLProps, HTMLAttributes, LabelHTMLAttributes } from "react"
+import { cn } from "@/lib/utils"
 
 export type TBody = DetailedHTMLProps<
   HTMLAttributes<HTMLDivElement>,
@@ -24,14 +25,16 @@ export default function Text({
   const Text = as
   return (
     <Text
-      className={clsx("font-regular leading-[150%]", {
-        "text-base": size === "medium",
-        "text-xs": size === "small",
-        "text-dark-grey text-xs font-normal": as === "label",
-        "text-grey text-base font-normal ": as === "p",
-        "text-grey": as === "span",
-        [className]: className,
-      })}
+      className={cn(
+        clsx("font-regular leading-[150%]", {
+          "text-base": size === "medium",
+          "text-xs": size === "small",
+          "text-dark-grey text-xs font-normal": as === "label",
+          "text-grey text-base font-normal ": as === "p",
+          "text-grey": as === "span",
+          [className]: className,
+        })
+      )}
       {...props}
     >
       {children}

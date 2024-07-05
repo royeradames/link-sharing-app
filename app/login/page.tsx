@@ -3,11 +3,11 @@ import React from "react"
 import { Logo } from "@/app/ui/components/Logo"
 import Text from "@/app/ui/components/Text"
 import Heading from "@/app/ui/components/Heading"
-import { InputField } from "@/app/ui/components/InputField"
+import { InputField } from "@/app/ui/inputs/InputField"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Button } from "@/app/ui/components/Button"
+import { Button } from "@/app/ui/inputs/Button"
 import Link from "next/link"
 
 const formSchema = z.object({
@@ -32,6 +32,7 @@ export default function Page() {
   const onSubmit = async (value: unknown) => {
     console.log("value")
     console.log(value)
+    alert(value)
     // Simulate an async operation
     await new Promise(resolve => setTimeout(resolve, 2000))
   }

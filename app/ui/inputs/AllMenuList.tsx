@@ -1,5 +1,6 @@
-import { Dropdown, TDropDown } from "@/app/ui/components/DropdownOld"
+import { Select, TDropDown } from "@/app/ui/inputs/Select"
 import { SlChangeEvent } from "@shoelace-style/shoelace"
+import { UseFormRegister } from "react-hook-form"
 
 const options: TDropDown["options"] = [
   { value: "github", label: "Github", iconName: "github" },
@@ -67,6 +68,8 @@ const options: TDropDown["options"] = [
 
 export type TAllMenuList = {
   onChange: (value: string) => void
+  register: UseFormRegister<any>
+  name: string
 }
 export function AllMenuList(props: TAllMenuList) {
   const { onChange } = props
@@ -74,5 +77,12 @@ export function AllMenuList(props: TAllMenuList) {
     const target = event.target as HTMLSelectElement
     onChange(target.value)
   }
-  return <Dropdown options={options} onChange={handleChange}></Dropdown>
+  return (
+    <Select
+      name={props.name}
+      register={props.register}
+      options={options}
+      onChange={handleChange}
+    ></Select>
+  )
 }
