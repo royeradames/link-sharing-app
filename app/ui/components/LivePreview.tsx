@@ -2,7 +2,7 @@ export function LivePreview() {
   return (
     <section
       aria-label="Live preview"
-      className="bg-[url('/assets/preview-section.svg')] w-[307px] h-[631px] shrink-0 bg-no-repeat flex flex-col items-center justify-center gap-2"
+      className="bg-[url('/assets/preview-section.svg')] w-[307px] h-[631px] shrink-0 bg-no-repeat flex flex-col items-center justify-center gap-5 []"
     >
       <h2 className="sr-only">Live preview</h2>
       <svg
@@ -36,6 +36,7 @@ export function LivePreview() {
       >
         <rect x="0.5" width="72" height="8" rx="4" fill="#EEEEEE" />
       </svg>
+
       <svg
         id="link-1"
         width="237"
