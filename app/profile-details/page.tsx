@@ -65,7 +65,7 @@ export default function Page() {
 
   return (
     <article aria-label="Profile Details" className="flex flex-wrap">
-      <div className="bg-white flex items-center justify-center">
+      <div className="flex w-[560px] justify-center items-center gap-2 self-stretch bg-white p-6 rounded-xl">
         <LivePreview />
       </div>
       <form
