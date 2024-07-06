@@ -12,7 +12,7 @@ const SlIcon = dynamic(
 )
 export function Header() {
   return (
-    <header className="flex justify-between items-center self-stretch bg-white pl-6 pr-4 py-4 rounded-xl">
+    <header className="flex justify-between items-center self-stretch bg-white pl-6 pr-4 py-4 rounded-xl mb-4 md:mb-6">
       <Logo />
       <Nav></Nav>
       <Button variant="secondary">
