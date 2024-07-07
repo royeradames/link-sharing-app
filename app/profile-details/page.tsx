@@ -64,10 +64,11 @@ export default function Page() {
   }
 
   return (
-    <article aria-label="Profile Details" className="flex flex-wrap gap-6">
-      <div className="flex w-[560px] justify-center items-center gap-2 self-stretch bg-white p-6 rounded-xl">
-        <LivePreview />
-      </div>
+    <article
+      aria-label="Profile Details"
+      className="flex flex-wrap gap-6 justify-center"
+    >
+      <LivePreview />
       <form
         onSubmit={formMethods.handleSubmit(onSubmit)}
         className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center"
