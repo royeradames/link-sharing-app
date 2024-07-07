@@ -7,23 +7,26 @@ import { PreviewElements } from "@/app/ui/components/PreviewElements"
 export default function Page() {
   return (
     <article
-      aria-label="Profile Details"
-      className="flex flex-col flex-wrap gap-6 "
+      aria-label="Preview Page"
+      className="flex flex-col flex-wrap gap-[60px] justify-stretch pb-4"
     >
-      <header className="flex flex-col items-start gap-2 self-stretch bg-white pl-6 pr-4 py-4 rounded-xl">
-        <nav className="flex items-center gap-4 self-stretch">
+      <header className="flex flex-col items-start gap-2 self-stretch bg-white pl-6 pr-4 py-4 rounded-xl ">
+        <nav className="flex items-center gap-4 self-stretch justify-center">
           <Link
-            href="/links"
-            className="flex flex-col justify-center items-center gap-2 flex-[1_0_0] border border-purple px-[27px] py-[11px] rounded-lg border-solid text-purple text-base font-semibold leading-[150%]"
+            href="/profile-details"
+            className="flex flex-col justify-center items-center gap-2 flex-[1_0_0] border border-purple px-[27px] py-[11px] rounded-lg border-solid text-purple text-base font-semibold leading-[150%] max-w-max"
           >
             Back to editor
           </Link>
-          <Button>Share Link</Button>
+          <Button className="w-[155px]">Share Link</Button>
         </nav>
       </header>
-      <div className="flex w-[375px] flex-col items-center gap-[60px] [background:var(--White,#FFF)] pb-[237px]">
+      <section
+        aria-label="Preview elements"
+        className="flex-col items-center justify-center gap-14 flex bg-white"
+      >
         <PreviewElements />
-      </div>
+      </section>
     </article>
   )
 }
