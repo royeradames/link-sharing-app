@@ -62,16 +62,24 @@ export function LivePreview() {
               <p className="text-dark-grey text-lg font-semibold leading-[150%]">{`${userData.state.firstName} ${userData.state.lastName}`}</p>
             )}
 
-            <svg
-              id="email"
-              width="73"
-              height="8"
-              viewBox="0 0 73 8"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect x="0.5" width="72" height="8" rx="4" fill="#EEEEEE" />
-            </svg>
+            {!userData.state.email && (
+              <svg
+                id="email"
+                width="73"
+                height="8"
+                viewBox="0 0 73 8"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect x="0.5" width="72" height="8" rx="4" fill="#EEEEEE" />
+              </svg>
+            )}
+
+            {userData.state.email && (
+              <p className="text-grey text-sm font-normal leading-[150%]">
+                {userData.state.email}
+              </p>
+            )}
           </div>
         </div>
 
