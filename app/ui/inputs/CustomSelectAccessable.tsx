@@ -90,6 +90,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     }
   }
 
+  const handleBlur = (event: React.FocusEvent) => {
+    if (!selectRef.current?.contains(event.relatedTarget)) {
+      setIsOpen(false)
+    }
+  }
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
@@ -102,6 +108,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       className="relative w-64"
       onClick={() => setIsOpen(prev => !prev)}
       onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
       tabIndex={0}
       role="combobox"
       aria-expanded={isOpen}
