@@ -14,17 +14,34 @@ export function LivePreview() {
       >
         <h2 className="sr-only">Live preview</h2>
         <div className="flex flex-col items-center gap-[25px] ">
-          <div className={`w-[97px] h-[96px]`}>
-            <svg
-              id="profile-image"
-              width="97"
-              height="96"
-              viewBox="0 0 97 96"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle id="Ellipse 3" cx="48.5" cy="48" r="48" fill="#EEEEEE" />
-            </svg>
+          <div
+            className={`w-[97px] h-[96px] rounded-full`}
+            style={{
+              backgroundImage: userData.state.profilePicture
+                ? `url(${userData.state.profilePicture})`
+                : "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {!userData.state.profilePicture && (
+              <svg
+                id="profile-image"
+                width="97"
+                height="96"
+                viewBox="0 0 97 96"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  id="Ellipse 3"
+                  cx="48.5"
+                  cy="48"
+                  r="48"
+                  fill="#EEEEEE"
+                />
+              </svg>
+            )}
           </div>
 
           <div className="flex flex-col gap-[13px] items-center ">
