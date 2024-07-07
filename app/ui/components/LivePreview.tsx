@@ -45,16 +45,22 @@ export function LivePreview() {
           </div>
 
           <div className="flex flex-col gap-[13px] items-center ">
-            <svg
-              id="name"
-              width="161"
-              height="16"
-              viewBox="0 0 161 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect x="0.5" width="160" height="16" rx="8" fill="#EEEEEE" />
-            </svg>
+            {!(userData.state.firstName || userData.state.lastName) && (
+              <svg
+                id="name"
+                width="161"
+                height="16"
+                viewBox="0 0 161 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect x="0.5" width="160" height="16" rx="8" fill="#EEEEEE" />
+              </svg>
+            )}
+
+            {(userData.state.firstName || userData.state.lastName) && (
+              <p className="text-dark-grey text-lg font-semibold leading-[150%]">{`${userData.state.firstName} ${userData.state.lastName}`}</p>
+            )}
 
             <svg
               id="email"
