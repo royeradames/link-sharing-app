@@ -8,6 +8,8 @@ import { z } from "zod"
 import { TextField } from "@/app/profile-details/TextField"
 import { InputImageUpload } from "@/app/ui/components/InputImageUpload"
 import { LivePreview } from "@/app/ui/components/LivePreview"
+import { ProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import { useContext } from "react"
 
 const userDetailsFields: {
   label: string
@@ -54,6 +56,7 @@ const ProfileDetailsFormSchema = z.object({
 
 export type ProfileDetailsFormValues = z.infer<typeof ProfileDetailsFormSchema>
 export default function Page() {
+  const userData = useContext(ProfileAndLinksStoreContext)
   const formMethods = useForm<ProfileDetailsFormValues>({
     resolver: zodResolver(ProfileDetailsFormSchema),
   })
@@ -61,6 +64,7 @@ export default function Page() {
   function onSubmit(formValues: ProfileDetailsFormValues) {
     console.log(formValues)
     alert(JSON.stringify(formValues))
+    userData.setState(formValues)
   }
 
   return (

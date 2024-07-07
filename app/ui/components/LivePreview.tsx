@@ -1,4 +1,11 @@
+"use client"
+
+import { ProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import { useContext } from "react"
+
 export function LivePreview() {
+  const userData = useContext(ProfileAndLinksStoreContext)
+  console.log(userData)
   return (
     <div className="hidden xl:flex w-[560px] justify-center items-center gap-2 self-stretch bg-white p-6 rounded-xl">
       <section
@@ -7,16 +14,19 @@ export function LivePreview() {
       >
         <h2 className="sr-only">Live preview</h2>
         <div className="flex flex-col items-center gap-[25px] ">
-          <svg
-            id="profile-image"
-            width="97"
-            height="96"
-            viewBox="0 0 97 96"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle id="Ellipse 3" cx="48.5" cy="48" r="48" fill="#EEEEEE" />
-          </svg>
+          <div className={`w-[97px] h-[96px]`}>
+            <svg
+              id="profile-image"
+              width="97"
+              height="96"
+              viewBox="0 0 97 96"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle id="Ellipse 3" cx="48.5" cy="48" r="48" fill="#EEEEEE" />
+            </svg>
+          </div>
+
           <div className="flex flex-col gap-[13px] items-center ">
             <svg
               id="name"
