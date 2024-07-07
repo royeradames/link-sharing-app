@@ -6,7 +6,7 @@ export default function Layout({
   children: React.ReactNode
 }>) {
   return (
-    <main className="m-4 bg-light-grey">
+    <main className="p-4 bg-light-grey min-h-screen">
       <Header />
       {children}
     </main>

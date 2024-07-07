@@ -6,6 +6,7 @@ import {
   getBasePath,
   setBasePath,
 } from "@shoelace-style/shoelace/dist/utilities/base-path.js"
+import { ProfileAndLinksStoreProvider } from "@/app/ProfileAndLinksStoreProvider"
 
 setBasePath("/@shoelace-style/shoelace/dist")
 console.log(getBasePath())
@@ -28,9 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={instrumentSans.className} style={instrumentSans.style}>
-        {children}
-      </body>
+      <ProfileAndLinksStoreProvider>
+        <body className={instrumentSans.className} style={instrumentSans.style}>
+          {children}
+        </body>
+      </ProfileAndLinksStoreProvider>
     </html>
   )
 }
