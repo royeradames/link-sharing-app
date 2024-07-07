@@ -71,7 +71,7 @@ export default function Page() {
       <LivePreview />
       <form
         onSubmit={formMethods.handleSubmit(onSubmit)}
-        className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center"
+        className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 bg-white text-center rounded-xl"
       >
         <Heading as="h1" id="page-heading">
           Profile Details
