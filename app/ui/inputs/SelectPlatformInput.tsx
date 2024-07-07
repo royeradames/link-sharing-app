@@ -1,3 +1,4 @@
+"use client"
 import { Select, TDropDown } from "@/app/ui/inputs/Select"
 import { UseFormRegister } from "react-hook-form"
 

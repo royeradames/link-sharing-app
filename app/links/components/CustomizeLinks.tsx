@@ -24,7 +24,8 @@ import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
 
 export function CustomizeLinks() {
-  const { handleSubmit, fields, append, remove, move } = useLinksFormContext()
+  const { handleSubmit, fields, append, remove, move, formState } =
+    useLinksFormContext()
   const handleAddNewLink = () => {
     append({
       platform: "Test",
@@ -34,6 +35,7 @@ export function CustomizeLinks() {
 
   console.log(fields)
   const onSubmit = (data: LinksSchemaType) => {
+    alert(data)
     console.log("onSubmit")
     console.log(data)
     console.log(fields)
@@ -144,6 +146,7 @@ export function CustomizeLinks() {
         <Button
           className="p-3 border-t border-borders rounded-b-lg"
           type="submit"
+          onClick={() => alert(JSON.stringify(formState.errors))}
         >
           Save
         </Button>
