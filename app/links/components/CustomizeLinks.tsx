@@ -22,8 +22,10 @@ import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hi
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
+import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
 
 export function CustomizeLinks() {
+  const profileAndLinksContext = useProfileAndLinksStoreContext()
   const { handleSubmit, fields, append, remove, move, formState } =
     useLinksFormContext()
   const handleAddNewLink = () => {
@@ -34,8 +36,10 @@ export function CustomizeLinks() {
   }
 
   const onSubmit = (data: LinksSchemaType) => {
-    console.log("onSubmit")
-    console.log(data)
+    profileAndLinksContext.setState(current => ({
+      ...current,
+      links: data.links,
+    }))
   }
 
   const reorderItem = useCallback(
