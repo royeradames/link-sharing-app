@@ -113,9 +113,9 @@ export function CustomizeLinks() {
     <ListContext.Provider value={contextValue}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-lg"
+        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-xl"
       >
-        <div className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
+        <div className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
           <Heading as="h1">Customize your links</Heading>
           <Text as="p">
             Add/edit/remove links below and then share all your profiles with
