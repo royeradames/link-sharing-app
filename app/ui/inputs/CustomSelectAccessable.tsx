@@ -114,7 +114,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   return (
     <div
       className="relative text-black"
-      onClick={() => setIsOpen(prev => !prev)}
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       tabIndex={0}
@@ -124,7 +123,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       aria-controls="options-listbox"
       ref={selectRef}
     >
-      <div className="p-2 border border-gray-300 rounded bg-white cursor-pointer">
+      <div
+        className="p-2 border border-gray-300 rounded bg-white cursor-pointer"
+        onClick={() => setIsOpen(prev => !prev)}
+      >
         {selectedOption ? selectedOption.label : placeholder}
       </div>
       {isOpen && (
