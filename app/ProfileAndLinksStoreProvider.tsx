@@ -33,7 +33,7 @@ export type ProfileAndLinksStoreType = {
 }
 
 /**
- * Initilizing the context
+ * Initializing the context
  * Create the function that can wrap around all other so that it sets the level of the service like state
  */
 const ProfileAndLinksStoreContext = createContext<
