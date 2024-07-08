@@ -5,9 +5,8 @@ import { DropIndicator } from "@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
 import { RefObject } from "react"
 import { InputField } from "@/app/ui/inputs/InputField"
-import { PlatformOptions } from "@/app/ui/inputs/SelectPlatformInput"
+import { SelectPlatformInput } from "@/app/ui/inputs/SelectPlatformInput"
 import { useLinksFormContext } from "@/app/links/components/LinksFormProvider"
-import CustomSelectAccessable from "@/app/ui/inputs/CustomSelectAccessable"
 
 export function LinkForm({
   index = 0,
@@ -51,18 +50,9 @@ export function LinkForm({
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
-        {/*<SelectPlatformInput*/}
-        {/*  name={`links.${index}.platform`}*/}
-        {/*  register={register}*/}
-        {/*/>*/}
-
-        <CustomSelectAccessable
-          options={PlatformOptions}
-          placeholder="Select an option"
-          onSelect={option => console.log(option)}
-          register={register}
-          setValue={setValue}
+        <SelectPlatformInput
           name={`links.${index}.platform`}
+          register={register}
         />
         {errors.links?.[index]?.platform && (
           <p className="text-red">{errors.links[index]?.platform?.message}</p>
