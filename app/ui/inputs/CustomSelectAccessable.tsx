@@ -117,7 +117,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   return (
     <div
-      className="relative w-64"
+      className="relative text-black"
       onClick={() => setIsOpen(prev => !prev)}
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
