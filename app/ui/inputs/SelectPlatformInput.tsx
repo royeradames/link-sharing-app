@@ -76,6 +76,7 @@ export function SelectPlatformInput(props: TAllMenuList) {
       name={props.name}
       register={props.register}
       options={PlatformOptions}
+      placeholder="Select a platform"
     ></Select>
   )
 }
