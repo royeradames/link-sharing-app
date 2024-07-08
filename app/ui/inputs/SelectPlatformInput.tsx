@@ -7,7 +7,7 @@ export const PlatformOptions: TDropDown["options"] = [
   {
     value: "frontend-mentor",
     label: "Frontend Mentor",
-    iconName: "frontendmentor",
+    iconName: "frontend-mentor",
   },
   {
     value: "twitter-x",

@@ -1,4 +1,5 @@
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import { PreviewLink } from "@/app/ui/components/PreviewLink"
 
 export function PreviewElements() {
   const userData = useProfileAndLinksStoreContext()
@@ -68,17 +69,26 @@ export function PreviewElements() {
         </div>
       </div>
 
-      <div className="flex flex-col items-start gap-5 ">
-        <svg
-          id="link-1"
-          width="237"
-          height="44"
-          viewBox="0 0 237 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-        </svg>
+      <div className="flex flex-col gap-5 items-stretch">
+        {userData.state.links[0] && (
+          <PreviewLink
+            className=""
+            href={userData.state.links[0].link}
+            id={userData.state.links[0].platform}
+          />
+        )}
+        {!userData.state.links[0] && (
+          <svg
+            id="link-1"
+            width="237"
+            height="44"
+            viewBox="0 0 237 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="237" height="44" rx="8" fill="#EEEEEE" />
+          </svg>
+        )}
 
         <svg
           id="link-2"
