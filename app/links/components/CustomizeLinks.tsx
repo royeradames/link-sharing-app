@@ -12,7 +12,7 @@ import {
 import {
   LinksSchemaType,
   useLinksFormContext,
-} from "@/app/links/components/LinksFormProvider"
+} from "@/app/links/LinksFormProvider"
 import { useCallback, useEffect, useMemo } from "react"
 import {
   Edge,

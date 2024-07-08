@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Heading from "@/app/ui/components/Heading"
 import Text from "@/app/ui/components/Text"
-import { useLinksFormContext } from "@/app/links/components/LinksFormProvider"
+import { useLinksFormContext } from "@/app/links/LinksFormProvider"
 
 export function NoLinkMessage() {
   const { fields } = useLinksFormContext()
