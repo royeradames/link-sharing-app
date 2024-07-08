@@ -28,14 +28,21 @@ export type TDropDown = {
   register: UseFormRegister<any>
 }
 
-const Select = forwardRef((props: TDropDown, ref: any) => {
-  const { options, placeholder = "" } = props
-  return (
-    <SlSelect
-      placeholder={placeholder}
-      {...props.register(props.name)}
-      ref={ref}
-      className="
+/**
+ * todo: on initial value auto select
+ todo: how can I handle the ...register(name) outside this component?
+ *
+ */
+const Select = forwardRef<any, TDropDown>(
+  ({ options, placeholder = "", register, name }, ref) => {
+    // console.log([...register(name)])
+    // seFormRegisterReturn<string>
+    return (
+      <SlSelect
+        placeholder={placeholder}
+        {...register(name)}
+        ref={ref}
+        className="
         w-full
         [&::part(combobox)]:hover:shadow
         [&::part(combobox)]:hover:shadow-purple/25
@@ -48,20 +55,20 @@ const Select = forwardRef((props: TDropDown, ref: any) => {
         [&::part(combobox)]:focus-within:border-purple
         [&::part(expand-icon)]:text-purple
       "
-    >
-      <div slot="prefix">
-        <SlIcon
-          name="link-45deg"
-          aria-hidden
-          className="h-5 w-5 text-grey flex"
-        />
-      </div>
+      >
+        <div slot="prefix">
+          <SlIcon
+            name="link-45deg"
+            aria-hidden
+            className="h-5 w-5 text-grey flex"
+          />
+        </div>
 
-      {options.map((option, i: number) => (
-        <SlOption
-          key={i}
-          value={option.value}
-          className="
+        {options.map((option, i: number) => (
+          <SlOption
+            key={i}
+            value={option.value}
+            className="
             group
             [&::part(prefix)]:flex-none
             [&::part(suffix)]:flex-none
@@ -72,18 +79,21 @@ const Select = forwardRef((props: TDropDown, ref: any) => {
             [&::part(base)]:[--sl-color-neutral-0:var(--purple)]
             [&::part(base)]:[--sl-color-primary-600:white]
             "
-        >
-          <div slot="prefix">
-            <SlIcon name={option.iconName} />
-          </div>
-          {option.label}
-          <div slot="suffix" className=" hidden group-aria-selected:inline">
-            (selected)
-          </div>
-        </SlOption>
-      ))}
-    </SlSelect>
-  )
-})
+          >
+            <div slot="prefix">
+              <SlIcon name={option.iconName} />
+            </div>
+            {option.label}
+            <div slot="suffix" className=" hidden group-aria-selected:inline">
+              (selected)
+            </div>
+          </SlOption>
+        ))}
+      </SlSelect>
+    )
+  }
+)
+
+Select.displayName = "Select"
 
 export { Select }
