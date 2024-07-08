@@ -28,17 +28,14 @@ export function CustomizeLinks() {
     useLinksFormContext()
   const handleAddNewLink = () => {
     append({
-      platform: "Test",
-      link: "google@test.com",
+      platform: "",
+      link: "https://github@test.com",
     })
   }
 
-  console.log(fields)
   const onSubmit = (data: LinksSchemaType) => {
-    alert(data)
     console.log("onSubmit")
     console.log(data)
-    console.log(fields)
   }
 
   const reorderItem = useCallback(
@@ -142,11 +139,12 @@ export function CustomizeLinks() {
             </div>
           )}
         </div>
+        {/**/}
 
         <Button
           className="p-3 border-t border-borders rounded-b-lg"
           type="submit"
-          onClick={() => alert(JSON.stringify(formState.errors))}
+          onClick={() => console.log(formState.errors)}
         >
           Save
         </Button>

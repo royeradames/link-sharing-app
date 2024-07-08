@@ -5,8 +5,9 @@ import { DropIndicator } from "@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
 import { RefObject } from "react"
 import { InputField } from "@/app/ui/inputs/InputField"
-import { SelectPlatformInput } from "@/app/ui/inputs/SelectPlatformInput"
+import { PlatformOptions } from "@/app/ui/inputs/SelectPlatformInput"
 import { useLinksFormContext } from "@/app/links/components/LinksFormProvider"
+import CustomSelectAccessable from "@/app/ui/inputs/CustomSelectAccessable"
 
 export function LinkForm({
   index = 0,
@@ -22,7 +23,9 @@ export function LinkForm({
   const {
     register,
     formState: { errors },
+    setValue,
   } = useLinksFormContext()
+
   return (
     <section className="flex flex-col justify-center items-stretch gap-3 self-stretch bg-light-grey p-5 rounded-xl">
       <header className="flex justify-between items-start self-stretch">
@@ -48,10 +51,22 @@ export function LinkForm({
         <Text as="label" htmlFor="platform">
           Platform
         </Text>
-        <SelectPlatformInput
-          name={`links.${index}.platform`}
+        {/*<SelectPlatformInput*/}
+        {/*  name={`links.${index}.platform`}*/}
+        {/*  register={register}*/}
+        {/*/>*/}
+
+        <CustomSelectAccessable
+          options={PlatformOptions}
+          placeholder="Select an option"
+          onSelect={option => console.log(option)}
           register={register}
+          setValue={setValue}
+          name={`links.${index}.platform`}
         />
+        {errors.links?.[index]?.platform && (
+          <p className="text-red">{errors.links[index]?.platform?.message}</p>
+        )}
       </div>
       <div className="text-left">
         <Text as="label" htmlFor="link">
@@ -64,6 +79,9 @@ export function LinkForm({
           errors={errors}
           id="link"
         />
+        {errors.links?.[index]?.link && (
+          <p className="text-red">{errors.links[index]?.link?.message}</p>
+        )}
       </div>
     </section>
   )
