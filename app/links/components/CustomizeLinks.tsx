@@ -29,7 +29,7 @@ export function CustomizeLinks() {
   const handleAddNewLink = () => {
     append({
       platform: "",
-      link: "https://github@test.com",
+      link: "",
     })
   }
 
