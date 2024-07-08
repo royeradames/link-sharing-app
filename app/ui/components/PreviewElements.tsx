@@ -1,8 +1,7 @@
-import { useContext } from "react"
-import { ProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
 
 export function PreviewElements() {
-  const userData = useContext(ProfileAndLinksStoreContext)
+  const userData = useProfileAndLinksStoreContext()
   return (
     <>
       <div className="flex flex-col items-center gap-[25px] ">
