@@ -1,4 +1,4 @@
-import React from "react"
+import React, { forwardRef } from "react"
 import dynamic from "next/dynamic"
 import { UseFormRegister } from "react-hook-form"
 
@@ -27,12 +27,14 @@ export type TDropDown = {
   name: string
   register: UseFormRegister<any>
 }
-export function Select(props: TDropDown) {
+
+const Select = forwardRef((props: TDropDown, ref: any) => {
   const { options, placeholder = "" } = props
   return (
     <SlSelect
       placeholder={placeholder}
       {...props.register(props.name)}
+      ref={ref}
       className="
         w-full
         [&::part(combobox)]:hover:shadow
@@ -82,4 +84,6 @@ export function Select(props: TDropDown) {
       ))}
     </SlSelect>
   )
-}
+})
+
+export { Select }
