@@ -11,6 +11,18 @@ interface CustomSelectProps {
   onSelect: (option: Option) => void
 }
 
+/**
+ *
+ * @param options
+ * @param placeholder
+ * @param onSelect
+ * @constructor
+ *
+ * The <select> element is notoriously difficult to style productively with CSS. You can affect certain aspects like any element — for example, manipulating the box model, the displayed font, etc., and you can use the appearance property to remove the default system appearance.
+ *
+ * However, these properties don't produce a consistent result across browsers, and it is hard to do things like line different types of form element up with one another in a column. The <select> element's internal structure is complex, and hard to control. If you want to get full control, you should consider using a library with good facilities for styling form widgets, or try rolling your own dropdown menu using non-semantic elements, JavaScript, and WAI-ARIA to provide semantics.
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#styling_with_css
+ */
 const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder,
@@ -22,7 +34,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     null
   )
   const selectRef = useRef<HTMLDivElement>(null)
-  const optionsListRef = useRef<HTMLDivElement>(null)
+  const optionsListRef = useRef<HTMLUListElement>(null)
 
   const handleOptionClick = (option: Option) => {
     setSelectedOption(option)
@@ -120,14 +132,14 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         {selectedOption ? selectedOption.label : placeholder}
       </div>
       {isOpen && (
-        <div
+        <ul
           id="options-listbox"
-          className="absolute top-full left-0 w-full border border-gray-300 rounded bg-white z-10"
+          className="absolute top-full left-0 w-full border border-gray-300 rounded bg-white z-10 max-h-60 overflow-auto"
           role="listbox"
           ref={optionsListRef}
         >
           {options.map((option, index) => (
-            <div
+            <li
               key={option.value}
               className={`p-2 cursor-pointer ${focusedOptionIndex === index ? "bg-gray-200" : "hover:bg-gray-100"}`}
               onClick={() => handleOptionClick(option)}
@@ -136,9 +148,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               tabIndex={-1}
             >
               {option.label}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   )
