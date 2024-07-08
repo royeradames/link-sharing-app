@@ -1,12 +1,20 @@
 import dynamic from "next/dynamic"
 import { clsx } from "clsx"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
-const optionsLink: TPreviewList["options"][] = [
+export type PreviewLinkOptions = {
+  styles: { base: string; icon?: string; text?: string }
+  label: string
+  iconName: string
+  id: string
+}
+const optionsLink: PreviewLinkOptions[] = [
   {
     styles: { base: "bg-[#1A1A1A]" },
     label: "Github",
     iconName: "github",
+    id: "github",
   },
   {
     styles: {
@@ -15,62 +23,74 @@ const optionsLink: TPreviewList["options"][] = [
       icon: "text-grey",
     },
     label: "Frontend Mentor",
-    iconName: "frontendmentor",
+    iconName: "frontend-mentor",
+    id: "frontend-mentor",
   },
   {
     styles: { base: "bg-[#1A1A1A] border" },
     label: "Twitter-X",
     iconName: "twitter-x",
+    id: "twitter-x",
   },
   {
     styles: { base: "bg-[#2D68FF]" },
     label: "LinkedIn",
     iconName: "linkedin",
+    id: "linkedin",
   },
   {
     styles: { base: "bg-[#EE3939]" },
     label: "YouTube",
     iconName: "youtube",
+    id: "youtube",
   },
   {
     styles: { base: "bg-[#2442AC]" },
     label: "Facebook",
     iconName: "facebook",
+    id: "facebook",
   },
   {
     styles: { base: "bg-[#EE3FC8]" },
     label: "Twitch",
     iconName: "twitch",
+    id: "twitch",
   },
   {
     styles: { base: "bg-[#333]" },
     label: "Dev.to",
     iconName: "dev-to",
+    id: "dev-to",
   },
   {
     styles: { base: "bg-[#8A1A50]" },
     label: "Codewars",
     iconName: "codewars",
+    id: "codewars",
   },
   {
     styles: { base: "bg-[#302267]" },
     label: "freeCodeCamp",
     iconName: "freecodecamp",
+    id: "freecodecamp",
   },
   {
     styles: { base: "bg-[#EB4925]" },
     label: "GitLab",
     iconName: "gitlab",
+    id: "gitlab",
   },
   {
     styles: { base: "bg-[#0330D1]" },
     label: "Hashnode",
     iconName: "hashnode",
+    id: "hashnode",
   },
   {
     styles: { base: "bg-[#EC7100]" },
     label: "Stack Overflow",
     iconName: "stackoverflow",
+    id: "stackoverflow",
   },
 ]
 const SlIcon = dynamic(
@@ -81,31 +101,36 @@ const SlIcon = dynamic(
 )
 
 export type TPreviewList = {
-  options: {
-    styles: { base: string; icon?: string; logo?: string; text?: string }
-    label: string
-    iconName: string
-  }
   href: string
+  id: string
+  className: string
 }
-export function PreviewLink({
-  options: { styles, label, iconName },
-  href,
-}: TPreviewList) {
+export function PreviewLink({ id, href, className }: TPreviewList) {
+  // options: { styles, label, iconName },
+  const optionLink = optionsLink.find(option => option.id === id)
+  if (!optionLink) {
+    throw new Error("Couldn't find the link in the available options")
+  }
+  const { styles, label, iconName } = optionLink
   return (
     <Link
       id="base"
       href={href}
-      className={clsx("flex gap-3 p-4 items-center rounded-lg", {
-        [styles.base]: styles.base,
-      })}
+      className={cn(
+        clsx("flex gap-3 p-4 items-center rounded-lg", {
+          [styles.base]: styles.base,
+          [className]: className,
+        })
+      )}
     >
       <SlIcon
         id="logo"
         name={iconName}
-        className={clsx("text-white flex-grow-0", {
-          [styles.logo || ""]: styles.logo,
-        })}
+        className={cn(
+          clsx("text-white flex-grow-0", {
+            [styles.icon || ""]: styles.icon,
+          })
+        )}
       ></SlIcon>
       <span
         id="text"
