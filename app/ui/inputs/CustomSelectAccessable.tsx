@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { UseFormRegister, UseFormSetValue } from "react-hook-form"
 
 interface Option {
   value: string
@@ -9,24 +10,18 @@ interface CustomSelectProps {
   options: Option[]
   placeholder: string
   onSelect: (option: Option) => void
+  register: UseFormRegister<any>
+  setValue: UseFormSetValue<any>
+  name: string
 }
 
-/**
- *
- * @param options
- * @param placeholder
- * @param onSelect
- * @constructor
- *
- * The <select> element is notoriously difficult to style productively with CSS. You can affect certain aspects like any element — for example, manipulating the box model, the displayed font, etc., and you can use the appearance property to remove the default system appearance.
- *
- * However, these properties don't produce a consistent result across browsers, and it is hard to do things like line different types of form element up with one another in a column. The <select> element's internal structure is complex, and hard to control. If you want to get full control, you should consider using a library with good facilities for styling form widgets, or try rolling your own dropdown menu using non-semantic elements, JavaScript, and WAI-ARIA to provide semantics.
- * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#styling_with_css
- */
 const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder,
   onSelect,
+  register,
+  setValue,
+  name,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
@@ -40,6 +35,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     setSelectedOption(option)
     setIsOpen(false)
     onSelect(option)
+    setValue(name, option.value) // Update form value
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -152,6 +148,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           ))}
         </ul>
       )}
+      <input type="hidden" {...register(name)} />
+      {/*
+          Hidden input for form registration
+          the value change is being handle trough the setValue
+       */}
     </div>
   )
 }
