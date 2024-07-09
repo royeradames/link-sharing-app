@@ -1,8 +1,9 @@
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
 import { PreviewLink } from "@/app/ui/components/PreviewLink"
 
-export function PreviewElements() {
+export function PreviewElements({ isPreview = true }) {
   const userData = useProfileAndLinksStoreContext()
+  const links = [1, 2, 3, 4, 5]
   return (
     <>
       <div className="flex flex-col items-center gap-[25px] ">
@@ -70,69 +71,31 @@ export function PreviewElements() {
       </div>
 
       <div className="flex flex-col gap-5 items-stretch">
-        {userData.state.links[0] && (
-          <PreviewLink
-            className=""
-            href={userData.state.links[0].link}
-            id={userData.state.links[0].platform}
-          />
-        )}
-        {!userData.state.links[0] && (
-          <svg
-            id="link-1"
-            width="237"
-            height="44"
-            viewBox="0 0 237 44"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-          </svg>
-        )}
-
-        <svg
-          id="link-2"
-          width="237"
-          height="44"
-          viewBox="0 0 237 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-        </svg>
-
-        <svg
-          id="link-3"
-          width="237"
-          height="44"
-          viewBox="0 0 237 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-        </svg>
-
-        <svg
-          id="link-4"
-          width="237"
-          height="44"
-          viewBox="0 0 237 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-        </svg>
-
-        <svg
-          id="link-5"
-          width="237"
-          height="44"
-          viewBox="0 0 237 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect width="237" height="44" rx="8" fill="#EEEEEE" />
-        </svg>
+        {links.map((link, index) => {
+          return (
+            <>
+              {userData.state.links[index] && (
+                <PreviewLink
+                  className="w-[237px] h-[44px]"
+                  href={userData.state.links[index].link}
+                  id={userData.state.links[index].platform}
+                />
+              )}
+              {isPreview && !userData.state.links[index] && (
+                <svg
+                  id="link-1"
+                  width="237"
+                  height="44"
+                  viewBox="0 0 237 44"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect width="237" height="44" rx="8" fill="#EEEEEE" />
+                </svg>
+              )}
+            </>
+          )
+        })}
       </div>
     </>
   )

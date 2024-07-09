@@ -106,7 +106,6 @@ export type TPreviewList = {
   className: string
 }
 export function PreviewLink({ id, href, className }: TPreviewList) {
-  // options: { styles, label, iconName },
   const optionLink = optionsLink.find(option => option.id === id)
   if (!optionLink) {
     throw new Error("Couldn't find the link in the available options")
