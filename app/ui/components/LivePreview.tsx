@@ -5,7 +5,7 @@ import { PreviewElements } from "@/app/ui/components/PreviewElements"
 export function LivePreview() {
   return (
     <>
-      <div className="hidden xl:flex w-[560px] justify-center items-center gap-2 self-stretch bg-white p-6 rounded-xl"></div>
+      <div className="hidden xl:flex w-[560px] justify-center items-center gap-2 self-stretch bg-white p-6 rounded-xl min-h-[679px]"></div>
       <div className="hidden xl:flex w-[560px] justify-center items-center gap-2 self-stretch p-6 rounded-xl fixed left-0">
         <section
           aria-label="Live preview"
