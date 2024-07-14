@@ -1,7 +1,7 @@
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
 import { PreviewLink } from "@/app/ui/components/PreviewLink"
 
-export function PreviewElements({ isPreview = true }) {
+export function PreviewElements({ showLinksPlaceholder = true }) {
   const userData = useProfileAndLinksStoreContext()
   const links = [1, 2, 3, 4, 5]
   return (
@@ -81,7 +81,7 @@ export function PreviewElements({ isPreview = true }) {
                   id={userData.state.links[index].platform}
                 />
               )}
-              {isPreview && !userData.state.links[index] && (
+              {showLinksPlaceholder && !userData.state.links[index] && (
                 <svg
                   id="link-1"
                   width="237"

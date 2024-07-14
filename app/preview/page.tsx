@@ -37,7 +37,7 @@ export default function Page() {
         <h2 className="sr-only" id="preview-elements">
           Preview elements
         </h2>
-        <PreviewElements />
+        <PreviewElements showLinksPlaceholder={false} />
       </section>
     </article>
   )
