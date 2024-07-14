@@ -13,7 +13,7 @@ import {
   LinksSchemaType,
   useLinksFormContext,
 } from "@/app/links/LinksFormProvider"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Edge,
   extractClosestEdge,
@@ -23,12 +23,41 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import dynamic from "next/dynamic"
+
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlAlert),
+  {
+    ssr: false,
+  }
+)
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 
 export function CustomizeLinks() {
+  const [open, setOpen] = useState(false)
+  const warning = useRef(null)
   const profileAndLinksContext = useProfileAndLinksStoreContext()
   const { handleSubmit, fields, append, remove, move, formState } =
     useLinksFormContext()
   const handleAddNewLink = () => {
+    const is5Links = getListLength() >= 5
+    if (is5Links) {
+      setOpen(true)
+      // todo: fix ref and focus on alert button. Currently ref keep being null
+      // console.log(warning.current)
+      // console.log(warning.current?.focus)
+      // if (warning.current) {
+      //   console.log(warning.current)
+      //   console.log(warning.current.focus)
+      //   warning.current.focus()
+      // }
+      return
+    }
     append({
       platform: "",
       link: "",
@@ -125,7 +154,23 @@ export function CustomizeLinks() {
             Add/edit/remove links below and then share all your profiles with
             the world!
           </Text>
-          <Button variant="secondary" onClick={handleAddNewLink}>
+          <SlAlert
+            id="links-limit"
+            ref={warning}
+            variant="warning"
+            open={open}
+            closable
+            onSlAfterHide={() => setOpen(false)}
+          >
+            <SlIcon slot="icon" name="info-circle" />
+            Cannot be more than 5 links.
+          </SlAlert>
+
+          <Button
+            aria-describedby="links-limit"
+            variant="secondary"
+            onClick={handleAddNewLink}
+          >
             + Add new link
           </Button>
 
