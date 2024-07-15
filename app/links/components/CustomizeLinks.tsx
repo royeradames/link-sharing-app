@@ -12,8 +12,8 @@ import {
 import {
   LinksSchemaType,
   useLinksFormContext,
-} from "@/app/links/components/LinksFormProvider"
-import { useCallback, useEffect, useMemo } from "react"
+} from "@/app/links/LinksFormProvider"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Edge,
   extractClosestEdge,
@@ -22,21 +22,53 @@ import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hi
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
+import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import dynamic from "next/dynamic"
+
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlAlert),
+  {
+    ssr: false,
+  }
+)
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
+  {
+    ssr: false,
+  }
+)
 
 export function CustomizeLinks() {
-  const { handleSubmit, fields, append, remove, move } = useLinksFormContext()
+  const [open, setOpen] = useState(false)
+  const warning = useRef(null)
+  const profileAndLinksContext = useProfileAndLinksStoreContext()
+  const { handleSubmit, fields, append, remove, move, formState } =
+    useLinksFormContext()
   const handleAddNewLink = () => {
+    const is5Links = getListLength() >= 5
+    if (is5Links) {
+      setOpen(true)
+      // todo: fix ref and focus on alert button. Currently ref keep being null
+      // console.log(warning.current)
+      // console.log(warning.current?.focus)
+      // if (warning.current) {
+      //   console.log(warning.current)
+      //   console.log(warning.current.focus)
+      //   warning.current.focus()
+      // }
+      return
+    }
     append({
-      platform: "Test",
-      link: "google@test.com",
+      platform: "",
+      link: "",
     })
   }
 
-  console.log(fields)
   const onSubmit = (data: LinksSchemaType) => {
-    console.log("onSubmit")
-    console.log(data)
-    console.log(fields)
+    profileAndLinksContext.setState(current => ({
+      ...current,
+      links: data.links,
+    }))
   }
 
   const reorderItem = useCallback(
@@ -114,15 +146,31 @@ export function CustomizeLinks() {
     <ListContext.Provider value={contextValue}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-lg"
+        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-xl"
       >
-        <div className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
+        <div className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
           <Heading as="h1">Customize your links</Heading>
           <Text as="p">
             Add/edit/remove links below and then share all your profiles with
             the world!
           </Text>
-          <Button variant="secondary" onClick={handleAddNewLink}>
+          <SlAlert
+            id="links-limit"
+            ref={warning}
+            variant="warning"
+            open={open}
+            closable
+            onSlAfterHide={() => setOpen(false)}
+          >
+            <SlIcon slot="icon" name="info-circle" />
+            Cannot be more than 5 links.
+          </SlAlert>
+
+          <Button
+            aria-describedby="links-limit"
+            variant="secondary"
+            onClick={handleAddNewLink}
+          >
             + Add new link
           </Button>
 
@@ -140,10 +188,12 @@ export function CustomizeLinks() {
             </div>
           )}
         </div>
+        {/**/}
 
         <Button
           className="p-3 border-t border-borders rounded-b-lg"
           type="submit"
+          onClick={() => console.log(formState.errors)}
         >
           Save
         </Button>

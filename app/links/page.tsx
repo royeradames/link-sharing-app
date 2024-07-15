@@ -1,12 +1,17 @@
 import { CustomizeLinks } from "@/app/links/components/CustomizeLinks"
-import { LinksFormProvider } from "@/app/links/components/LinksFormProvider"
-// import { FormProvider } from "react-hook-form"
-// import { FormProvider } from "@/app/links/FormProvider"
+import { LinksFormProvider } from "@/app/links/LinksFormProvider"
+import { LivePreview } from "@/app/ui/components/LivePreview"
 
 export default function Page() {
   return (
     <LinksFormProvider>
-      <CustomizeLinks />
+      <article
+        aria-label="Customize your links"
+        className="flex flex-wrap gap-6 justify-center"
+      >
+        <LivePreview />
+        <CustomizeLinks />
+      </article>
     </LinksFormProvider>
   )
 }

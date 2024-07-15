@@ -30,9 +30,6 @@ export function Button({
   loading,
   ...props
 }: TButton) {
-  function handleClick() {
-    console.log("handleClick")
-  }
   return (
     <SlButton
       variant="primary"

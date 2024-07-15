@@ -5,10 +5,8 @@ import { DropIndicator } from "@atlaskit/pragmatic-drag-and-drop-react-drop-indi
 import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-accessibility/drag-handle-button"
 import { RefObject } from "react"
 import { InputField } from "@/app/ui/inputs/InputField"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { formSchema } from "@/app/ui/demos/FormDemo"
 import { SelectPlatformInput } from "@/app/ui/inputs/SelectPlatformInput"
+import { useLinksFormContext } from "@/app/links/LinksFormProvider"
 
 export function LinkForm({
   index = 0,
@@ -23,14 +21,10 @@ export function LinkForm({
 }) {
   const {
     register,
-    handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      textField: "",
-    },
-  })
+    setValue,
+  } = useLinksFormContext()
+
   return (
     <section className="flex flex-col justify-center items-stretch gap-3 self-stretch bg-light-grey p-5 rounded-xl">
       <header className="flex justify-between items-start self-stretch">
@@ -60,6 +54,9 @@ export function LinkForm({
           name={`links.${index}.platform`}
           register={register}
         />
+        {errors.links?.[index]?.platform && (
+          <p className="text-red">{errors.links[index]?.platform?.message}</p>
+        )}
       </div>
       <div className="text-left">
         <Text as="label" htmlFor="link">
@@ -72,6 +69,9 @@ export function LinkForm({
           errors={errors}
           id="link"
         />
+        {errors.links?.[index]?.link && (
+          <p className="text-red">{errors.links[index]?.link?.message}</p>
+        )}
       </div>
     </section>
   )

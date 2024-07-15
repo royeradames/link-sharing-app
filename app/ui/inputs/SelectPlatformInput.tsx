@@ -1,7 +1,8 @@
+"use client"
 import { Select, TDropDown } from "@/app/ui/inputs/Select"
 import { UseFormRegister } from "react-hook-form"
 
-const options: TDropDown["options"] = [
+export const PlatformOptions: TDropDown["options"] = [
   { value: "github", label: "Github", iconName: "github" },
   {
     value: "frontend-mentor",
@@ -74,7 +75,8 @@ export function SelectPlatformInput(props: TAllMenuList) {
     <Select
       name={props.name}
       register={props.register}
-      options={options}
+      options={PlatformOptions}
+      placeholder="Select a platform"
     ></Select>
   )
 }
