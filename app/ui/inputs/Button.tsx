@@ -1,14 +1,8 @@
 "use client"
 import { ReactNode } from "react"
 import { clsx } from "clsx"
-import dynamic from "next/dynamic"
+import { SlButton } from "@/shoelace-wrappers"
 
-const SlButton = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlButton),
-  {
-    ssr: false,
-  }
-)
 export type TButton = {
   children: ReactNode
   disabled?: boolean
