@@ -7,4 +7,6 @@ generateReactWrappers(manifest, {
     `@shoelace-style/shoelace/dist/components/${tagName.replace("sl-", "")}/${tagName.replace("sl-", "")}.js`,
   defaultExport: true,
   ssrSafe: true,
+  // todo: fix SlTreeItem auto build issue. For now skip it.
+  exclude: ["SlTreeItem"],
 })

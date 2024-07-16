@@ -2,15 +2,9 @@
 import Link from "next/link"
 import { clsx } from "clsx"
 import { usePathname } from "next/navigation"
-import dynamic from "next/dynamic"
 import React from "react"
+import { SlIcon } from "@/shoelace-wrappers"
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
 export default function Nav({}: {}) {
   const pathname = usePathname()
   const linkStyles = (isActive: boolean) => {

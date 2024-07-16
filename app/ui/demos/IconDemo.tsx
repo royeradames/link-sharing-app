@@ -1,13 +1,7 @@
 "use client"
-import dynamic from "next/dynamic"
 import React from "react"
+import { SlIcon } from "@/shoelace-wrappers"
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(sl => sl.SlIcon),
-  {
-    ssr: false,
-  }
-)
 export default function IconDemo() {
   function handleLoad() {
     console.log("loaded")

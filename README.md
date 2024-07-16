@@ -97,6 +97,11 @@ Styling with ::part is harder to read than normal css classes.
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## default npm install to include --legacy-peer-deps 
+
+create `.npmrc` file
+
+add `legacy-peer-deps=true`
 
 
 ## for now I'm getting 404 on images and I cannot set the base path to the correct path

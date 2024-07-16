@@ -1,14 +1,7 @@
-import dynamic from "next/dynamic"
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { clsx } from "clsx"
 import { UseFormRegister } from "react-hook-form"
-
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
+import { SlIcon } from "@/shoelace-wrappers"
 
 export function InputImageUpload({
   register,

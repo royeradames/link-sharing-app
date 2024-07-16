@@ -1,13 +1,6 @@
 "use client"
-import dynamic from "next/dynamic"
+import { SlIcon } from "@/shoelace-wrappers"
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
-// https://shoelace.style/getting-started/installation/#setting-the-base-path
 export default function IconDemo() {
   function handleLoad() {
     console.log("loaded")

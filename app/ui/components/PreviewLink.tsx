@@ -1,7 +1,7 @@
-import dynamic from "next/dynamic"
 import { clsx } from "clsx"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { SlIcon } from "@/shoelace-wrappers"
 
 export type PreviewLinkOptions = {
   styles: { base: string; icon?: string; text?: string }
@@ -93,12 +93,6 @@ const optionsLink: PreviewLinkOptions[] = [
     id: "stackoverflow",
   },
 ]
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
 
 export type TPreviewList = {
   href: string

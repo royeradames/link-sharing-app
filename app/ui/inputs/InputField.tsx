@@ -3,14 +3,8 @@ import clsx from "clsx"
 import { z } from "zod"
 import { FieldErrors, UseFormRegister } from "react-hook-form"
 import Text from "@/app/ui/components/Text"
-import dynamic from "next/dynamic"
+import { SlIcon } from "@/shoelace-wrappers"
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
 export const TextFieldSchema = z
   .string()
   .min(1, { message: "Please check again" })
