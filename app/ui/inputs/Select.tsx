@@ -1,25 +1,6 @@
 import React, { forwardRef } from "react"
-import dynamic from "next/dynamic"
 import { UseFormRegister } from "react-hook-form"
-
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
-const SlOption = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlOption),
-  {
-    ssr: false,
-  }
-)
-const SlSelect = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlSelect),
-  {
-    ssr: false,
-  }
-)
+import { SlIcon, SlOption, SlSelect } from "@/shoelace-wrappers"
 
 export type TDropDown = {
   options: { value: string; label: string; iconName?: string }[]

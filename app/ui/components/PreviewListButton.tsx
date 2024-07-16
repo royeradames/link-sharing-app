@@ -1,13 +1,6 @@
-import dynamic from "next/dynamic"
 import { clsx } from "clsx"
 import Link from "next/link"
-
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
+import { SlIcon } from "@/shoelace-wrappers"
 
 export type TPreviewList = {
   options: {

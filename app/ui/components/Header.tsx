@@ -1,15 +1,9 @@
 "use client"
 import Nav from "@/app/ui/components/Nav"
 import { Logo } from "@/app/ui/components/Logo"
-import dynamic from "next/dynamic"
 import Link from "next/link"
+import { SlIcon } from "@/shoelace-wrappers"
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
 export function Header() {
   return (
     <header className="flex justify-between items-center self-stretch bg-white pl-6 pr-4 py-4 rounded-xl mb-4 md:mb-6">

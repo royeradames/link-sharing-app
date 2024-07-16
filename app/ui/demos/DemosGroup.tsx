@@ -3,35 +3,9 @@ import DropdownDemo from "@/app/ui/demos/DropdownDemo"
 import IconDemo from "@/app/ui/demos/IconDemo"
 import { SlImportDemo } from "@/app/ui/demos/SlImportDemo"
 import { FormDemo } from "@/app/ui/demos/FormDemo"
-import dynamic from "next/dynamic"
 import { Button } from "@/app/ui/inputs/Button"
-import { ImageUpload1 } from "@/app/ui/components/ImageUpload1"
 import { PreviewListDemo } from "@/app/ui/demos/PreviewListDemo"
-
-const SlTab = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod["SlTab"]),
-  {
-    ssr: false,
-  }
-)
-const SlTabGroup = dynamic(
-  () =>
-    import("@shoelace-style/shoelace/dist/react").then(
-      mod => mod["SlTabGroup"]
-    ),
-  {
-    ssr: false,
-  }
-)
-const SlTabPanel = dynamic(
-  () =>
-    import("@shoelace-style/shoelace/dist/react").then(
-      mod => mod["SlTabPanel"]
-    ),
-  {
-    ssr: false,
-  }
-)
+import { SlTab, SlTabGroup, SlTabPanel } from "@/shoelace-wrappers"
 
 export function DemoGroup() {
   function handleMenuListChange(value: unknown) {
@@ -71,9 +45,7 @@ export function DemoGroup() {
       <SlTabPanel name="AllMenuList">
         {/*<AllMenuList onChange={handleMenuListChange} />*/}
       </SlTabPanel>
-      <SlTabPanel name="ImageUpload">
-        <ImageUpload1 />
-      </SlTabPanel>
+      <SlTabPanel name="ImageUpload">{/*<ImageUpload1 />*/}</SlTabPanel>
       <SlTabPanel name="DropdownDemo">
         <DropdownDemo />
       </SlTabPanel>

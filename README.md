@@ -97,6 +97,53 @@ Styling with ::part is harder to read than normal css classes.
 [link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
 # Lesson learns
 
+## use shoelace in react
+
+use a wrapper so that react can support custom elements
+
+create `scripts/make-wrappers.js`
+
+`make-wrappers.js`
+```js
+import { generateReactWrappers } from "custom-element-react-wrappers"
+import manifest from "@shoelace-style/shoelace/dist/custom-elements.json" assert { type: "json" }
+
+generateReactWrappers(manifest, {
+  outdir: "shoelace-wrappers",
+  modulePath: (className, tagName) =>
+    `@shoelace-style/shoelace/dist/components/${tagName.replace("sl-", "")}/${tagName.replace("sl-", "")}.js`,
+  defaultExport: true,
+  /**
+   * not true.
+   * Causes lag on reload. You don't event have to use them in 'use client' files just like any other tag.
+   * An important note is that in order to mkae this work, the wrapper generation configuration must have the `ssrSafe` property set to `true`. This will allow the components to register and execute when the client is ready.
+   */
+  // ssrSafe: true,
+  // todo: fix SlTreeItem auto build issue. For now skip it.
+  exclude: ["SlTreeItem"],
+})
+
+```
+
+`package.json`
+Enable type module and run the make-wrappers in the prepare script
+```json
+{
+  "type": "module",
+  "scripts": {
+    "prepare": "node scripts/make-wrappers.js"
+  }
+}
+
+```
+
+The prepare script is a npm life cycle hook that run automatically after each install.
+
+## default npm install to include --legacy-peer-deps 
+
+create `.npmrc` file
+
+add `legacy-peer-deps=true`
 
 
 ## for now I'm getting 404 on images and I cannot set the base path to the correct path

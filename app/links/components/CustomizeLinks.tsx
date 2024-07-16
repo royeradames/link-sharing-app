@@ -23,20 +23,7 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { LinkForm } from "@/app/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
-import dynamic from "next/dynamic"
-
-const SlAlert = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlAlert),
-  {
-    ssr: false,
-  }
-)
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
+import { SlAlert, SlIcon } from "@/shoelace-wrappers"
 
 export function CustomizeLinks() {
   const [open, setOpen] = useState(false)

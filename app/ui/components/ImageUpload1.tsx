@@ -1,14 +1,7 @@
 "use client"
-import dynamic from "next/dynamic"
 import { ChangeEvent, useRef, useState } from "react"
 import { clsx } from "clsx"
-
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
+import { SlIcon } from "@/shoelace-wrappers"
 
 export function ImageUpload1({ id, name }: { id: string; name: string }) {
   const [isImageUpload, setIsImageUpload] = useState(false)
