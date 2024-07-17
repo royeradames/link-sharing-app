@@ -27,7 +27,7 @@ export function InputImageUpload({
    */
   useEffect(() => {
     setValue(name, imgUrl)
-  }, [imgUrl, name])
+  }, [imgUrl, name, setValue])
   function handleImage(input: ChangeEvent<HTMLInputElement>) {
     const file = input.target.files?.[0]
     if (!file) {
