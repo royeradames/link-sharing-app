@@ -8,11 +8,11 @@ import {
   isItemData,
   ListContext,
   ListContextValue,
-} from "@/app/links/components/DragableLinksItem"
+} from "@/app/dashboard/links/components/DragableLinksItem"
 import {
   LinksSchemaType,
   useLinksFormContext,
-} from "@/app/links/LinksFormProvider"
+} from "@/app/dashboard/links/LinksFormProvider"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Edge,
@@ -20,8 +20,8 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { getReorderDestinationIndex } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { LinkForm } from "@/app/links/components/LinkForm"
-import { NoLinkMessage } from "@/app/links/components/NoLinkMessage"
+import { LinkForm } from "@/app/dashboard/links/components/LinkForm"
+import { NoLinkMessage } from "@/app/dashboard/links/components/NoLinkMessage"
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
 import { SlAlert, SlIcon } from "@/shoelace-wrappers"
 

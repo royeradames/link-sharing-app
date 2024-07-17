@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     // Redirect to /links when the component mounts
-    router.push("/links")
+    router.push("/dashboard/links")
   }, [router])
   return (
     <main className="flex min-h-screen flex-col gap-8">

@@ -1,5 +1,5 @@
-import { CustomizeLinks } from "@/app/links/components/CustomizeLinks"
-import { LinksFormProvider } from "@/app/links/LinksFormProvider"
+import { CustomizeLinks } from "@/app/dashboard/links/components/CustomizeLinks"
+import { LinksFormProvider } from "@/app/dashboard/links/LinksFormProvider"
 import { LivePreview } from "@/app/ui/components/LivePreview"
 
 export default function Page() {

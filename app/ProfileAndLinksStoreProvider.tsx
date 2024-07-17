@@ -8,7 +8,7 @@ import {
   useContext,
   useState,
 } from "react"
-import { LinksSchemaType } from "@/app/links/LinksFormProvider"
+import { LinksSchemaType } from "@/app/dashboard/links/LinksFormProvider"
 
 /**
  * the type of the React state that will be set as a root service
