@@ -6,7 +6,7 @@ import { DragHandleButton } from "@atlaskit/pragmatic-drag-and-drop-react-access
 import { RefObject } from "react"
 import { InputField } from "@/app/ui/inputs/InputField"
 import { SelectPlatformInput } from "@/app/ui/inputs/SelectPlatformInput"
-import { useLinksFormContext } from "@/app/links/LinksFormProvider"
+import { useLinksFormContext } from "@/app/dashboard/links/LinksFormProvider"
 
 export function LinkForm({
   index = 0,

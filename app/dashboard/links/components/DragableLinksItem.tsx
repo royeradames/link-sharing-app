@@ -1,5 +1,5 @@
 "use client"
-import { LinkForm } from "@/app/links/components/LinkForm"
+import { LinkForm } from "@/app/dashboard/links/components/LinkForm"
 import {
   createContext,
   Fragment,

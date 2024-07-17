@@ -18,12 +18,15 @@ export default function Nav({}: {}) {
   const iconSizeStyles = "h-5 w-5"
   return (
     <nav className="flex ">
-      <Link href="/links" className={linkStyles(pathname.includes("/links"))}>
+      <Link
+        href="/dashboard/links"
+        className={linkStyles(pathname.includes("/links"))}
+      >
         <SlIcon name="link-45deg" className={iconSizeStyles} />
         <span className="hidden sm:inline">Links</span>
       </Link>
       <Link
-        href="/profile-details"
+        href="/dashboard/profile-details"
         className={linkStyles(pathname.includes("/profile-details"))}
       >
         <SlIcon name="user-circle" className={iconSizeStyles} />

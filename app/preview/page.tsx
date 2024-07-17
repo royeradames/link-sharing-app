@@ -22,7 +22,7 @@ export default function Page() {
             Page option
           </h2>
           <Link
-            href="/profile-details"
+            href="/dashboard/profile-details"
             className="flex flex-col justify-center items-center gap-2 flex-[1_0_0] border border-purple px-[27px] py-[11px] rounded-lg border-solid text-purple text-base font-semibold leading-[150%] max-w-max"
           >
             Back to editor
