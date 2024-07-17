@@ -2,14 +2,8 @@ import "@shoelace-style/shoelace/dist/themes/light.css"
 import type { Metadata } from "next"
 import { instrumentSans } from "@/app/ui/fonts"
 import "./globals.css"
-import {
-  getBasePath,
-  setBasePath,
-} from "@shoelace-style/shoelace/dist/utilities/base-path.js"
 import { ProfileAndLinksStoreProvider } from "@/app/ProfileAndLinksStoreProvider"
-
-setBasePath("/@shoelace-style/shoelace/dist")
-console.log(getBasePath())
+import ShoelaceSetup from "@/app/shoelace-setup"
 
 export const metadata: Metadata = {
   title: {
@@ -29,11 +23,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ProfileAndLinksStoreProvider>
-        <body className={instrumentSans.className} style={instrumentSans.style}>
-          {children}
-        </body>
-      </ProfileAndLinksStoreProvider>
+      <ShoelaceSetup>
+        <ProfileAndLinksStoreProvider>
+          <body
+            className={instrumentSans.className}
+            style={instrumentSans.style}
+          >
+            {children}
+          </body>
+        </ProfileAndLinksStoreProvider>
+      </ShoelaceSetup>
     </html>
   )
 }
