@@ -3,7 +3,7 @@ import Link from "next/link"
 import { clsx } from "clsx"
 import { usePathname } from "next/navigation"
 import React from "react"
-import { SlIcon } from "@/shoelace-wrappers"
+import { Link45Deg, UserCircle } from "@/app/ui/svgs"
 
 export default function Nav({}: {}) {
   const pathname = usePathname()
@@ -15,21 +15,20 @@ export default function Nav({}: {}) {
       }
     )
   }
-  const iconSizeStyles = "h-5 w-5"
   return (
     <nav className="flex ">
       <Link
         href="/dashboard/links"
         className={linkStyles(pathname.includes("/links"))}
       >
-        <SlIcon name="link-45deg" className={iconSizeStyles} />
+        <Link45Deg height={20} width={20} />
         <span className="hidden sm:inline">Links</span>
       </Link>
       <Link
         href="/dashboard/profile-details"
         className={linkStyles(pathname.includes("/profile-details"))}
       >
-        <SlIcon name="user-circle" className={iconSizeStyles} />
+        <UserCircle height={20} width={20} />
         <span className="hidden sm:inline">Profile Details</span>
       </Link>
     </nav>
