@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { clsx } from "clsx"
 import { UseFormRegister } from "react-hook-form"
-import { SlIcon } from "@/shoelace-wrappers"
+import { CardImage } from "@/app/ui/svgs"
 
 export function InputImageUpload({
   register,
@@ -72,12 +72,13 @@ export function InputImageUpload({
         backgroundPosition: "center",
       }}
     >
-      <SlIcon
-        aria-hidden={true}
-        name="card-image"
-        className={clsx("w-10 h-10 mb-2 text-purple", {
+      <CardImage
+        width={40}
+        height={40}
+        className={clsx("text-purple", {
           "text-white": isImageUpload,
         })}
+        aria-hidden={true}
       />
       <span
         className={clsx("text-purple text-base font-semibold leading-[150%]", {
