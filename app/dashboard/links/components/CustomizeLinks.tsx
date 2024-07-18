@@ -23,8 +23,9 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { LinkForm } from "@/app/dashboard/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/dashboard/links/components/NoLinkMessage"
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
-import { SlAlert, SlIcon } from "@/shoelace-wrappers"
 
+// import { SlAlert, SlIcon } from "@/shoelace-wrappers"
+// todo: replace alert with custom alert
 export function CustomizeLinks() {
   const [open, setOpen] = useState(false)
   const warning = useRef(null)
@@ -141,17 +142,17 @@ export function CustomizeLinks() {
             Add/edit/remove links below and then share all your profiles with
             the world!
           </Text>
-          <SlAlert
-            id="links-limit"
-            ref={warning}
-            variant="warning"
-            open={open}
-            closable
-            onSlAfterHide={() => setOpen(false)}
-          >
-            <SlIcon slot="icon" name="info-circle" />
-            Cannot be more than 5 links.
-          </SlAlert>
+          {/*<SlAlert*/}
+          {/*  id="links-limit"*/}
+          {/*  ref={warning}*/}
+          {/*  variant="warning"*/}
+          {/*  open={open}*/}
+          {/*  closable*/}
+          {/*  onSlAfterHide={() => setOpen(false)}*/}
+          {/*>*/}
+          {/*  <SlIcon slot="icon" name="info-circle" />*/}
+          {/*  Cannot be more than 5 links.*/}
+          {/*</SlAlert>*/}
 
           <Button
             aria-describedby="links-limit"

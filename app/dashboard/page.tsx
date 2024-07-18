@@ -1,6 +1,5 @@
 "use client"
-
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
 export default function Page() {
@@ -11,5 +10,7 @@ export default function Page() {
     router.push("/dashboard/links")
   }, [router])
 
-  return null // or a loading spinner if you want to show something while redirecting
+  // return null // or a loading spinner if you want to show something while redirecting
+
+  return null
 }
