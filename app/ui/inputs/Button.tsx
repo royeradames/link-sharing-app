@@ -1,6 +1,5 @@
 import { ReactNode } from "react"
 import { clsx } from "clsx"
-import { SlButton } from "@/shoelace-wrappers"
 
 export type TButton = {
   children: ReactNode
@@ -24,26 +23,22 @@ export function Button({
   ...props
 }: TButton) {
   return (
-    <SlButton
-      variant="primary"
+    <button
       disabled={disabled}
-      outline={variant === "secondary"}
-      size={size}
       type={type}
-      loading={loading}
       onClick={props.onClick}
       className={clsx(
-        ` [&::part(base)]:rounded-lg [&::part(base)]:font-semibold [&::part(base)]:text-[1rem]`,
+        ` rounded-lg font-semibold text-[1rem] px-[27px] py-[11px]`,
         {
-          "[&::part(base)]:border-none [&::part(base)]:bg-purple [&::part(base)]:text-white  [&::part(base):active]:bg-purple-hover [&[disabled]::part(base)]:bg-purple/25":
+          "border-none bg-purple text-white  active:bg-purple-hover disabled:bg-purple/25":
             variant === "primary",
-          "[&::part(base)]:border-purple [&::part(base)]:text-purple [&::part(base):active]:bg-light-purple [&[disabled]::part(base)]:opacity-25 [&::part(base)]:bg-white":
+          "border-purple text-purple active:bg-light-purple disabled:opacity-25 bg-white border":
             variant === "secondary",
           [className]: className,
         }
       )}
     >
       {children}
-    </SlButton>
+    </button>
   )
 }
