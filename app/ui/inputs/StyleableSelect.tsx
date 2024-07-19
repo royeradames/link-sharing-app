@@ -153,7 +153,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       <input type="hidden" {...register(name)} />
       {/*
           Hidden input for form registration
-          the value change is being handle trough the setValue
+          the value change is being handle through the setValue
        */}
     </div>
   )
