@@ -9,13 +9,13 @@ interface Option {
 interface CustomSelectProps {
   options: Option[]
   placeholder: string
-  onSelect: (option: Option) => void
+  onSelect?: (option: Option) => void
   register: UseFormRegister<any>
   setValue: UseFormSetValue<any>
   name: string
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({
+const StyleableSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder,
   onSelect,
@@ -34,7 +34,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const handleOptionClick = (option: Option) => {
     setSelectedOption(option)
     setIsOpen(false)
-    onSelect(option)
+    if (onSelect) onSelect(option)
     setValue(name, option.value) // Update form value
   }
 
@@ -159,4 +159,4 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   )
 }
 
-export default CustomSelect
+export default StyleableSelect
