@@ -91,7 +91,7 @@ export type DraggableState =
 const idleState: DraggableState = { type: "idle" }
 const draggingState: DraggableState = { type: "dragging" }
 
-const listItemStyles = "relative p-4"
+const listItemStyles = "relative py-4"
 const listItemDisabledStyles = "opacity-40"
 const listItemPreviewStyles =
   "py-1 px-4 rounded-lg bg-gray-100 max-w-[360px] whitespace-nowrap overflow-hidden text-ellipsis"

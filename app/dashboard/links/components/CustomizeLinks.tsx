@@ -134,9 +134,9 @@ export function CustomizeLinks() {
     <ListContext.Provider value={contextValue}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch rounded-xl"
+        className=" bg-white flex flex-col items-stretch gap-10 flex-[1_0_0] rounded-xl p-6 md:p-10"
       >
-        <div className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch p-6 text-center">
+        <div className="flex flex-col items-stretch gap-10 flex-[1_0_0] self-stretch text-center">
           <Heading as="h1">Customize your links</Heading>
           <Text as="p">
             Add/edit/remove links below and then share all your profiles with
@@ -158,6 +158,7 @@ export function CustomizeLinks() {
             aria-describedby="links-limit"
             variant="secondary"
             onClick={handleAddNewLink}
+            className="w-full"
           >
             + Add new link
           </Button>
@@ -176,15 +177,16 @@ export function CustomizeLinks() {
             </div>
           )}
         </div>
-        {/**/}
 
-        <Button
-          className="p-3 border-t border-borders rounded-b-lg"
-          type="submit"
-          onClick={() => console.log(formState.errors)}
-        >
-          Save
-        </Button>
+        <div className="flex flex-col md:items-end">
+          <Button
+            className="p-3 border-t border-borders rounded-b-lg"
+            type="submit"
+            onClick={() => console.log(formState.errors)}
+          >
+            Save
+          </Button>
+        </div>
       </form>
     </ListContext.Provider>
   )
