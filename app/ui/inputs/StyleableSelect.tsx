@@ -116,12 +116,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
 
   return (
     <div
-      className="relative text-black focus-visible:shadow
-          focus-visible:shadow-purple/25
-          focus-visible:border-purple focus-visible:outline-none"
+      className="relative text-black "
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
-      tabIndex={0}
       role="combobox"
       aria-expanded={isOpen}
       aria-haspopup="listbox"
@@ -144,9 +141,13 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           open:shadow
           open:shadow-purple/25
           open:border-purple
+          focus-visible:shadow
+          focus-visible:shadow-purple/25
+          focus-visible:border-purple
+          focus-visible:outline-none
         "
         onClick={() => setIsOpen(prev => !prev)}
-        tabIndex={-1}
+        tabIndex={0}
         open={isOpen || undefined}
       >
         <SlIcon
