@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue } from "react-hook-form"
 import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
+import { cn } from "@/lib/utils"
 
 interface Option {
   value: string
@@ -126,7 +127,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       ref={selectRef}
     >
       <div
-        className="
+        className={cn(
+          clsx(
+            `
           grid gap-3 items-center grid-cols-[max-content,1fr,max-content]
           py-2
           px-4
@@ -138,17 +141,18 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           hover:shadow
           hover:shadow-purple/25
           hover:border-purple
-          open:shadow
-          open:shadow-purple/25
-          open:border-purple
           focus-visible:shadow
           focus-visible:shadow-purple/25
           focus-visible:border-purple
           focus-visible:outline-none
-        "
+          `,
+            {
+              "open:shadow open:shadow-purple/25 open:border-purple": isOpen,
+            }
+          )
+        )}
         onClick={() => setIsOpen(prev => !prev)}
         tabIndex={0}
-        open={isOpen || undefined}
       >
         <SlIcon
           name="link-45deg"
@@ -173,9 +177,11 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
             <li
               key={option.value}
               className={clsx(
-                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey ${focusedOptionIndex === index ? "bg-gray-200" : "hover:bg-gray-100"}`,
+                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100`,
                 {
-                  "text-purple": option.value === selectedOption?.value,
+                  "text-purple":
+                    option.value === selectedOption?.value ||
+                    focusedOptionIndex === index,
                 }
               )}
               onClick={() => handleOptionClick(option)}
