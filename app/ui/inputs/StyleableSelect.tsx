@@ -35,11 +35,12 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null)
   const optionsListRef = useRef<HTMLUListElement>(null)
 
-  const handleOptionClick = (option: Option) => {
+  const handleOptionClick = (option: Option, index: number) => {
     setSelectedOption(option)
     setIsOpen(false)
     if (onSelect) onSelect(option)
-    setValue(name, option.value) // Update form value
+    setValue(name, option.value)
+    setFocusedOptionIndex(index)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -66,7 +67,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex])
+          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
         }
         event.preventDefault()
         break
@@ -77,7 +78,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex])
+          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
         }
         event.preventDefault()
         break
@@ -184,7 +185,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
                     focusedOptionIndex === index,
                 }
               )}
-              onClick={() => handleOptionClick(option)}
+              onClick={() => handleOptionClick(option, index)}
               role="option"
               aria-selected={selectedOption?.value === option.value}
               tabIndex={-1}
