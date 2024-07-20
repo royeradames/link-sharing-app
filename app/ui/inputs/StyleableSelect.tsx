@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue } from "react-hook-form"
+import { SlIcon } from "@/shoelace-wrappers"
+import { clsx } from "clsx"
 
 interface Option {
   value: string
   label: string
+  iconName?: string
 }
 
 interface CustomSelectProps {
@@ -113,7 +116,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
 
   return (
     <div
-      className="relative text-black"
+      className="relative text-black focus-visible:shadow
+          focus-visible:shadow-purple/25
+          focus-visible:border-purple focus-visible:outline-none"
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       tabIndex={0}
@@ -124,10 +129,37 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       ref={selectRef}
     >
       <div
-        className="p-2 border border-gray-300 rounded bg-white cursor-pointer"
+        className="
+          grid gap-3 items-center grid-cols-[max-content,1fr,max-content]
+          py-2
+          px-4
+          border
+          border-gray-300
+          rounded bg-white
+          cursor-pointer
+          text-dark-grey
+          hover:shadow
+          hover:shadow-purple/25
+          hover:border-purple
+          open:shadow
+          open:shadow-purple/25
+          open:border-purple
+        "
         onClick={() => setIsOpen(prev => !prev)}
+        tabIndex={-1}
+        open={isOpen || undefined}
       >
+        <SlIcon
+          name="link-45deg"
+          aria-hidden
+          className="h-5 w-5 text-grey flex"
+        />
         {selectedOption ? selectedOption.label : placeholder}
+        <SlIcon
+          name={isOpen ? "arrow-up" : "arrow-down"}
+          aria-hidden
+          className="w-3 h-1.5 text-grey flex"
+        />
       </div>
       {isOpen && (
         <ul
@@ -139,13 +171,20 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           {options.map((option, index) => (
             <li
               key={option.value}
-              className={`p-2 cursor-pointer ${focusedOptionIndex === index ? "bg-gray-200" : "hover:bg-gray-100"}`}
+              className={clsx(
+                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey ${focusedOptionIndex === index ? "bg-gray-200" : "hover:bg-gray-100"}`,
+                {
+                  "text-purple": option.value === selectedOption?.value,
+                }
+              )}
               onClick={() => handleOptionClick(option)}
               role="option"
               aria-selected={selectedOption?.value === option.value}
               tabIndex={-1}
             >
-              {option.label}
+              <SlIcon name={option.iconName} />
+              <span>{option.label}</span>
+              {option.value === selectedOption?.value ? "(Selected)" : ""}
             </li>
           ))}
         </ul>
