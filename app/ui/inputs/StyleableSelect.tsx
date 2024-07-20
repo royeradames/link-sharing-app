@@ -76,8 +76,8 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       case "Space":
         if (!isOpen) {
           setIsOpen(true)
-        } else {
-          setIsOpen(false)
+        } else if (focusedOptionIndex !== null) {
+          handleOptionClick(options[focusedOptionIndex])
         }
         event.preventDefault()
         break
