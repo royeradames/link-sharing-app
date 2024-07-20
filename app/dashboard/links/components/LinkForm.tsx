@@ -23,6 +23,7 @@ export function LinkForm({
     register,
     formState: { errors },
     setValue,
+    watch,
   } = useLinksFormContext()
 
   return (
@@ -54,6 +55,7 @@ export function LinkForm({
           name={`links.${index}.platform`}
           register={register}
           setValue={setValue}
+          watch={watch}
         />
         {errors.links?.[index]?.platform && (
           <p className="text-red">{errors.links[index]?.platform?.message}</p>

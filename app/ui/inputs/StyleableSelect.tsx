@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { UseFormRegister, UseFormSetValue } from "react-hook-form"
+import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
 import { cn } from "@/lib/utils"
@@ -15,6 +15,7 @@ interface CustomSelectProps {
   placeholder: string
   onSelect?: (option: Option) => void
   register: UseFormRegister<any>
+  watch: UseFormWatch<any>
   setValue: UseFormSetValue<any>
   name: string
 }
@@ -25,6 +26,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   onSelect,
   register,
   setValue,
+  watch,
   name,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -111,11 +113,22 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside)
+    setDefaultValue()
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
-
+  function setDefaultValue() {
+    const defaultValue: Option["value"] | undefined = watch(name)
+    if (!defaultValue) {
+      return
+    }
+    const selectedOption = options.find(option => option.value === defaultValue)
+    if (!selectedOption) {
+      return
+    }
+    setSelectedOption(selectedOption)
+  }
   return (
     <div
       className="relative text-black "

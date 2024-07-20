@@ -1,6 +1,6 @@
 "use client"
 import { TDropDown } from "@/app/ui/inputs/Select"
-import { UseFormRegister, UseFormSetValue } from "react-hook-form"
+import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import StyleableSelect from "@/app/ui/inputs/StyleableSelect"
 
 export const PlatformOptions: TDropDown["options"] = [
@@ -71,6 +71,7 @@ export type TAllMenuList = {
   name: string
   register: UseFormRegister<any>
   setValue: UseFormSetValue<any>
+  watch: UseFormWatch<any>
 }
 export function SelectPlatformInput(props: TAllMenuList) {
   return (
@@ -79,6 +80,7 @@ export function SelectPlatformInput(props: TAllMenuList) {
       placeholder="Select a platform"
       register={props.register}
       setValue={props.setValue}
+      watch={props.watch}
       name={props.name}
     ></StyleableSelect>
   )
