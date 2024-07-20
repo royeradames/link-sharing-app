@@ -1,21 +1,25 @@
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue } from "react-hook-form"
+import { SlIcon } from "@/shoelace-wrappers"
+import { clsx } from "clsx"
+import { cn } from "@/lib/utils"
 
 interface Option {
   value: string
   label: string
+  iconName?: string
 }
 
 interface CustomSelectProps {
   options: Option[]
   placeholder: string
-  onSelect: (option: Option) => void
+  onSelect?: (option: Option) => void
   register: UseFormRegister<any>
   setValue: UseFormSetValue<any>
   name: string
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({
+const StyleableSelect: React.FC<CustomSelectProps> = ({
   options,
   placeholder,
   onSelect,
@@ -31,11 +35,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null)
   const optionsListRef = useRef<HTMLUListElement>(null)
 
-  const handleOptionClick = (option: Option) => {
+  const handleOptionClick = (option: Option, index: number) => {
     setSelectedOption(option)
     setIsOpen(false)
-    onSelect(option)
-    setValue(name, option.value) // Update form value
+    if (onSelect) onSelect(option)
+    setValue(name, option.value)
+    setFocusedOptionIndex(index)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -62,7 +67,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex])
+          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
         }
         event.preventDefault()
         break
@@ -72,8 +77,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       case "Space":
         if (!isOpen) {
           setIsOpen(true)
-        } else {
-          setIsOpen(false)
+        } else if (focusedOptionIndex !== null) {
+          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
         }
         event.preventDefault()
         break
@@ -113,10 +118,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   return (
     <div
-      className="relative text-black"
+      className="relative text-black "
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
-      tabIndex={0}
       role="combobox"
       aria-expanded={isOpen}
       aria-haspopup="listbox"
@@ -124,10 +128,44 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       ref={selectRef}
     >
       <div
-        className="p-2 border border-gray-300 rounded bg-white cursor-pointer"
+        className={cn(
+          clsx(
+            `
+          grid gap-3 items-center grid-cols-[max-content,1fr,max-content]
+          py-2
+          px-4
+          border
+          border-gray-300
+          rounded bg-white
+          cursor-pointer
+          text-dark-grey
+          hover:shadow
+          hover:shadow-purple/25
+          hover:border-purple
+          focus-visible:shadow
+          focus-visible:shadow-purple/25
+          focus-visible:border-purple
+          focus-visible:outline-none
+          `,
+            {
+              "open:shadow open:shadow-purple/25 open:border-purple": isOpen,
+            }
+          )
+        )}
         onClick={() => setIsOpen(prev => !prev)}
+        tabIndex={0}
       >
+        <SlIcon
+          name="link-45deg"
+          aria-hidden
+          className="h-5 w-5 text-grey flex"
+        />
         {selectedOption ? selectedOption.label : placeholder}
+        <SlIcon
+          name={isOpen ? "arrow-up" : "arrow-down"}
+          aria-hidden
+          className="w-3 h-1.5 text-grey flex"
+        />
       </div>
       {isOpen && (
         <ul
@@ -139,13 +177,22 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           {options.map((option, index) => (
             <li
               key={option.value}
-              className={`p-2 cursor-pointer ${focusedOptionIndex === index ? "bg-gray-200" : "hover:bg-gray-100"}`}
-              onClick={() => handleOptionClick(option)}
+              className={clsx(
+                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100`,
+                {
+                  "text-purple":
+                    option.value === selectedOption?.value ||
+                    focusedOptionIndex === index,
+                }
+              )}
+              onClick={() => handleOptionClick(option, index)}
               role="option"
               aria-selected={selectedOption?.value === option.value}
               tabIndex={-1}
             >
-              {option.label}
+              <SlIcon name={option.iconName} />
+              <span>{option.label}</span>
+              {option.value === selectedOption?.value ? "(Selected)" : ""}
             </li>
           ))}
         </ul>
@@ -153,10 +200,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       <input type="hidden" {...register(name)} />
       {/*
           Hidden input for form registration
-          the value change is being handle trough the setValue
+          the value change is being handle through the setValue
        */}
     </div>
   )
 }
 
-export default CustomSelect
+export default StyleableSelect

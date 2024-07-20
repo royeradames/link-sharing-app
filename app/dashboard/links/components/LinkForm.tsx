@@ -53,6 +53,7 @@ export function LinkForm({
         <SelectPlatformInput
           name={`links.${index}.platform`}
           register={register}
+          setValue={setValue}
         />
         {errors.links?.[index]?.platform && (
           <p className="text-red">{errors.links[index]?.platform?.message}</p>
