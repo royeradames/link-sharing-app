@@ -1,5 +1,10 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react"
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import {
+  UseFormRegister,
+  UseFormSetValue,
+  UseFormTrigger,
+  UseFormWatch,
+} from "react-hook-form"
 import { clsx } from "clsx"
 import { cn } from "@/lib/utils"
 import { Link45Deg } from "@/app/ui/svgs"
@@ -16,6 +21,7 @@ interface CustomSelectProps {
   register: UseFormRegister<any>
   watch: UseFormWatch<any>
   setValue: UseFormSetValue<any>
+  trigger: UseFormTrigger<any>
   name: string
   className?: string
   children: ReactNode
@@ -26,6 +32,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   onSelect,
   register,
   setValue,
+  trigger,
   watch,
   name,
   children,
@@ -73,6 +80,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
     setIsOpen(false)
     if (onSelect) onSelect(option)
     setValue(name, option.value)
+    trigger(name)
     setFocusedOptionIndex(index)
   }
 
