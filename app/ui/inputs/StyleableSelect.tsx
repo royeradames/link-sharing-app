@@ -39,6 +39,14 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null)
   const optionsListRef = useRef<HTMLUListElement>(null)
 
+  useEffect(() => {
+    let selectedOptionIndex = focusedOptionIndex
+    options.find((option, index) => {
+      if (option.value === selectedOption?.value) selectedOptionIndex = index
+    })
+    setFocusedOptionIndex(selectedOptionIndex)
+  }, [isOpen])
+
   const handleOptionClick = (option: Option, index: number) => {
     setSelectedOption(option)
     setIsOpen(false)
