@@ -1,4 +1,4 @@
-import { CustomizeLinks } from "@/app/dashboard/links/components/CustomizeLinks"
+import { CustomizeLinks } from "@/app/dashboard/links/CustomizeLinks"
 import { LinksFormProvider } from "@/app/dashboard/links/LinksFormProvider"
 import { LivePreview } from "@/app/ui/components/LivePreview"
 
