@@ -1,33 +1,35 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { ReactNode, useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
-import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
 import { cn } from "@/lib/utils"
+import { Link45Deg } from "@/app/ui/svgs"
 
-interface Option {
+export interface Option {
   value: string
   label: string
-  iconName?: string
+  Icon?: ReactNode
 }
 
 interface CustomSelectProps {
-  options: Option[]
   placeholder: string
   onSelect?: (option: Option) => void
   register: UseFormRegister<any>
   watch: UseFormWatch<any>
   setValue: UseFormSetValue<any>
   name: string
+  className?: string
+  children: ReactNode
 }
 
 const StyleableSelect: React.FC<CustomSelectProps> = ({
-  options,
   placeholder,
   onSelect,
   register,
   setValue,
   watch,
   name,
+  children,
+  className,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
@@ -36,6 +38,35 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   )
   const selectRef = useRef<HTMLDivElement>(null)
   const optionsListRef = useRef<HTMLUListElement>(null)
+
+  const optionsChildren = React.Children.map(children, (child, index) =>
+    React.isValidElement<any>(child)
+      ? React.cloneElement(child, {
+          isSelected: child.props.value === selectedOption?.value,
+          isFocused: index === focusedOptionIndex,
+          onClick: () =>
+            handleOptionClick(
+              {
+                value: (children as any)[index].props.value,
+                label: (children as any)[index].props.triggerLabel,
+              },
+              index
+            ),
+        })
+      : child
+  )
+  if (!optionsChildren?.length) {
+    throw new Error("Must have at least one option")
+  }
+  useEffect(() => {
+    let selectedOptionIndex = focusedOptionIndex
+    optionsChildren?.find((option: any, index) => {
+      if (option?.props.value === selectedOption?.value) {
+        selectedOptionIndex = index
+      }
+    })
+    setFocusedOptionIndex(selectedOptionIndex)
+  }, [isOpen])
 
   const handleOptionClick = (option: Option, index: number) => {
     setSelectedOption(option)
@@ -52,15 +83,17 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           setIsOpen(true)
         } else {
           setFocusedOptionIndex(prev =>
-            prev === null ? 0 : Math.min(prev + 1, options.length - 1)
+            prev === null ? 0 : Math.min(prev + 1, optionsChildren.length - 1)
           )
         }
         event.preventDefault()
         break
       case "ArrowUp":
-        if (isOpen) {
+        if (!isOpen) {
+          setIsOpen(true)
+        } else {
           setFocusedOptionIndex(prev =>
-            prev === null ? options.length - 1 : Math.max(prev - 1, 0)
+            prev === null ? optionsChildren.length - 1 : Math.max(prev - 1, 0)
           )
         }
         event.preventDefault()
@@ -69,7 +102,14 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
+          handleOptionClick(
+            {
+              value: (optionsChildren as any)[focusedOptionIndex].props.value,
+              label: (optionsChildren as any)[focusedOptionIndex].props
+                .triggerLabel,
+            },
+            focusedOptionIndex
+          )
         }
         event.preventDefault()
         break
@@ -80,7 +120,14 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
+          handleOptionClick(
+            {
+              value: (optionsChildren as any)[focusedOptionIndex].props.value,
+              label: (optionsChildren as any)[focusedOptionIndex].props
+                .triggerLabel,
+            },
+            focusedOptionIndex
+          )
         }
         event.preventDefault()
         break
@@ -123,7 +170,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
     if (!defaultValue) {
       return
     }
-    const selectedOption = options.find(option => option.value === defaultValue)
+    const selectedOption = (optionsChildren as any).find(
+      (option: any) => option.value === defaultValue
+    )
     if (!selectedOption) {
       return
     }
@@ -140,10 +189,13 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       aria-controls="options-listbox"
       ref={selectRef}
     >
-      <div
+      <button
+        type="button"
         className={cn(
           clsx(
             `
+            w-full
+            text-left
           grid gap-3 items-center grid-cols-[max-content,1fr,max-content]
           py-2
           px-4
@@ -159,27 +211,39 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           focus-visible:shadow-purple/25
           focus-visible:border-purple
           focus-visible:outline-none
+          data-[open]:shadow open:shadow-purple/25 data-[open]:border-purple
+          group
           `,
             {
-              "open:shadow open:shadow-purple/25 open:border-purple": isOpen,
+              [className || ""]: className,
             }
           )
         )}
         onClick={() => setIsOpen(prev => !prev)}
         tabIndex={0}
+        id={name}
+        data-open={isOpen ? isOpen : undefined}
       >
-        <SlIcon
-          name="link-45deg"
-          aria-hidden
-          className="h-5 w-5 text-grey flex"
-        />
+        <Link45Deg aria-hidden className="h-5 w-5 text-grey flex" />
         {selectedOption ? selectedOption.label : placeholder}
-        <SlIcon
-          name={isOpen ? "arrow-up" : "arrow-down"}
+
+        <svg
+          width="14"
+          height="9"
+          viewBox="0 0 14 9"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           aria-hidden
-          className="w-3 h-1.5 text-grey flex"
-        />
-      </div>
+          className="h-5 w-5 text-grey flex group-data-[open]:-rotate-180 ease-in-out duration-150"
+        >
+          <path
+            id="Vector 1"
+            d="M1 1L7 7L13 1"
+            stroke="#633CFF"
+            strokeWidth="2"
+          />
+        </svg>
+      </button>
       {isOpen && (
         <ul
           id="options-listbox"
@@ -187,27 +251,23 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           role="listbox"
           ref={optionsListRef}
         >
-          {options.map((option, index) => (
-            <li
-              key={option.value}
-              className={clsx(
-                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100`,
-                {
-                  "text-purple":
-                    option.value === selectedOption?.value ||
-                    focusedOptionIndex === index,
-                }
-              )}
-              onClick={() => handleOptionClick(option, index)}
-              role="option"
-              aria-selected={selectedOption?.value === option.value}
-              tabIndex={-1}
-            >
-              <SlIcon name={option.iconName} />
-              <span>{option.label}</span>
-              {option.value === selectedOption?.value ? "(Selected)" : ""}
-            </li>
-          ))}
+          {React.Children.map(children, (child, index) =>
+            React.isValidElement<any>(child)
+              ? React.cloneElement(child, {
+                  isSelected: child.props.value === selectedOption?.value,
+                  isFocused: index === focusedOptionIndex,
+                  onClick: () =>
+                    handleOptionClick(
+                      {
+                        value: (optionsChildren as any)[index].props.value,
+                        label: (optionsChildren as any)[index].props
+                          .triggerLabel,
+                      },
+                      index
+                    ),
+                })
+              : child
+          )}
         </ul>
       )}
       <input type="hidden" {...register(name)} />

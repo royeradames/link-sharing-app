@@ -48,7 +48,7 @@ export function LinkForm({
         </button>
       </header>
       <div className="text-left">
-        <Text as="label" htmlFor="platform">
+        <Text as="label" htmlFor={`links.${index}.platform`}>
           Platform
         </Text>
         <SelectPlatformInput
@@ -62,7 +62,7 @@ export function LinkForm({
         )}
       </div>
       <div className="text-left">
-        <Text as="label" htmlFor="link">
+        <Text as="label" htmlFor={`links.${index}.link`}>
           Link
         </Text>
         <InputField
@@ -70,7 +70,7 @@ export function LinkForm({
           placeholder="e.g. https://www.github.com/johnappleseed"
           register={register}
           errors={errors}
-          id="link"
+          id={`links.${index}.link`}
         />
         {errors.links?.[index]?.link && (
           <p className="text-red">{errors.links[index]?.link?.message}</p>
