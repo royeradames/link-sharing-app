@@ -10,6 +10,7 @@ export function StyleableOption({
   onClick,
 }: {
   value: string
+  triggerLabel: string
   className?: string
   children: ReactNode
   isSelected?: boolean

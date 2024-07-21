@@ -13,7 +13,6 @@ export type TAllMenuList = {
 export function SelectPlatformInput(props: TAllMenuList) {
   return (
     <StyleableSelectBrows
-      options={PlatformOptions}
       placeholder="Select a platform"
       register={props.register}
       setValue={props.setValue}
@@ -24,6 +23,7 @@ export function SelectPlatformInput(props: TAllMenuList) {
         <StyleableOption
           key={option.value}
           value={option.value}
+          triggerLabel={option.label}
           className="group flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100 data-[selected]:text-purple data-[focused]:text-purple"
         >
           {option.Icon}

@@ -7,11 +7,10 @@ import { Link45Deg } from "@/app/ui/svgs"
 export interface Option {
   value: string
   label: string
-  Icon: ReactNode
+  Icon?: ReactNode
 }
 
 interface CustomSelectProps {
-  options: Option[]
   placeholder: string
   onSelect?: (option: Option) => void
   register: UseFormRegister<any>
@@ -23,7 +22,6 @@ interface CustomSelectProps {
 }
 
 const StyleableSelect: React.FC<CustomSelectProps> = ({
-  options,
   placeholder,
   onSelect,
   register,
@@ -41,10 +39,31 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   const selectRef = useRef<HTMLDivElement>(null)
   const optionsListRef = useRef<HTMLUListElement>(null)
 
+  const optionsChildren = React.Children.map(children, (child, index) =>
+    React.isValidElement<any>(child)
+      ? React.cloneElement(child, {
+          isSelected: child.props.value === selectedOption?.value,
+          isFocused: index === focusedOptionIndex,
+          onClick: () =>
+            handleOptionClick(
+              {
+                value: (children as any)[index].props.value,
+                label: (children as any)[index].props.triggerLabel,
+              },
+              index
+            ),
+        })
+      : child
+  )
+  if (!optionsChildren?.length) {
+    throw new Error("Must have at least one option")
+  }
   useEffect(() => {
     let selectedOptionIndex = focusedOptionIndex
-    options.find((option, index) => {
-      if (option.value === selectedOption?.value) selectedOptionIndex = index
+    optionsChildren?.find((option: any, index) => {
+      if (option?.props.value === selectedOption?.value) {
+        selectedOptionIndex = index
+      }
     })
     setFocusedOptionIndex(selectedOptionIndex)
   }, [isOpen])
@@ -64,7 +83,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           setIsOpen(true)
         } else {
           setFocusedOptionIndex(prev =>
-            prev === null ? 0 : Math.min(prev + 1, options.length - 1)
+            prev === null ? 0 : Math.min(prev + 1, optionsChildren.length - 1)
           )
         }
         event.preventDefault()
@@ -74,7 +93,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           setIsOpen(true)
         } else {
           setFocusedOptionIndex(prev =>
-            prev === null ? options.length - 1 : Math.max(prev - 1, 0)
+            prev === null ? optionsChildren.length - 1 : Math.max(prev - 1, 0)
           )
         }
         event.preventDefault()
@@ -83,7 +102,14 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
+          handleOptionClick(
+            {
+              value: (optionsChildren as any)[focusedOptionIndex].props.value,
+              label: (optionsChildren as any)[focusedOptionIndex].props
+                .triggerLabel,
+            },
+            focusedOptionIndex
+          )
         }
         event.preventDefault()
         break
@@ -94,7 +120,14 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         if (!isOpen) {
           setIsOpen(true)
         } else if (focusedOptionIndex !== null) {
-          handleOptionClick(options[focusedOptionIndex], focusedOptionIndex)
+          handleOptionClick(
+            {
+              value: (optionsChildren as any)[focusedOptionIndex].props.value,
+              label: (optionsChildren as any)[focusedOptionIndex].props
+                .triggerLabel,
+            },
+            focusedOptionIndex
+          )
         }
         event.preventDefault()
         break
@@ -137,7 +170,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
     if (!defaultValue) {
       return
     }
-    const selectedOption = options.find(option => option.value === defaultValue)
+    const selectedOption = (optionsChildren as any).find(
+      (option: any) => option.value === defaultValue
+    )
     if (!selectedOption) {
       return
     }
@@ -221,7 +256,15 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
               ? React.cloneElement(child, {
                   isSelected: child.props.value === selectedOption?.value,
                   isFocused: index === focusedOptionIndex,
-                  onClick: () => handleOptionClick(options[index], index),
+                  onClick: () =>
+                    handleOptionClick(
+                      {
+                        value: (optionsChildren as any)[index].props.value,
+                        label: (optionsChildren as any)[index].props
+                          .triggerLabel,
+                      },
+                      index
+                    ),
                 })
               : child
           )}
