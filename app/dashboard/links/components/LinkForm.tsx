@@ -20,6 +20,7 @@ export function LinkForm({
   dragHandleRef: RefObject<HTMLButtonElement>
 }) {
   const {
+    trigger,
     register,
     formState: { errors },
     setValue,
@@ -57,6 +58,7 @@ export function LinkForm({
             register={register}
             setValue={setValue}
             watch={watch}
+            trigger={trigger}
           />
           {errors.links?.[index]?.platform && (
             <p className="text-red">{errors.links[index]?.platform?.message}</p>
