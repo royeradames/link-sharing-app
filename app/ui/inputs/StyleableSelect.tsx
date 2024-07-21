@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
-import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
 import { cn } from "@/lib/utils"
+import { Link45Deg } from "@/app/ui/svgs"
 
 export interface Option {
   value: string
@@ -177,6 +177,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           focus-visible:border-purple
           focus-visible:outline-none
           data-[open]:shadow open:shadow-purple/25 data-[open]:border-purple
+          group
           `,
             {
               [className || ""]: className,
@@ -188,17 +189,25 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         id={name}
         data-open={isOpen ? isOpen : undefined}
       >
-        <SlIcon
-          name="link-45deg"
-          aria-hidden
-          className="h-5 w-5 text-grey flex"
-        />
+        <Link45Deg aria-hidden className="h-5 w-5 text-grey flex" />
         {selectedOption ? selectedOption.label : placeholder}
-        <SlIcon
-          name={isOpen ? "arrow-up" : "arrow-down"}
+
+        <svg
+          width="14"
+          height="9"
+          viewBox="0 0 14 9"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           aria-hidden
-          className="w-3 h-1.5 text-grey flex"
-        />
+          className="h-5 w-5 text-grey flex group-data-[open]:-rotate-180 ease-in-out duration-150"
+        >
+          <path
+            id="Vector 1"
+            d="M1 1L7 7L13 1"
+            stroke="#633CFF"
+            strokeWidth="2"
+          />
+        </svg>
       </button>
       {isOpen && (
         <ul
