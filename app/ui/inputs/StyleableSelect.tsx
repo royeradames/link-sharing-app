@@ -18,6 +18,7 @@ interface CustomSelectProps {
   watch: UseFormWatch<any>
   setValue: UseFormSetValue<any>
   name: string
+  className?: string
   children: ReactNode
 }
 
@@ -30,6 +31,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   watch,
   name,
   children,
+  className,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
@@ -174,15 +176,17 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           focus-visible:shadow-purple/25
           focus-visible:border-purple
           focus-visible:outline-none
+          data-[open]:shadow open:shadow-purple/25 data-[open]:border-purple
           `,
             {
-              "open:shadow open:shadow-purple/25 open:border-purple": isOpen,
+              [className || ""]: className,
             }
           )
         )}
         onClick={() => setIsOpen(prev => !prev)}
         tabIndex={0}
         id={name}
+        data-open={isOpen ? isOpen : undefined}
       >
         <SlIcon
           name="link-45deg"
