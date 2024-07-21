@@ -1,7 +1,9 @@
 "use client"
 import { TDropDown } from "@/app/ui/inputs/Select"
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
-import StyleableSelect from "@/app/ui/inputs/StyleableSelect"
+import { StyleableOption } from "@/app/ui/inputs/StyleableOption"
+import { SlIcon } from "@/shoelace-wrappers"
+import StyleableSelectBrows from "@/app/ui/inputs/StyleableSelect"
 
 export const PlatformOptions: TDropDown["options"] = [
   { value: "github", label: "Github", iconName: "github" },
@@ -75,13 +77,27 @@ export type TAllMenuList = {
 }
 export function SelectPlatformInput(props: TAllMenuList) {
   return (
-    <StyleableSelect
+    <StyleableSelectBrows
       options={PlatformOptions}
       placeholder="Select a platform"
       register={props.register}
       setValue={props.setValue}
       watch={props.watch}
       name={props.name}
-    ></StyleableSelect>
+    >
+      {PlatformOptions.map(option => (
+        <StyleableOption
+          key={option.value}
+          value={option.value}
+          className="group flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100 data-[selected]:text-purple data-[focused]:text-purple"
+        >
+          <SlIcon name={option.iconName} />
+          <span>{option.label}</span>
+          <span className="hidden group-data-[selected]:inline">
+            (Selected)
+          </span>
+        </StyleableOption>
+      ))}
+    </StyleableSelectBrows>
   )
 }
