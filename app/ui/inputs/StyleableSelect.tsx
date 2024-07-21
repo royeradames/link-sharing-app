@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { ReactNode, useEffect, useRef, useState } from "react"
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
@@ -18,6 +18,7 @@ interface CustomSelectProps {
   watch: UseFormWatch<any>
   setValue: UseFormSetValue<any>
   name: string
+  children: ReactNode
 }
 
 const StyleableSelect: React.FC<CustomSelectProps> = ({
@@ -28,6 +29,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
   setValue,
   watch,
   name,
+  children,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState<Option | null>(null)
@@ -58,7 +60,9 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         event.preventDefault()
         break
       case "ArrowUp":
-        if (isOpen) {
+        if (!isOpen) {
+          setIsOpen(true)
+        } else {
           setFocusedOptionIndex(prev =>
             prev === null ? options.length - 1 : Math.max(prev - 1, 0)
           )
@@ -179,7 +183,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           aria-hidden
           className="w-3 h-1.5 text-grey flex"
         />
-      </div>
+      </button>
       {isOpen && (
         <ul
           id="options-listbox"
@@ -187,27 +191,15 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
           role="listbox"
           ref={optionsListRef}
         >
-          {options.map((option, index) => (
-            <li
-              key={option.value}
-              className={clsx(
-                `flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100`,
-                {
-                  "text-purple":
-                    option.value === selectedOption?.value ||
-                    focusedOptionIndex === index,
-                }
-              )}
-              onClick={() => handleOptionClick(option, index)}
-              role="option"
-              aria-selected={selectedOption?.value === option.value}
-              tabIndex={-1}
-            >
-              <SlIcon name={option.iconName} />
-              <span>{option.label}</span>
-              {option.value === selectedOption?.value ? "(Selected)" : ""}
-            </li>
-          ))}
+          {React.Children.map(children, (child, index) =>
+            React.isValidElement<any>(child)
+              ? React.cloneElement(child, {
+                  isSelected: child.props.value === selectedOption?.value,
+                  isFocused: index === focusedOptionIndex,
+                  onClick: () => handleOptionClick(options[index], index),
+                })
+              : child
+          )}
         </ul>
       )}
       <input type="hidden" {...register(name)} />
