@@ -7,7 +7,9 @@ import { SlIcon } from "@/shoelace-wrappers"
 export function Header() {
   return (
     <header className="flex justify-between items-center self-stretch bg-white pl-6 pr-4 py-4 rounded-xl mb-4 md:mb-6">
-      <Logo />
+      <Link href="/dashboard/links">
+        <Logo />
+      </Link>
       <Nav></Nav>
       <Link
         href="/preview"
