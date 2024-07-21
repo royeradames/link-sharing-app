@@ -51,30 +51,34 @@ export function LinkForm({
         <Text as="label" htmlFor={`links.${index}.platform`}>
           Platform
         </Text>
-        <SelectPlatformInput
-          name={`links.${index}.platform`}
-          register={register}
-          setValue={setValue}
-          watch={watch}
-        />
-        {errors.links?.[index]?.platform && (
-          <p className="text-red">{errors.links[index]?.platform?.message}</p>
-        )}
+        <div className="flex flex-col gap-4">
+          <SelectPlatformInput
+            name={`links.${index}.platform`}
+            register={register}
+            setValue={setValue}
+            watch={watch}
+          />
+          {errors.links?.[index]?.platform && (
+            <p className="text-red">{errors.links[index]?.platform?.message}</p>
+          )}
+        </div>
       </div>
       <div className="text-left">
         <Text as="label" htmlFor={`links.${index}.link`}>
           Link
         </Text>
-        <InputField
-          name={`links.${index}.link`}
-          placeholder="e.g. https://www.github.com/johnappleseed"
-          register={register}
-          errors={errors}
-          id={`links.${index}.link`}
-        />
-        {errors.links?.[index]?.link && (
-          <p className="text-red">{errors.links[index]?.link?.message}</p>
-        )}
+        <div className="flex flex-col gap-4">
+          <InputField
+            name={`links.${index}.link`}
+            placeholder="e.g. https://www.github.com/johnappleseed"
+            register={register}
+            errors={errors}
+            id={`links.${index}.link`}
+          />
+          {errors.links?.[index]?.link && (
+            <p className="text-red">{errors.links[index]?.link?.message}</p>
+          )}
+        </div>
       </div>
     </section>
   )
