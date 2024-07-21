@@ -4,10 +4,10 @@ import { SlIcon } from "@/shoelace-wrappers"
 import { clsx } from "clsx"
 import { cn } from "@/lib/utils"
 
-interface Option {
+export interface Option {
   value: string
   label: string
-  iconName?: string
+  Icon: ReactNode
 }
 
 interface CustomSelectProps {

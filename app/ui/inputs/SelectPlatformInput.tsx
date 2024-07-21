@@ -1,73 +1,8 @@
 "use client"
-import { TDropDown } from "@/app/ui/inputs/Select"
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
 import { StyleableOption } from "@/app/ui/inputs/StyleableOption"
-import { SlIcon } from "@/shoelace-wrappers"
 import StyleableSelectBrows from "@/app/ui/inputs/StyleableSelect"
-
-export const PlatformOptions: TDropDown["options"] = [
-  { value: "github", label: "Github", iconName: "github" },
-  {
-    value: "frontend-mentor",
-    label: "Frontend Mentor",
-    iconName: "frontend-mentor",
-  },
-  {
-    value: "twitter-x",
-    label: "Twitter-X",
-    iconName: "twitter-x",
-  },
-  {
-    value: "linkedin",
-    label: "LinkedIn",
-    iconName: "linkedin",
-  },
-  {
-    value: "youtube",
-    label: "YouTube",
-    iconName: "youtube",
-  },
-  {
-    value: "facebook",
-    label: "Facebook",
-    iconName: "facebook",
-  },
-  {
-    value: "twitch",
-    label: "Twitch",
-    iconName: "twitch",
-  },
-  {
-    value: "dev-to",
-    label: "Dev.to",
-    iconName: "dev-to",
-  },
-  {
-    value: "codewars",
-    label: "Codewars",
-    iconName: "codewars",
-  },
-  {
-    value: "freecodecamp",
-    label: "freeCodeCamp",
-    iconName: "freecodecamp",
-  },
-  {
-    value: "gitlab",
-    label: "GitLab",
-    iconName: "gitlab",
-  },
-  {
-    value: "hashnode",
-    label: "Hashnode",
-    iconName: "hashnode",
-  },
-  {
-    value: "stackoverflow",
-    label: "Stack Overflow",
-    iconName: "stackoverflow",
-  },
-]
+import { PlatformOptions } from "@/app/ui/inputs/PlatformOptions"
 
 export type TAllMenuList = {
   name: string
@@ -91,7 +26,7 @@ export function SelectPlatformInput(props: TAllMenuList) {
           value={option.value}
           className="group flex gap-3 items-center p-2 cursor-pointer text-dark-grey hover:bg-gray-100 data-[selected]:text-purple data-[focused]:text-purple"
         >
-          <SlIcon name={option.iconName} />
+          {option.Icon}
           <span>{option.label}</span>
           <span className="hidden group-data-[selected]:inline">
             (Selected)
