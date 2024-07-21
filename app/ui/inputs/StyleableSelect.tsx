@@ -144,10 +144,13 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
       aria-controls="options-listbox"
       ref={selectRef}
     >
-      <div
+      <button
+        type="button"
         className={cn(
           clsx(
             `
+            w-full
+            text-left
           grid gap-3 items-center grid-cols-[max-content,1fr,max-content]
           py-2
           px-4
@@ -171,6 +174,7 @@ const StyleableSelect: React.FC<CustomSelectProps> = ({
         )}
         onClick={() => setIsOpen(prev => !prev)}
         tabIndex={0}
+        id={name}
       >
         <SlIcon
           name="link-45deg"
