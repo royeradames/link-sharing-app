@@ -23,12 +23,11 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import { LinkForm } from "@/app/dashboard/links/components/LinkForm"
 import { NoLinkMessage } from "@/app/dashboard/links/components/NoLinkMessage"
 import { useProfileAndLinksStoreContext } from "@/app/ProfileAndLinksStoreProvider"
+import { Alert } from "@/app/ui/components/Alert"
 
-// import { SlAlert, SlIcon } from "@/shoelace-wrappers"
-// todo: replace alert with custom alert
 export function CustomizeLinks() {
   const [open, setOpen] = useState(false)
-  const warning = useRef(null)
+  const warning = useRef<HTMLButtonElement>(null)
   const profileAndLinksContext = useProfileAndLinksStoreContext()
   const { handleSubmit, fields, append, remove, move, formState } =
     useLinksFormContext()
@@ -36,14 +35,7 @@ export function CustomizeLinks() {
     const is5Links = getListLength() >= 5
     if (is5Links) {
       setOpen(true)
-      // todo: fix ref and focus on alert button. Currently ref keep being null
-      // console.log(warning.current)
-      // console.log(warning.current?.focus)
-      // if (warning.current) {
-      //   console.log(warning.current)
-      //   console.log(warning.current.focus)
-      //   warning.current.focus()
-      // }
+      warning.current?.focus()
       return
     }
     append({
@@ -142,18 +134,7 @@ export function CustomizeLinks() {
             Add/edit/remove links below and then share all your profiles with
             the world!
           </Text>
-          {/*<SlAlert*/}
-          {/*  id="links-limit"*/}
-          {/*  ref={warning}*/}
-          {/*  variant="warning"*/}
-          {/*  open={open}*/}
-          {/*  closable*/}
-          {/*  onSlAfterHide={() => setOpen(false)}*/}
-          {/*>*/}
-          {/*  <SlIcon slot="icon" name="info-circle" />*/}
-          {/*  Cannot be more than 5 links.*/}
-          {/*</SlAlert>*/}
-
+          <Alert open={open} setOpen={setOpen} ref={warning} />
           <Button
             aria-describedby="links-limit"
             variant="secondary"
