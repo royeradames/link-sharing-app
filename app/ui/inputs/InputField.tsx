@@ -3,7 +3,7 @@ import clsx from "clsx"
 import { z } from "zod"
 import { FieldErrors, UseFormRegister } from "react-hook-form"
 import Text from "@/app/ui/components/Text"
-import { SlIcon } from "@/shoelace-wrappers"
+import Icon from "@/app/ui/components/Icon"
 
 export const TextFieldSchema = z
   .string()
@@ -39,7 +39,7 @@ export const InputField = ({
       )}
     >
       {iconName && (
-        <SlIcon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
+        <Icon name={iconName} aria-hidden className="h-5 w-5 text-grey" />
       )}
 
       <input

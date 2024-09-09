@@ -1,7 +1,7 @@
 "use client"
 import { ChangeEvent, useRef, useState } from "react"
 import { clsx } from "clsx"
-import { SlIcon } from "@/shoelace-wrappers"
+import Icon from "@/app/ui/components/Icon"
 
 export function ImageUpload1({ id, name }: { id: string; name: string }) {
   const [isImageUpload, setIsImageUpload] = useState(false)
@@ -40,7 +40,7 @@ export function ImageUpload1({ id, name }: { id: string; name: string }) {
             backgroundPosition: "center",
           }}
         >
-          <SlIcon
+          <Icon
             aria-hidden={true}
             name="card-image"
             className={clsx("w-10 h-10 mb-2 text-purple", {
