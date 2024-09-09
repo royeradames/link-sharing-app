@@ -1,7 +1,7 @@
 import { clsx } from "clsx"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { SlIcon } from "@/shoelace-wrappers"
+import Icon from "@/app/ui/components/Icon"
 
 export type PreviewLinkOptions = {
   styles: { base: string; icon?: string; text?: string }
@@ -116,7 +116,7 @@ export function PreviewLink({ id, href, className }: TPreviewList) {
         })
       )}
     >
-      <SlIcon
+      <Icon
         id="logo"
         name={iconName}
         className={cn(
@@ -124,7 +124,7 @@ export function PreviewLink({ id, href, className }: TPreviewList) {
             [styles.icon || ""]: styles.icon,
           })
         )}
-      ></SlIcon>
+      ></Icon>
       <span
         id="text"
         className={clsx(" flex-grow-0", {
@@ -135,7 +135,7 @@ export function PreviewLink({ id, href, className }: TPreviewList) {
         {label}
       </span>
       <div className="flex-1 flex justify-start flex-row-reverse">
-        <SlIcon
+        <Icon
           id="icon"
           name="arrow-right"
           className={clsx("", {
