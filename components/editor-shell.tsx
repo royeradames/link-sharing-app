@@ -8,6 +8,9 @@ import type { ReactNode } from "react"
 export function EditorShell({ children }: { children: ReactNode }) {
   const path = usePathname()
   const editor = useEditor()
+  // The welcome page never reads the draft; showing it at once avoids a
+  // loading panel that later grows into the real content.
+  const waitingForDraft = editor.loaded.kind === "loading" && path !== "/"
   return (
     <>
       <a href="#main" className="skip-link">
@@ -52,7 +55,7 @@ export function EditorShell({ children }: { children: ReactNode }) {
         profile pages are not available yet.
       </p>
       <main id="main" tabIndex={-1}>
-        {editor.loaded.kind === "loading" ? (
+        {waitingForDraft ? (
           <p className="panel">Loading your local draft…</p>
         ) : (
           children

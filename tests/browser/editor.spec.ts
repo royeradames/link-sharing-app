@@ -644,3 +644,11 @@ test("missing platform with a valid URL identifies the chooser, not the URL", as
     await page.evaluate(key => localStorage.getItem(key), storageKey)
   ).toBe(before)
 })
+
+test("welcome page is server-rendered without waiting for the local draft", async ({
+  request,
+}) => {
+  const html = await (await request.get("/")).text()
+  expect(html).toContain("<h1>Your links, ready to copy</h1>")
+  expect(html).not.toContain("Loading your local draft")
+})
