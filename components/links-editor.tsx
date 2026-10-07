@@ -13,11 +13,24 @@ export function LinksEditor() {
   // Busy, not disabled: pending work keeps these buttons focusable and
   // announced; the provider blocks the action until the work finishes.
   const busy = editor.saving || editor.imageReading
-  function move(id: string, targetId: string) {
+  function move(id: string, targetId: string, control?: "up" | "down") {
     const next = moveLink(form.state.values.links, id, targetId)
+    const position = next.findIndex(link => link.id === id)
     form.setFieldValue("links", next)
     editor.setNotice(
-      `Link moved to position ${next.findIndex(link => link.id === id) + 1}. Save links to keep this order.`
+      `Link moved to position ${position + 1}. Save links to keep this order.`
+    )
+    if (!control) return
+    // Keep focus on the moved row. At the top or bottom the pressed control
+    // becomes unavailable, so focus its opposite instead of dropping to body.
+    const target =
+      control === "up" && position === 0
+        ? "down"
+        : control === "down" && position === next.length - 1
+          ? "up"
+          : control
+    requestAnimationFrame(() =>
+      document.getElementById(`move-${target}-${id}`)?.focus()
     )
   }
   function focusRow(id: string | undefined) {
@@ -144,16 +157,22 @@ export function LinksEditor() {
                         </button>
                         <button
                           type="button"
+                          id={`move-up-${link.id}`}
                           disabled={index === 0}
-                          onClick={() => move(link.id, links[index - 1].id)}
+                          onClick={() =>
+                            move(link.id, links[index - 1].id, "up")
+                          }
                         >
                           Move up
                           <span className="sr-only"> link {index + 1}</span>
                         </button>
                         <button
                           type="button"
+                          id={`move-down-${link.id}`}
                           disabled={index === links.length - 1}
-                          onClick={() => move(link.id, links[index + 1].id)}
+                          onClick={() =>
+                            move(link.id, links[index + 1].id, "down")
+                          }
                         >
                           Move down
                           <span className="sr-only"> link {index + 1}</span>

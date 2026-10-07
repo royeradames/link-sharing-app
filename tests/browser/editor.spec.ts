@@ -821,3 +821,99 @@ test("pending image checks keep save buttons focusable and busy instead of disab
   await expect(save).not.toHaveAttribute("aria-busy", "true")
   await expect(page.getByAltText("Selected profile picture")).toBeVisible()
 })
+test("failed saves move focus to the first invalid field", async ({ page }) => {
+  await go(page)
+  await addLink(page)
+  await addLink(page, "YouTube", "https://github.com/wrong-platform")
+  await page.getByRole("button", { name: "Save links", exact: true }).click()
+  await expect(page.getByLabel("Link URL").nth(1)).toBeFocused()
+  await page
+    .getByRole("button", { name: "+ Add new link", exact: true })
+    .click()
+  const missing = page.locator(".link-row").last()
+  await missing.getByLabel("Link URL").fill("https://github.com/example")
+  await page.getByRole("button", { name: "Save links", exact: true }).click()
+  // The YouTube URL comes first in the form, so it keeps the focus.
+  await expect(page.getByLabel("Link URL").nth(1)).toBeFocused()
+  await page.getByLabel("Link URL").nth(1).fill("https://youtube.com/@example")
+  await page.getByRole("button", { name: "Save links", exact: true }).click()
+  await expect(missing.locator("summary")).toBeFocused()
+
+  await page.getByRole("link", { name: "Profile details", exact: true }).click()
+  await page.getByRole("button", { name: "Save profile", exact: true }).click()
+  await expect(page.getByLabel("First name (required)")).toBeFocused()
+  await page.getByLabel("First name (required)").fill("Demo")
+  await page.getByRole("button", { name: "Save profile", exact: true }).click()
+  await expect(page.getByLabel("Last name (required)")).toBeFocused()
+  await page.getByLabel("Last name (required)").fill("Reader")
+  await page.getByLabel("Email (optional)").fill("invalid")
+  await page.getByRole("button", { name: "Save profile", exact: true }).click()
+  await expect(page.getByLabel("Email (optional)")).toBeFocused()
+})
+test("move up and move down keep focus on the moved row and announce its position", async ({
+  page
+}) => {
+  await go(page)
+  await addLink(page)
+  await addLink(page, "YouTube", "https://youtube.com/@example")
+  await addLink(page, "GitLab", "https://gitlab.com/example")
+  const status = page.getByRole("status").filter({ hasText: "Link moved" })
+  await page
+    .getByRole("button", { name: "Move down link 1", exact: true })
+    .click()
+  await expect(
+    page.getByRole("button", { name: "Move down link 2", exact: true })
+  ).toBeFocused()
+  await expect(page.getByLabel("Link URL").nth(1)).toHaveValue(
+    "https://github.com/example"
+  )
+  await expect(status).toHaveText(
+    "Link moved to position 2. Save links to keep this order."
+  )
+  await page
+    .getByRole("button", { name: "Move down link 2", exact: true })
+    .click()
+  // Move down is unavailable on the last row, so focus stays on its Move up.
+  await expect(
+    page.getByRole("button", { name: "Move up link 3", exact: true })
+  ).toBeFocused()
+  await expect(status).toHaveText(
+    "Link moved to position 3. Save links to keep this order."
+  )
+  await page.getByRole("button", { name: "Move up link 3", exact: true }).click()
+  await expect(
+    page.getByRole("button", { name: "Move up link 2", exact: true })
+  ).toBeFocused()
+  await page.getByRole("button", { name: "Move up link 2", exact: true }).click()
+  await expect(
+    page.getByRole("button", { name: "Move down link 1", exact: true })
+  ).toBeFocused()
+  await expect(page.getByLabel("Link URL").first()).toHaveValue(
+    "https://github.com/example"
+  )
+  await expect(status).toHaveText(
+    "Link moved to position 1. Save links to keep this order."
+  )
+})
+test("home declares one site name in its identity, og:site_name and WebSite JSON-LD", async ({
+  page,
+  request
+}) => {
+  const html = await (await request.get("/")).text()
+  expect(html).toContain('<meta property="og:site_name" content="Devlinks"/>')
+  const match = html.match(
+    /<script type="application\/ld\+json">(.*?)<\/script>/
+  )
+  expect(match, "WebSite JSON-LD on the home page").not.toBeNull()
+  expect(JSON.parse(match?.[1] ?? "{}")).toEqual({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Devlinks",
+    url: "https://link-sharing-app-self.vercel.app/"
+  })
+  await page.goto("/")
+  await expect(page.locator(".site-header .brand img")).toHaveAttribute(
+    "alt",
+    "Devlinks"
+  )
+})

@@ -35,6 +35,15 @@ function useEditorState() {
   })
   const [notice, setNotice] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({})
+  // Bumped after a failed save so focus lands on the first invalid field
+  // once the errors have rendered.
+  const [invalidFocus, setInvalidFocus] = useState(0)
+  useEffect(() => {
+    if (!invalidFocus) return
+    document
+      .querySelector<HTMLElement>('#main [aria-invalid="true"]')
+      ?.focus()
+  }, [invalidFocus])
   const [saving, setSaving] = useState(false)
   const reloadSequence = useRef(0)
   const [imageReading, updateImageReading] = useState(false)
@@ -97,6 +106,7 @@ function useEditorState() {
         nextErrors[path.join(".")] = issue.message
       }
       setErrors(nextErrors)
+      setInvalidFocus(count => count + 1)
       setNotice("Check the highlighted fields. Nothing was saved.")
       return
     }

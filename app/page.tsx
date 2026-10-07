@@ -1,7 +1,15 @@
 import Link from "next/link"
+import { websiteJsonLd } from "@/lib/site"
 export default function Page() {
   return (
     <section className="panel welcome">
+      <script
+        type="application/ld+json"
+        // Static, trusted object; "<" is escaped so the JSON cannot close the tag.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <p className="eyebrow">Browser-local preparation</p>
       <h1>Your links, ready to copy</h1>
       <p>

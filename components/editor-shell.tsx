@@ -26,7 +26,7 @@ export function EditorShell({ children }: { children: ReactNode }) {
             src="/assets/logo/devlinks.svg"
             width={146}
             height={32}
-            alt="devlinks"
+            alt="Devlinks"
             priority
           />
         </Link>
