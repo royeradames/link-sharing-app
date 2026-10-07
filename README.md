@@ -1,3 +1,25 @@
+# Devlinks local editor preparation
+
+This candidate upgrades the historical Link Sharing exercise to Next16, React19, Tailwind4 and TanStack Form. It is an intermediate browser-local editor, not a completed hosted account or public-profile application. Nothing in this candidate connects to a database or accepts account credentials.
+
+## Local workflow
+
+Use Node24. Run `npm ci`, `npm run dev`, and open the displayed local URL. `/dashboard/links` edits up to five platform URLs; `/dashboard/profile-details` edits a name, optional email and picture. Each section saves independently. The preview and Copy links use only saved values. Changing pages retains unsaved edits; reloading restores the saved version. `/login` and `/create-account` return to the honest local entry instead of collecting credentials.
+
+Saved data stays under `devlinks.saved-draft.v1` in this browser origin. PNG/JPEG pictures must decode and be at most256KB and1024×1024pixels. Web Locks serialize saves and an expected stored revision rejects stale tabs. If locking or storage is unavailable, saving fails visibly. Malformed drafts remain untouched until the person downloads a backup and explicitly resets that one key. Other browser data is never reset. Saved drafts are not encrypted; anyone with access to this browser profile may read them. Clearing browser data removes them.
+
+Copy links copies the saved ordered URLs as plain text. A clipboard denial reveals a selectable fallback. The preview route is not a shareable public profile address. Public profiles and durable accounts need a separately reviewed implementation; no authentication package is included here.
+
+## Verification
+
+`npm test` exercises the actual validation/serialization/reorder interface. `npm run lint`, `npm run typecheck`, `npm run build`, and `npm audit --omit=dev` check the candidate. After building, `npm run test:browser` starts its own production server at127.0.0.1:4392 and exercises persistence, keyboard/pointer behavior, storage failure and conflict, image decode, clipboard denial and400/768/1440layouts with synthetic data only. Chrome is required. The runner does not submit links to external platforms.
+
+The historical37image assets remain unchanged. Instrument Sans is self-hosted from Google Fonts with its original OFL license. Full premium design stills were not available for this preparation; it retains the historical purple/white editor and preview composition without claiming pixel-exact compliance. The five-link cap is historical behavior, not a new claim about the official brief.
+
+The original exercise notes are retained below. Old Docker/Shoelace notes describe the former stack and are not the current setup instructions.
+
+---
+
 # Issues
 
 ## 404 on .svg. Next js tries to get them from the public file
