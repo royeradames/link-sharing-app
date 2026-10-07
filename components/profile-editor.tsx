@@ -9,6 +9,9 @@ export function ProfileEditor() {
   const { form, setImageReading } = editor
   const imageSequence = useRef(0)
   const [imageError, setImageError] = useState("")
+  // Busy, not disabled: pending work keeps these buttons focusable and
+  // announced; the provider blocks the action until the work finishes.
+  const busy = editor.saving || editor.imageReading
   useEffect(
     () => () => {
       imageSequence.current += 1
@@ -164,7 +167,7 @@ export function ProfileEditor() {
             <button
               type="button"
               className="text-button"
-              disabled={editor.imageReading}
+              aria-disabled={busy || undefined}
               onClick={() => void editor.reloadSaved()}
             >
               Load saved draft
@@ -172,11 +175,9 @@ export function ProfileEditor() {
             <button
               className="button"
               type="submit"
-              disabled={
-                editor.loaded.kind !== "ready" ||
-                editor.saving ||
-                editor.imageReading
-              }
+              disabled={editor.loaded.kind !== "ready"}
+              aria-disabled={busy || undefined}
+              aria-busy={busy || undefined}
             >
               {editor.saving ? "Saving…" : "Save profile"}
             </button>

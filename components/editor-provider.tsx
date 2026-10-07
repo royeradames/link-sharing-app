@@ -23,6 +23,11 @@ import {
   type ReadResult
 } from "@/lib/local-draft"
 
+function busyNotice(imageReading: boolean) {
+  return imageReading
+    ? "Still checking the image. Try again when it finishes."
+    : "Still saving. Try again when it finishes."
+}
 function useEditorState() {
   const form = useForm({ defaultValues: emptyDraft() })
   const [loaded, setLoaded] = useState<ReadResult | { kind: "loading" }>({
@@ -66,9 +71,13 @@ function useEditorState() {
     }
   }, [form])
   async function save(section: Section) {
+    if (saving || imageReading) {
+      setNotice(busyNotice(imageReading))
+      return
+    }
     setErrors({})
     setNotice("")
-    if (loaded.kind !== "ready" || saving || imageReading) return
+    if (loaded.kind !== "ready") return
     reloadSequence.current += 1
     const values = form.state.values
     const checked =
@@ -123,7 +132,10 @@ function useEditorState() {
     )
   }
   async function reloadSaved() {
-    if (saving || imageReading) return
+    if (saving || imageReading) {
+      setNotice(busyNotice(imageReading))
+      return
+    }
     if (!window.confirm("Discard unsaved edits and load the saved draft?"))
       return
     const sequence = ++reloadSequence.current

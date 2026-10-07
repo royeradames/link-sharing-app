@@ -10,6 +10,9 @@ export function LinksEditor() {
   const { form } = editor
   const dragged = useRef<string | null>(null)
   const addButton = useRef<HTMLButtonElement>(null)
+  // Busy, not disabled: pending work keeps these buttons focusable and
+  // announced; the provider blocks the action until the work finishes.
+  const busy = editor.saving || editor.imageReading
   function move(id: string, targetId: string) {
     const next = moveLink(form.state.values.links, id, targetId)
     form.setFieldValue("links", next)
@@ -47,17 +50,24 @@ export function LinksEditor() {
             {links => (
               <>
                 <p className="save-state">
-                  {JSON.stringify(links) === JSON.stringify(editor.saved.links)
-                    ? "No unsaved link changes"
-                    : "Unsaved link changes"}{" "}
-                  · {links.length} of 5 links
+                  <span>
+                    {JSON.stringify(links) ===
+                    JSON.stringify(editor.saved.links)
+                      ? "No unsaved link changes"
+                      : "Unsaved link changes"}
+                  </span>{" "}
+                  <span aria-hidden="true">·</span>{" "}
+                  <span>{`${links.length} of 5 links`}</span>
                 </p>
                 <button
                   type="button"
                   ref={addButton}
                   className="button secondary add-link"
-                  disabled={links.length >= 5 || editor.saving}
+                  disabled={links.length >= 5}
+                  aria-disabled={editor.saving || undefined}
+                  aria-busy={editor.saving || undefined}
                   onClick={() => {
+                    if (editor.saving) return
                     const id = crypto.randomUUID()
                     form.setFieldValue("links", [
                       ...links,
@@ -206,6 +216,7 @@ export function LinksEditor() {
             <button
               type="button"
               className="text-button"
+              aria-disabled={busy || undefined}
               onClick={() => void editor.reloadSaved()}
             >
               Load saved draft
@@ -213,11 +224,9 @@ export function LinksEditor() {
             <button
               className="button"
               type="submit"
-              disabled={
-                editor.loaded.kind !== "ready" ||
-                editor.saving ||
-                editor.imageReading
-              }
+              disabled={editor.loaded.kind !== "ready"}
+              aria-disabled={busy || undefined}
+              aria-busy={busy || undefined}
             >
               {editor.saving ? "Saving…" : "Save links"}
             </button>

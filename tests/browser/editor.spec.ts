@@ -652,3 +652,172 @@ test("welcome page is server-rendered without waiting for the local draft", asyn
   expect(html).toContain("<h1>Your links, ready to copy</h1>")
   expect(html).not.toContain("Loading your local draft")
 })
+
+async function statusLine(page: Page) {
+  const state = page.locator(".save-state")
+  return state.evaluate(element => {
+    const chars: { char: string; left: number; right: number }[] = []
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.textContent ?? ""
+      for (let i = 0; i < text.length; i++) {
+        const range = document.createRange()
+        range.setStart(node, i)
+        range.setEnd(node, i + 1)
+        const rect = range.getBoundingClientRect()
+        if (text[i].trim() && rect.width)
+          chars.push({ char: text[i], left: rect.left, right: rect.right })
+      }
+    }
+    const dot = chars.findIndex(item => item.char === "·")
+    return {
+      text: element.textContent,
+      gapBefore: dot > 0 ? chars[dot].left - chars[dot - 1].right : -1,
+      gapAfter:
+        dot >= 0 && dot < chars.length - 1
+          ? chars[dot + 1].left - chars[dot].right
+          : -1
+    }
+  })
+}
+test("link status line spaces its separator in every state and hides it from screen readers", async ({
+  page
+}) => {
+  await go(page)
+  const state = page.locator(".save-state")
+  const expectState = async (text: string, spoken: string) => {
+    await expect(state).toHaveText(text)
+    const measured = await statusLine(page)
+    expect(measured.text).toBe(text)
+    expect(measured.gapBefore).toBeGreaterThanOrEqual(3)
+    expect(measured.gapAfter).toBeGreaterThanOrEqual(3)
+    await expect(state.locator('[aria-hidden="true"]')).toHaveText("·")
+    await expect(state).toMatchAriaSnapshot(`- paragraph: ${spoken}`)
+  }
+  await expectState(
+    "No unsaved link changes · 0 of 5 links",
+    "No unsaved link changes 0 of 5 links"
+  )
+  await addLink(page)
+  await expectState(
+    "Unsaved link changes · 1 of 5 links",
+    "Unsaved link changes 1 of 5 links"
+  )
+  await saveLinks(page)
+  await expectState(
+    "No unsaved link changes · 1 of 5 links",
+    "No unsaved link changes 1 of 5 links"
+  )
+  for (let i = 0; i < 4; i++)
+    await addLink(page, "GitLab", `https://gitlab.com/example${i}`)
+  await expectState(
+    "Unsaved link changes · 5 of 5 links",
+    "Unsaved link changes 5 of 5 links"
+  )
+})
+test("keyboard help and platform caret align with the layout at family widths", async ({
+  page
+}) => {
+  for (const width of [400, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 })
+    for (const route of [
+      "/",
+      "/dashboard/links",
+      "/dashboard/profile-details",
+      "/preview"
+    ]) {
+      await page.goto(route)
+      await expect(page.locator("main h1")).toBeVisible()
+      const help = page.locator(".keyboard-help summary")
+      await expect(help).toHaveText("Keyboard help")
+      const bounds = await help.evaluate(summary => {
+        const column = document.querySelector("main > :first-child")
+        if (!column) throw new Error("Main content column is missing")
+        return {
+          help: summary.getBoundingClientRect().left,
+          column: column.getBoundingClientRect().left
+        }
+      })
+      expect(
+        Math.abs(bounds.help - bounds.column),
+        `${route} at ${width}: Keyboard help ${bounds.help}px, content column ${bounds.column}px`
+      ).toBeLessThanOrEqual(1)
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth
+        )
+      ).toBe(true)
+    }
+    await go(page)
+    await page
+      .getByRole("button", { name: "+ Add new link", exact: true })
+      .click()
+    const summary = page.locator(".platform-picker summary").first()
+    const caret = summary.locator('[aria-hidden="true"]')
+    const gap = await caret.evaluate(element => {
+      const control = element.closest("summary")
+      if (!control) throw new Error("Platform control is missing")
+      return (
+        control.getBoundingClientRect().right -
+        element.getBoundingClientRect().right
+      )
+    })
+    expect(gap, `platform caret gap at ${width}`).toBeGreaterThanOrEqual(12)
+  }
+})
+test("pending image checks keep save buttons focusable and busy instead of disabled", async ({
+  page
+}) => {
+  await page.goto("/dashboard/profile-details")
+  await expect(page.locator("main h1")).toBeVisible()
+  await page.evaluate(() => {
+    const decode = HTMLImageElement.prototype.decode
+    HTMLImageElement.prototype.decode = async function () {
+      await new Promise<void>(resolve =>
+        document.addEventListener("release-test-decode", () => resolve(), {
+          once: true
+        })
+      )
+      return decode.call(this)
+    }
+  })
+  const png = await page.evaluate(() => {
+    const c = document.createElement("canvas")
+    c.width = 16
+    c.height = 16
+    return c.toDataURL("image/png")
+  })
+  await page.getByLabel("Profile picture", { exact: true }).setInputFiles({
+    name: "synthetic.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(png.split(",")[1], "base64")
+  })
+  await expect(
+    page.getByRole("status").filter({ hasText: "Checking image…" })
+  ).toBeVisible()
+  const save = page.getByRole("button", { name: "Save profile", exact: true })
+  for (const button of [
+    save,
+    page.getByRole("button", { name: "Load saved draft", exact: true })
+  ]) {
+    await expect(button).not.toHaveAttribute("disabled")
+    await expect(button).toHaveAttribute("aria-disabled", "true")
+    await button.focus()
+    await expect(button).toBeFocused()
+  }
+  await expect(save).toHaveAttribute("aria-busy", "true")
+  await save.focus()
+  await page.keyboard.press("Enter")
+  await expect(save).toBeFocused()
+  await expect(
+    page.getByRole("status").filter({ hasText: "Still checking the image." })
+  ).toBeVisible()
+  expect(
+    await page.evaluate(key => localStorage.getItem(key), storageKey)
+  ).toBeNull()
+  await page.evaluate(() =>
+    document.dispatchEvent(new Event("release-test-decode"))
+  )
+  await expect(save).not.toHaveAttribute("aria-busy", "true")
+  await expect(page.getByAltText("Selected profile picture")).toBeVisible()
+})

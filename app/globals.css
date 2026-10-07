@@ -7,6 +7,12 @@
   --muted: #616161;
   --line: #d9d9d9;
   --paper: #fafafa;
+  /* Page content columns. The footer reuses them so Keyboard help lines up
+     with the content it belongs to. */
+  --page-max: 1400px;
+  --page-gutter: 24px;
+  --welcome-max: 650px;
+  --preview-max: 800px;
 }
 * {
   box-sizing: border-box;
@@ -49,6 +55,12 @@ button,
 button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+/* Busy, not disabled: still focusable, the action is blocked in code. */
+button[aria-busy="true"],
+button[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.75;
 }
 :focus-visible {
   outline: 3px solid #261367;
@@ -131,9 +143,9 @@ img {
   color: var(--muted);
 }
 main {
-  max-width: 1400px;
+  max-width: var(--page-max);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 var(--page-gutter);
 }
 .editor-layout {
   display: grid;
@@ -225,14 +237,14 @@ main {
   font-weight: 600;
   text-decoration: none;
 }
-.button:hover:not(:disabled) {
+.button:hover:not(:disabled, [aria-disabled="true"]) {
   background: #4820cf;
 }
 .button.secondary {
   color: #5330db;
   background: white;
 }
-.button.secondary:hover:not(:disabled) {
+.button.secondary:hover:not(:disabled, [aria-disabled="true"]) {
   background: var(--pale);
 }
 .text-button {
@@ -427,7 +439,7 @@ textarea:hover,
   border-radius: 12px;
 }
 .preview-page {
-  max-width: 800px;
+  max-width: var(--preview-max);
   margin: auto;
   text-align: center;
 }
@@ -468,20 +480,33 @@ textarea:hover,
   margin-bottom: 8px;
 }
 .welcome {
-  max-width: 650px;
+  max-width: var(--welcome-max);
   margin: 48px auto;
 }
 .welcome .button {
   margin: 8px 0 32px;
 }
+/* Keyboard help starts on the same left edge as the page's content column:
+   the full editor column on Links and Profile details, and the centered
+   card column on the welcome and saved preview pages. */
 footer {
-  max-width: 900px;
+  max-width: var(--page-max);
   margin: 20px auto 40px;
-  padding: 0 24px;
+  padding: 0 var(--page-gutter);
+}
+body:has(main > .welcome) .keyboard-help {
+  max-width: var(--welcome-max);
+  margin-inline: auto;
+}
+body:has(main > .preview-page) .keyboard-help {
+  max-width: var(--preview-max);
+  margin-inline: auto;
 }
 .keyboard-help summary {
+  width: fit-content;
   min-height: 44px;
-  padding: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
   color: var(--purple);
 }
 .keyboard-help summary:hover {
@@ -515,8 +540,8 @@ footer {
   .site-header nav a {
     flex: 1;
   }
-  main {
-    padding: 0 16px;
+  :root {
+    --page-gutter: 16px;
   }
   .local-notice {
     margin: 0 16px 20px;
