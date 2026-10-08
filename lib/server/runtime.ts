@@ -65,7 +65,13 @@ export function serverRuntime(): Runtime | null {
     return null
   }
   if (!settings) return null
-  const db = getDatabase(settings.databaseURL)
+  let db: pg.Pool
+  try {
+    db = getDatabase(settings.databaseURL)
+  } catch {
+    console.error(JSON.stringify({ event: "database_settings_invalid" }))
+    return null
+  }
   globalThis.__devlinksAccounts ??= configure(db, settings)
   return {
     db,

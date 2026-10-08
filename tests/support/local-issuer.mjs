@@ -121,7 +121,13 @@ export async function startLocalIssuer({ port = 0, clients }) {
   /** Signs up and verifies a synthetic account. */
   async function createAccount({ name, email, password }) {
     const jar = cookieJar()
-    const created = await call(jar, "/api/auth/sign-up/email", { name, email, password })
+    // The issuer rate-limits sign-ups (a few per short window); wait it out.
+    let created = await call(jar, "/api/auth/sign-up/email", { name, email, password })
+    for (let attempt = 0; created.status === 429 && attempt < 5; attempt++) {
+      const seconds = Number(created.headers.get("x-retry-after") ?? created.headers.get("retry-after")) || 5
+      await new Promise(resolve => setTimeout(resolve, Math.min(seconds, 15) * 1000))
+      created = await call(jar, "/api/auth/sign-up/email", { name, email, password })
+    }
     if (!created.ok) throw new Error(`Local sign-up failed with ${created.status}`)
     const verification = mail.findLast(m => m.kind === "verify" && m.email === email)
     if (!verification) throw new Error("No verification mail was captured")

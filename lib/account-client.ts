@@ -5,6 +5,7 @@ export type AccountProfile = {
   document: SavedDocument | null
   publicId: string | null
   publishing: Publishing
+  publishingRevision: string | null
 }
 export type SignedIn = {
   state: "signed_in"
@@ -14,6 +15,8 @@ export type SignedIn = {
 export type AccountView =
   | SignedIn
   | { state: "signed_out" }
+  /** Signed in earlier in this browser, but the session has ended. */
+  | { state: "expired" }
   | { state: "unavailable" }
   | { state: "coming_soon" }
 
@@ -50,7 +53,7 @@ async function write(path: string, body: unknown): Promise<WriteResult> {
       return {
         kind: "signed_out",
         message:
-          "Your sign-in ended, so nothing was saved. Your edits are still here. Open Account in a new tab, sign in, then save again.",
+          "Your sign-in expired, so nothing was saved. Your edits are still here. Sign in again to save them.",
       }
     const message =
       "error" in result && result.error
@@ -69,8 +72,11 @@ async function write(path: string, body: unknown): Promise<WriteResult> {
 export function saveAccountDraft(draft: Draft, expectedRevision: string | null) {
   return write("/api/account/profile", { expectedRevision, draft })
 }
-export function saveAccountPublishing(publishing: Publishing) {
-  return write("/api/account/publishing", publishing)
+export function saveAccountPublishing(
+  publishing: Publishing,
+  expectedRevision: string | null
+) {
+  return write("/api/account/publishing", { expectedRevision, publishing })
 }
 
 /** Starts central sign-in and returns the issuer address to open. */

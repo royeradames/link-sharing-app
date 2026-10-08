@@ -238,7 +238,20 @@ try {
   await widths(visitor.page, "public-profile")
   log("A signed-out visitor sees Alice's published name and links, without her email.")
 
-  // 5. Unpublishing takes the page down; signing out returns to guest mode.
+  // 5. An ended session is shown as expired, never as guest mode, and signing
+  //    in again returns to the same page.
+  await alice.context.clearCookies({ domain: "devlinks.localhost" })
+  await alice.page.goto(`${APP}/dashboard/links`)
+  await alice.page.getByRole("region", { name: "Sign-in expired" }).waitFor()
+  assert.equal(await alice.page.getByText("Guest mode.").count(), 0)
+  await alice.page.getByRole("button", { name: "Sign in again", exact: true }).click()
+  await alice.page.waitForURL(`${APP}/dashboard/links`)
+  await alice.page.getByText("Signed in as Alice Example. Saves go to your account.").waitFor()
+  assert.equal(await alice.page.getByLabel("Link URL").first().inputValue(), "https://github.com/alice")
+  await alice.page.goto(`${APP}/account`)
+  log("An expired session asks Alice to sign in again and returns her to her account.")
+
+  // 6. Unpublishing takes the page down; signing out returns to guest mode.
   await alice.page.getByLabel("Publish my profile page").uncheck()
   await alice.page.getByRole("button", { name: "Save public profile", exact: true }).click()
   await status(alice.page, "Public profile saved.")

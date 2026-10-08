@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEditor } from "./editor-provider"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 
 export function EditorShell({ children }: { children: ReactNode }) {
   const path = usePathname()
@@ -71,18 +71,22 @@ export function EditorShell({ children }: { children: ReactNode }) {
         ) : (
           children
         )}
-        {editor.loaded.kind === "unavailable" && (
-          <section className="storage-warning" aria-label="Storage unavailable">
-            <p>{editor.loaded.message} Saving is unavailable.</p>
-            <button
-              className="button secondary"
-              onClick={() => void editor.reloadSaved()}
+        {editor.account?.state === "expired" ? (
+          <ExpiredSignIn />
+        ) : (
+          editor.loaded.kind === "unavailable" && (
+            <section
+              className="storage-warning"
+              aria-label={
+                editor.source === "browser"
+                  ? "Storage unavailable"
+                  : "Account unavailable"
+              }
             >
-              {editor.source === "browser"
-                ? "Retry loading saved draft"
-                : "Check my account again"}
-            </button>
-          </section>
+              <p>{editor.loaded.message} Saving is unavailable.</p>
+              <RetryButton />
+            </section>
+          )
         )}
         {editor.loaded.kind === "corrupt" && (
           <section className="storage-warning" aria-label="Draft recovery">
@@ -143,6 +147,10 @@ function SourceNotice() {
         profile pages are coming soon.
       </>
     )
+  if (account?.state === "expired")
+    return <>Your sign-in expired. Saving to your account is paused.</>
+  if (account?.state === "unavailable")
+    return <>Your account could not be checked. Saving is paused.</>
   if (source === "account" && account?.state === "signed_in")
     return <>Signed in as {account.user.name || account.user.email}. Saves go to your account.</>
   if (source === "browser")
@@ -153,4 +161,63 @@ function SourceNotice() {
       </>
     )
   return <>Checking your account…</>
+}
+
+/** Retries loading; busy, not disabled, while the check runs. */
+function RetryButton() {
+  const editor = useEditor()
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      className="button secondary"
+      aria-busy={busy || undefined}
+      aria-disabled={busy || undefined}
+      onClick={async () => {
+        if (busy) return
+        setBusy(true)
+        await editor.reloadSaved()
+        setBusy(false)
+      }}
+    >
+      {editor.source === "browser"
+        ? "Retry loading saved draft"
+        : "Check my account again"}
+    </button>
+  )
+}
+
+/** An ended session: sign in again (edits kept) or continue as a guest. */
+export function ExpiredSignIn() {
+  const editor = useEditor()
+  const [busy, setBusy] = useState(false)
+  return (
+    <section className="storage-warning" aria-label="Sign-in expired">
+      <p>
+        Your sign-in expired. Sign in again to keep saving to your account;
+        your unsaved edits come back with you. Or continue as a guest in this
+        browser.
+      </p>
+      <button
+        className="button"
+        aria-busy={busy || undefined}
+        aria-disabled={busy || undefined}
+        onClick={async () => {
+          if (busy) return
+          setBusy(true)
+          await editor.reauthenticate().catch(() => setBusy(false))
+        }}
+      >
+        {busy ? "Opening sign-in…" : "Sign in again"}
+      </button>
+      <button
+        className="button secondary"
+        aria-disabled={busy || undefined}
+        onClick={() => {
+          if (!busy) editor.continueAsGuest()
+        }}
+      >
+        Continue as a guest
+      </button>
+    </section>
+  )
 }

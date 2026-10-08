@@ -25,7 +25,7 @@ Accounts switch on only where every setting in `.env.example` is present: today,
 
 The historical37image assets remain unchanged. Instrument Sans is self-hosted from Google Fonts with its original OFL license. Full premium design stills were not available for this preparation; it retains the historical purple/white editor and preview composition without claiming pixel-exact compliance. The five-link cap is historical behavior, not a new claim about the official brief.
 
-The original exercise notes are retained below. Old Docker/Shoelace notes describe the former stack and are not the current setup instructions.
+The original exercise notes are retained below. Old Shoelace notes describe the former stack (the unused Docker setup was removed) and are not the current setup instructions.
 
 ---
 

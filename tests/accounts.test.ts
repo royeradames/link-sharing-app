@@ -14,6 +14,7 @@ type Handler = (request: Request) => Promise<Response>
 const people = {
   alice: { name: "Alice Example", email: "alice@example.test", password: randomBytes(18).toString("base64url") },
   bob: { name: "Bob Example", email: "bob@example.test", password: randomBytes(18).toString("base64url") },
+  carol: { name: "Carol Example", email: "carol@example.test", password: randomBytes(18).toString("base64url") },
 }
 const draft = (first: string, email: string, url: string) => ({
   profile: { firstName: first, lastName: "Example", email, image: "" },
@@ -28,6 +29,15 @@ let account: { GET: Handler }
 let profile: { PUT: Handler }
 let publishing: { PUT: Handler }
 let publicProfile: (id: string) => Promise<unknown>
+let decoysBefore = ""
+const decoys = async () =>
+  JSON.stringify(
+    await Promise.all(
+      ["user", "session", "devlinks_profiles"].map(
+        async table => (await database.query(`select * from public."${table}" order by 1`)).rows
+      )
+    )
+  )
 
 before(async () => {
   APP = `https://devlinks.localhost:${await freePort()}`
@@ -36,6 +46,17 @@ before(async () => {
   })
   for (const person of Object.values(people)) await issuer.createAccount(person)
   database = await startTestDatabase()
+  // Decoys with Devlinks' table names in the shared database's public schema:
+  // the app must never read or write them.
+  await database.query(`
+    create table public."user" ("id" text primary key, "name" text, "email" text);
+    create table public."session" ("id" text primary key, "token" text);
+    create table public."devlinks_profiles" ("issuer" text, "subject" text, "public_id" text, "note" text);
+    insert into public."user" values ('decoy-user', 'Decoy', 'decoy@example.test');
+    insert into public."session" values ('decoy-session', 'decoy-token');
+    insert into public."devlinks_profiles" values ('decoy', 'decoy', 'decoydecoy12', 'untouched');
+  `)
+  decoysBefore = await decoys()
   const [client] = issuer.credentials
   Object.assign(process.env, {
     POSTGRES_URL_NON_POOLING: database.url,
@@ -109,7 +130,19 @@ const write = (handler: { PUT: Handler }, path: string, jar: Jar | undefined, bo
 type AccountBody = {
   state: string
   user?: { name: string; email: string }
-  profile?: { document: { revision: string; draft: ReturnType<typeof draft> } | null; publicId: string | null }
+  profile?: {
+    document: { revision: string; draft: ReturnType<typeof draft> } | null
+    publicId: string | null
+    publishingRevision: string | null
+  }
+}
+/** Saves publishing choices against the revision this account last loaded. */
+async function publish(jar: Jar, choices: Record<string, boolean>, expectedRevision?: string | null) {
+  const current = (await (await read(jar)).json()) as AccountBody
+  return write(publishing, "/api/account/publishing", jar, {
+    expectedRevision: expectedRevision === undefined ? current.profile?.publishingRevision ?? null : expectedRevision,
+    publishing: choices,
+  })
 }
 
 test("two accounts never see or overwrite each other's profile and links", async () => {
@@ -163,10 +196,6 @@ test("two accounts never see or overwrite each other's profile and links", async
     'select "subject" from "devlinks_preview"."devlinks_profiles" order by "subject"'
   )
   assert.equal(rows.rowCount, 2, "one row per issuer subject")
-  const publicRows = await database.query(
-    "select 1 from information_schema.tables where table_schema = 'public' and table_name = 'devlinks_profiles'"
-  )
-  assert.equal(publicRows.rowCount, 0, "Preview data stays in the Preview schema")
 })
 
 test("signed-out, forged and cross-site requests cannot read or write account data", async () => {
@@ -201,7 +230,7 @@ test("a public profile shows only the published fields of the saved profile", as
   assert.ok(publicId)
   assert.equal(await publicProfile(publicId), null, "unpublished profiles are not public")
 
-  const published = await write(publishing, "/api/account/publishing", alice, {
+  const published = await publish(alice, {
     published: true,
     name: true,
     email: false,
@@ -216,15 +245,11 @@ test("a public profile shows only the published fields of the saved profile", as
   })
   assert.ok(!JSON.stringify(view).includes(people.alice.email), "hidden email is never served")
 
-  // Unsaved edits never reach the public page: only the saved document is read.
-  await write(publishing, "/api/account/publishing", alice, {
-    published: true, name: false, email: true, image: false, links: false,
-  })
+  // Each field follows its own choice; turning links off leaves an empty list.
+  await publish(alice, { published: true, name: false, email: true, image: false, links: false })
   assert.deepEqual(await publicProfile(publicId), { email: people.alice.email, links: [] })
 
-  await write(publishing, "/api/account/publishing", alice, {
-    published: false, name: true, email: true, image: true, links: true,
-  })
+  await publish(alice, { published: false, name: true, email: true, image: true, links: true })
   assert.equal(await publicProfile(publicId), null, "unpublishing takes the page down")
   assert.equal(await publicProfile("not-a-valid-id"), null)
 
@@ -232,4 +257,25 @@ test("a public profile shows only the published fields of the saved profile", as
   const bobId = ((await (await read(bob)).json()) as AccountBody).profile?.publicId
   assert.ok(bobId)
   assert.equal(await publicProfile(bobId), null, "Bob has not published")
+})
+
+test("a stale publishing change conflicts instead of overwriting newer choices", async () => {
+  const alice = await signIn(people.alice)
+  const loaded = ((await (await read(alice)).json()) as AccountBody).profile?.publishingRevision
+  assert.ok(loaded)
+  const first = await publish(alice, { published: true, name: true, email: false, image: true, links: true }, loaded)
+  assert.equal(first.status, 200)
+  // A second tab still holding the old revision tries to publish the email.
+  const stale = await publish(alice, { published: true, name: true, email: true, image: true, links: true }, loaded)
+  assert.equal(stale.status, 409)
+  const publicId = ((await (await read(alice)).json()) as AccountBody).profile?.publicId ?? ""
+  assert.deepEqual(Object.keys((await publicProfile(publicId)) ?? {}).includes("email"), false)
+  // Publishing before anything is saved is refused, not created empty.
+  const fresh = await signIn(people.carol)
+  assert.equal((await publish(fresh, { published: true, name: true, email: false, image: true, links: true })).status, 409)
+})
+
+test("the shared database's public tables are never read or written", async () => {
+  assert.equal(await decoys(), decoysBefore)
+  assert.equal(await publicProfile("decoydecoy12"), null, "a public-schema row is not a profile")
 })

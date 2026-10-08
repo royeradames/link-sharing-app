@@ -18,6 +18,11 @@ export async function startTestDatabase({ migrate = true } = {}) {
   })
   await server.start()
   const url = `postgresql://postgres@${server.getServerConn()}/postgres?sslmode=disable`
+  // PGlite is one shared session and ignores the startup search_path the
+  // app passes (Neon honors it; see tests/database.test.ts). Set it once here
+  // so the app's unqualified names resolve the way they do in Preview.
+  await database.exec("create schema if not exists devlinks_preview")
+  await database.exec("set search_path to devlinks_preview")
   if (migrate) {
     const migrations = await import("../../scripts/migrations.mjs")
     const client = new pg.Client({ connectionString: url })

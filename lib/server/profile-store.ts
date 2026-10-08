@@ -23,8 +23,15 @@ export type AccountProfile = {
   document: SavedDocument | null
   publicId: string | null
   publishing: Publishing
+  publishingRevision: string | null
 }
-type Row = { public_id: string; document: unknown; publishing: unknown }
+type Row = {
+  public_id: string
+  document: unknown
+  publishing: unknown
+  publishing_revision: string
+}
+const columns = `"public_id", "document", "publishing", "publishing_revision"`
 
 /** The issuer subject linked to a signed-in local principal. */
 export async function ownerFor(
@@ -40,11 +47,17 @@ export async function ownerFor(
 
 function toProfile(row: Row | undefined): AccountProfile {
   if (!row)
-    return { document: null, publicId: null, publishing: defaultPublishing }
+    return {
+      document: null,
+      publicId: null,
+      publishing: defaultPublishing,
+      publishingRevision: null,
+    }
   return {
     document: documentSchema.parse(row.document),
     publicId: row.public_id,
     publishing: publishingSchema.parse(row.publishing),
+    publishingRevision: row.publishing_revision,
   }
 }
 
@@ -53,7 +66,7 @@ export async function readProfile(
   owner: Owner
 ): Promise<AccountProfile> {
   const { rows } = await db.query<Row>(
-    'select "public_id", "document", "publishing" from "devlinks_profiles" where "issuer" = $1 and "subject" = $2',
+    `select ${columns} from "devlinks_profiles" where "issuer" = $1 and "subject" = $2`,
     [owner.issuer, owner.subject]
   )
   return toProfile(rows[0])
@@ -97,7 +110,7 @@ export async function saveDraft(
     const { rows } = await db.query<Row>(
       `update "devlinks_profiles" set "document" = $3, "revision" = $4, "updated_at" = now()
        where "issuer" = $1 and "subject" = $2 and "revision" = $5
-       returning "public_id", "document", "publishing"`,
+       returning ${columns}`,
       [owner.issuer, owner.subject, document, document.revision, expectedRevision]
     )
     return rows[0]
@@ -107,10 +120,10 @@ export async function saveDraft(
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const { rows } = await db.query<Row>(
-        `insert into "devlinks_profiles" ("issuer", "subject", "public_id", "document", "revision", "publishing")
-         values ($1, $2, $3, $4, $5, $6)
+        `insert into "devlinks_profiles" ("issuer", "subject", "public_id", "document", "revision", "publishing", "publishing_revision")
+         values ($1, $2, $3, $4, $5, $6, $7)
          on conflict ("issuer", "subject") do nothing
-         returning "public_id", "document", "publishing"`,
+         returning ${columns}`,
         [
           owner.issuer,
           owner.subject,
@@ -118,6 +131,7 @@ export async function saveDraft(
           document,
           document.revision,
           defaultPublishing,
+          randomUUID(),
         ]
       )
       return rows[0]
@@ -132,19 +146,33 @@ export async function saveDraft(
   throw new Error("unreachable")
 }
 
-/** Publishing choices apply to an existing saved profile; null when there is none yet. */
+/**
+ * Publishing choices apply to an existing saved profile, compare-and-set on
+ * the publishing revision the page loaded. "missing" means nothing is saved
+ * yet; "conflict" means another tab or device changed the choices first.
+ */
 export async function savePublishing(
   db: pg.Pool,
   owner: Owner,
+  expectedRevision: string,
   publishing: Publishing
-): Promise<AccountProfile | null> {
+): Promise<
+  | { kind: "saved"; profile: AccountProfile }
+  | { kind: "conflict" }
+  | { kind: "missing" }
+> {
   const { rows } = await db.query<Row>(
-    `update "devlinks_profiles" set "publishing" = $3, "updated_at" = now()
-     where "issuer" = $1 and "subject" = $2
-     returning "public_id", "document", "publishing"`,
-    [owner.issuer, owner.subject, publishingSchema.parse(publishing)]
+    `update "devlinks_profiles" set "publishing" = $3, "publishing_revision" = $4, "updated_at" = now()
+     where "issuer" = $1 and "subject" = $2 and "publishing_revision" = $5
+     returning ${columns}`,
+    [owner.issuer, owner.subject, publishingSchema.parse(publishing), randomUUID(), expectedRevision]
   )
-  return rows[0] ? toProfile(rows[0]) : null
+  if (rows[0]) return { kind: "saved", profile: toProfile(rows[0]) }
+  const exists = await db.query(
+    'select 1 from "devlinks_profiles" where "issuer" = $1 and "subject" = $2',
+    [owner.issuer, owner.subject]
+  )
+  return exists.rowCount ? { kind: "conflict" } : { kind: "missing" }
 }
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -165,7 +193,7 @@ export async function publicProfileFor(
   const runtime = serverRuntime()
   if (!runtime) return null
   const { rows } = await runtime.db.query<Row>(
-    'select "public_id", "document", "publishing" from "devlinks_profiles" where "public_id" = $1',
+    `select ${columns} from "devlinks_profiles" where "public_id" = $1`,
     [publicId]
   )
   if (!rows[0]) return null

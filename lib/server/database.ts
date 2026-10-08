@@ -15,26 +15,28 @@ export function databaseSchema(env = process.env) {
   return env.VERCEL_ENV === "production" ? "devlinks" : "devlinks_preview"
 }
 
+export class DatabaseSettingsError extends Error {}
+
 /**
- * The app's pool on the direct (unpooled) connection, so a session-level
- * search_path is safe. Every new connection resolves names only inside the
- * Devlinks schema; the shared database's public tables are never visible.
+ * The app's pool on the direct (unpooled) connection. The schema is a
+ * connection startup parameter, so every session resolves names only inside
+ * the Devlinks schema from its first query, and a connection that cannot set
+ * it fails instead of falling back to the shared database's public tables.
+ * A pooler URL is refused: transaction pooling does not keep session settings.
  */
 export function getDatabase(connectionString: string): pg.Pool {
   if (globalThis.__devlinksDatabase) return globalThis.__devlinksDatabase
-  const schema = databaseSchema()
+  if (new URL(connectionString).hostname.includes("-pooler"))
+    throw new DatabaseSettingsError(
+      "Use the direct (unpooled) database connection."
+    )
   const pool = new pg.Pool({
     connectionString,
+    options: `-c search_path=${databaseSchema()}`,
     // Tests use a single-session PostgreSQL; deployments keep a small pool.
     max: Number(process.env.DATABASE_POOL_MAX) || 3,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000,
-  })
-  // Queued before any other query on this connection.
-  pool.on("connect", client => {
-    client.query(`set search_path to "${schema}"`).catch(() => {
-      console.error(JSON.stringify({ event: "database_schema_failed" }))
-    })
   })
   pool.on("error", () =>
     console.error(JSON.stringify({ event: "database_connection_failed" }))

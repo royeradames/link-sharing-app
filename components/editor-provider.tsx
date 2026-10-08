@@ -10,6 +10,7 @@ import {
 } from "react"
 import { useForm } from "@tanstack/react-form"
 import {
+  draftSchema,
   emptyDraft,
   linksSchema,
   profileSchema,
@@ -27,6 +28,7 @@ import {
 import {
   fetchAccount,
   saveAccountDraft,
+  startSignIn,
   type AccountView,
   type SignedIn
 } from "@/lib/account-client"
@@ -42,8 +44,37 @@ export type AccountsConfig = { enabled: boolean; origin: string | null }
 export type DraftSource = "browser" | "account" | "checking"
 const accountUnavailable =
   "Your account could not be checked, so nothing was loaded. Your current edits are still available."
-const signInEnded =
-  "Your sign-in ended. Open Account in a new tab to sign in again; your edits are still here."
+const signInExpired =
+  "Your sign-in expired. Sign in again to keep editing your account, or continue as a guest in this browser."
+/**
+ * Remembers that this browser was signed in, so an ended session is shown
+ * as expired instead of silently turning into guest mode. Cleared by an
+ * explicit sign-out or "Continue as a guest". It holds no account data.
+ */
+const SIGNED_IN_HINT = "devlinks.signed-in"
+/** Unsaved edits carried across a sign-in round trip, in this tab only. */
+const REAUTH_EDITS = "devlinks.reauth-edits"
+function storageCall<T>(run: () => T): T | null {
+  try {
+    return run()
+  } catch {
+    return null
+  }
+}
+export function forgetSignedIn() {
+  storageCall(() => localStorage.removeItem(SIGNED_IN_HINT))
+}
+/** A signed-out answer for a browser that was signed in means the session expired. */
+function classify(view: AccountView): AccountView {
+  if (view.state === "signed_in")
+    storageCall(() => localStorage.setItem(SIGNED_IN_HINT, "1"))
+  if (
+    view.state === "signed_out" &&
+    storageCall(() => localStorage.getItem(SIGNED_IN_HINT))
+  )
+    return { state: "expired" }
+  return view
+}
 function accountResult(view: SignedIn): ReadResult {
   const document = view.profile.document
   return {
@@ -95,7 +126,7 @@ function useEditorState(accounts: AccountsConfig) {
     // Accounts off: the browser-local editor, exactly as before accounts.
     // Accounts on: ask the server first; a guest falls back to this browser.
     const initial: Promise<ReadResult> = accounts.enabled
-      ? fetchAccount().then(view => {
+      ? fetchAccount().then(classify).then(view => {
           if (!alive) return { kind: "unavailable", message: "" }
           setAccount(view)
           if (view.state === "signed_in") {
@@ -104,6 +135,8 @@ function useEditorState(accounts: AccountsConfig) {
           }
           if (view.state === "unavailable")
             return { kind: "unavailable", message: accountUnavailable }
+          if (view.state === "expired")
+            return { kind: "unavailable", message: signInExpired }
           setSource("browser")
           return readDraft()
         })
@@ -111,10 +144,21 @@ function useEditorState(accounts: AccountsConfig) {
     void initial.then(result => {
       if (!alive) return
       setLoaded(result)
-      if (result.kind === "ready")
-        form.reset(result.document?.draft ?? emptyDraft(), {
-          keepDefaultValues: true
-        })
+      if (result.kind !== "ready") return
+      form.reset(result.document?.draft ?? emptyDraft(), {
+        keepDefaultValues: true
+      })
+      if (!accounts.enabled) return
+      // Back from signing in again: put the unsaved edits back on top.
+      const stashed = storageCall(() => sessionStorage.getItem(REAUTH_EDITS))
+      storageCall(() => sessionStorage.removeItem(REAUTH_EDITS))
+      const edits = stashed
+        ? draftSchema.safeParse(storageCall(() => JSON.parse(stashed)))
+        : null
+      if (edits?.success) {
+        form.reset(edits.data, { keepDefaultValues: true })
+        setNotice("Your unsaved edits were restored. Save to keep them.")
+      }
     })
     return () => {
       alive = false
@@ -136,7 +180,7 @@ function useEditorState(accounts: AccountsConfig) {
   /** Reads the saved draft from wherever saves currently go. */
   async function readCurrent(): Promise<ReadResult> {
     if (source === "browser") return readDraft()
-    const view = await fetchAccount()
+    const view = classify(await fetchAccount())
     if (view.state === "signed_in") {
       setAccount(view)
       setSource("account")
@@ -144,19 +188,48 @@ function useEditorState(accounts: AccountsConfig) {
     }
     if (view.state === "unavailable")
       return { kind: "unavailable", message: accountUnavailable }
-    // Signed out after a failed check: this is a guest after all.
-    if (source === "checking") {
+    // Signed out after a failed check, never signed in here: a guest after all.
+    if (source === "checking" && view.state === "signed_out") {
       setAccount(view)
       setSource("browser")
       return readDraft()
     }
-    return { kind: "unavailable", message: signInEnded }
+    setAccount({ state: "expired" })
+    return { kind: "unavailable", message: signInExpired }
+  }
+  /**
+   * Signs in again through the issuer and returns to this page. Unsaved
+   * edits ride along in this tab's session storage and are restored after.
+   */
+  async function reauthenticate() {
+    const values = form.state.values
+    if (JSON.stringify(values) !== JSON.stringify(saved))
+      storageCall(() =>
+        sessionStorage.setItem(REAUTH_EDITS, JSON.stringify(values))
+      )
+    try {
+      window.location.assign(
+        await startSignIn(window.location.pathname + window.location.search)
+      )
+    } catch (error) {
+      storageCall(() => sessionStorage.removeItem(REAUTH_EDITS))
+      setNotice(
+        error instanceof Error ? error.message : "Sign-in is unavailable."
+      )
+      throw error
+    }
+  }
+  /** Leaves an expired account for this browser's guest draft. */
+  function continueAsGuest() {
+    forgetSignedIn()
+    window.location.reload()
   }
   async function saveToAccount(
     candidate: Draft,
     expectedRevision: string | null
   ): Promise<SaveResult> {
     const outcome = await saveAccountDraft(candidate, expectedRevision)
+    if (outcome.kind === "signed_out") setAccount({ state: "expired" })
     if (outcome.kind !== "saved")
       return { kind: "failed", message: outcome.message }
     setAccount(outcome.view)
@@ -295,6 +368,8 @@ function useEditorState(accounts: AccountsConfig) {
     source,
     account,
     setAccount,
+    reauthenticate,
+    continueAsGuest,
     form,
     loaded,
     saved,

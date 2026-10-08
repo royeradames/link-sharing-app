@@ -12,7 +12,9 @@ const profileFor = cache(publicProfileFor)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const profile = await profileFor((await params).publicId)
   return {
-    title: profile?.name ? `${profile.name} on Devlinks` : "Devlinks profile",
+    title: {
+      absolute: profile?.name ? `${profile.name} on Devlinks` : "Devlinks profile",
+    },
     description: "Links published on Devlinks.",
   }
 }

@@ -9,7 +9,7 @@ import {
   type SignedIn
 } from "@/lib/account-client"
 import { defaultPublishing, type Publishing } from "@/lib/publishing"
-import { useEditor } from "./editor-provider"
+import { forgetSignedIn, useEditor } from "./editor-provider"
 
 const signInErrors: Record<string, string> = {
   expired: "That sign-in expired or was already used. Start again.",
@@ -46,6 +46,8 @@ export function AccountPanel() {
     // The issuer only returns to the registered address. A deployment URL
     // that is not it goes there first.
     if (accounts.origin && window.location.origin !== accounts.origin) {
+      // Another origin (the registered branch address), not an internal route.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign(`${accounts.origin}/account`)
       return
     }
@@ -66,6 +68,7 @@ export function AccountPanel() {
     setMessage("")
     try {
       await signOutOfDevlinks()
+      forgetSignedIn()
       // A fresh load returns the editor to this browser's guest draft.
       window.location.reload()
     } catch (error) {
@@ -78,7 +81,7 @@ export function AccountPanel() {
     }
   }
 
-  if (!accounts.enabled)
+  if (!accounts.enabled || account?.state === "coming_soon")
     return (
       <section className="panel account" aria-labelledby="account-title">
         <h1 id="account-title">Accounts are coming soon</h1>
@@ -101,8 +104,7 @@ export function AccountPanel() {
       )}
       {/* An unavailable check is reported by the editor shell with a retry. */}
       {!account && <p role="status">Checking your account…</p>}
-      {(account?.state === "signed_out" ||
-        account?.state === "coming_soon") && (
+      {account?.state === "signed_out" && (
         <>
           <h2>Save your profile to your account</h2>
           <p>
@@ -177,7 +179,10 @@ function PublishingForm({ account }: { account: SignedIn }) {
     setSaving(true)
     setNotice("")
     const values: Publishing = form.state.values
-    const result = await saveAccountPublishing(values)
+    const result = await saveAccountPublishing(
+      values,
+      account.profile.publishingRevision
+    )
     setSaving(false)
     if (result.kind !== "saved") {
       setNotice(result.message)
