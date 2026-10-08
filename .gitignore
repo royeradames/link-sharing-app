@@ -40,3 +40,5 @@ shoelace-wrappers
 .test-state/
 test-results/
 playwright-report/
+.next-journey/
+!.env.example

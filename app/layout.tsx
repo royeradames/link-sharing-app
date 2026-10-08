@@ -1,7 +1,5 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import { EditorProvider } from "@/components/editor-provider"
-import { EditorShell } from "@/components/editor-shell"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import "./globals.css"
 const instrument = localFont({
@@ -22,17 +20,7 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={instrument.variable}>
-      <body>
-        <EditorProvider>
-          <EditorShell>{children}</EditorShell>
-        </EditorProvider>
-        <noscript>
-          <p className="storage-warning">
-            JavaScript is needed to edit and save a draft in this browser. No
-            account or credentials are required.
-          </p>
-        </noscript>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

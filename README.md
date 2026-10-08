@@ -1,18 +1,27 @@
-# Devlinks local editor preparation
+# Devlinks
 
-This candidate upgrades the historical Link Sharing exercise to Next16, React19, Tailwind4 and TanStack Form. It is an intermediate browser-local editor, not a completed hosted account or public-profile application. Nothing in this candidate connects to a database or accepts account credentials.
+A link-sharing editor with optional hosted accounts. Guests use a browser-local editor. Signed-in people save their profile and links to their Breakthrough account (the shared sign-in for Breakthrough Development apps) and can publish a public profile page.
 
 ## Local workflow
 
-Use Node24. Run `npm ci`, `npm run dev`, and open the displayed local URL. `/dashboard/links` edits up to five platform URLs; `/dashboard/profile-details` edits a name, optional email and picture. Each section saves independently. The preview and Copy links use only saved values. Changing pages retains unsaved edits; reloading restores the saved version. `/login` and `/create-account` return to the honest local entry instead of collecting credentials.
+Use Node24. `@royer/auth` installs from GitHub Packages as the private `@royeradames/auth`, through the committed `.npmrc`. Run `NPM_TOKEN=<read:packages token> npm ci` (the token stays in your shell for that one command), then `npm run dev`. `/dashboard/links` edits up to five platform URLs; `/dashboard/profile-details` edits a name, optional email and picture. Each section saves independently. The preview and Copy links use only saved values. Changing pages retains unsaved edits; reloading restores the saved version. `/login` and `/create-account` return to the welcome page instead of collecting credentials.
 
-Saved data stays under `devlinks.saved-draft.v1` in this browser origin. PNG/JPEG pictures must decode and be at most256KB and1024×1024pixels. Web Locks serialize saves and an expected stored revision rejects stale tabs. If locking or storage is unavailable, saving fails visibly. Malformed drafts remain untouched until the person downloads a backup and explicitly resets that one key. Other browser data is never reset. Saved drafts are not encrypted; anyone with access to this browser profile may read them. Clearing browser data removes them.
+## Guests: saved in this browser
 
-Copy links copies the saved ordered URLs as plain text. A clipboard denial reveals a selectable fallback. The preview route is not a shareable public profile address. Public profiles and durable accounts need a separately reviewed implementation; no authentication package is included here.
+Saved data stays under `devlinks.saved-draft.v1` in this browser origin. PNG/JPEG pictures must decode and be at most256KB and1024×1024pixels. Web Locks serialize saves and an expected stored revision rejects stale tabs. If locking or storage is unavailable, saving fails visibly. Malformed drafts remain untouched until the person downloads a backup and explicitly resets that one key. Saved drafts are not encrypted; anyone with access to this browser profile may read them.
+
+## Accounts and public profiles
+
+Accounts switch on only where every setting in `.env.example` is present: today, the protected Preview once its client is registered on `accounts-preview.royeradames.com`. Production has none, so it stays the browser-local editor and Account says accounts are coming soon. The editor pages read this at build time, so redeploy after changing those settings.
+
+- Sign-in uses the central OIDC mode of `@royer/auth` (`createFederatedAuth`). Devlinks never sees a password. A failed account check is a retry state, never "signed out".
+- A signed-in person's saved draft lives in `devlinks_profiles`, keyed by issuer and subject. Saves are compare-and-set on the loaded revision, so another tab or device cannot be silently overwritten. Account writes require this app's own `Origin`.
+- Each saved profile gets a stable, random public address `/p/<12 characters>`. Nothing is public until the owner turns on **Publish my profile page**; email is hidden by default. The page shows only the chosen fields of the saved profile, never unsaved edits or internal IDs. Unpublishing takes the page down (404).
+- App data lives in the project's existing Postgres, in its own schema: Preview uses `devlinks_preview`, Production uses `devlinks`, chosen from `VERCEL_ENV` in code. The database's older `public` tables are never touched. Migrations run only through the explicit, hash-checked runner: `npm run db:plan`, then `vercel env run -e preview -- node scripts/migrate.mjs --environment=preview --reviewed-sha256=<hash>`. `scripts/plan-accounts-migration.mjs` regenerates `0001_accounts.sql` from the pinned package.
 
 ## Verification
 
-`npm test` exercises the actual validation/serialization/reorder interface. `npm run lint`, `npm run typecheck`, `npm run build`, and `npm audit --omit=dev` check the candidate. After building, `npm run test:browser` starts its own production server at127.0.0.1:4392 and exercises persistence, keyboard/pointer behavior, storage failure and conflict, image decode, clipboard denial and400/768/1440layouts with synthetic data only. Chrome is required. The runner does not submit links to external platforms.
+`npm test` runs the validation/serialization/reorder tests, the publishing rules, and the account tests: two synthetic accounts signed in through a local copy of the real issuer, isolation, public-page fields, cross-site and forged requests, and guest mode with accounts off. `npm run lint`, `npm run typecheck` and `npm run build` check the candidate. After building, `npm run test:browser` starts its own production server at127.0.0.1:4392 and exercises the guest editor (persistence, keyboard/pointer behavior, storage failure and conflict, image decode, clipboard denial and400/768/1440layouts). `npm run test:journey` builds an accounts-enabled copy into `.next-journey`, serves it over HTTPS at `devlinks.localhost:4472`, and walks a guest, two signed-in accounts, publishing and a signed-out visitor in Chrome. All data is synthetic.
 
 The historical37image assets remain unchanged. Instrument Sans is self-hosted from Google Fonts with its original OFL license. Full premium design stills were not available for this preparation; it retains the historical purple/white editor and preview composition without claiming pixel-exact compliance. The five-link cap is historical behavior, not a new claim about the official brief.
 

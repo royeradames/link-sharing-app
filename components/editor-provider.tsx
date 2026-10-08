@@ -14,22 +14,56 @@ import {
   linksSchema,
   profileSchema,
   STORAGE_KEY,
+  type Draft,
   type Section
 } from "@/lib/draft"
 import {
   readDraft,
   resetDraft,
   saveDraft,
-  type ReadResult
+  type ReadResult,
+  type SaveResult
 } from "@/lib/local-draft"
+import {
+  fetchAccount,
+  saveAccountDraft,
+  type AccountView,
+  type SignedIn
+} from "@/lib/account-client"
+
+/** Whether central accounts exist on this deployment, and their registered origin. */
+export type AccountsConfig = { enabled: boolean; origin: string | null }
+/**
+ * Where saves go. "browser" is the guest editor (and the only source where
+ * accounts are off). "account" is the signed-in person's server profile.
+ * "checking" means the account could not be checked yet: nothing is loaded
+ * from either place, so account data is never mixed with this browser's.
+ */
+export type DraftSource = "browser" | "account" | "checking"
+const accountUnavailable =
+  "Your account could not be checked, so nothing was loaded. Your current edits are still available."
+const signInEnded =
+  "Your sign-in ended. Open Account in a new tab to sign in again; your edits are still here."
+function accountResult(view: SignedIn): ReadResult {
+  const document = view.profile.document
+  return {
+    kind: "ready",
+    raw: document ? JSON.stringify(document) : null,
+    document
+  }
+}
 
 function busyNotice(imageReading: boolean) {
   return imageReading
     ? "Still checking the image. Try again when it finishes."
     : "Still saving. Try again when it finishes."
 }
-function useEditorState() {
+function useEditorState(accounts: AccountsConfig) {
   const form = useForm({ defaultValues: emptyDraft() })
+  const [source, setSource] = useState<DraftSource>(
+    accounts.enabled ? "checking" : "browser"
+  )
+  const [account, setAccount] = useState<AccountView | null>(null)
   const [loaded, setLoaded] = useState<ReadResult | { kind: "loading" }>({
     kind: "loading"
   })
@@ -58,7 +92,23 @@ function useEditorState() {
       : emptyDraft()
   useEffect(() => {
     let alive = true
-    void readDraft().then(result => {
+    // Accounts off: the browser-local editor, exactly as before accounts.
+    // Accounts on: ask the server first; a guest falls back to this browser.
+    const initial: Promise<ReadResult> = accounts.enabled
+      ? fetchAccount().then(view => {
+          if (!alive) return { kind: "unavailable", message: "" }
+          setAccount(view)
+          if (view.state === "signed_in") {
+            setSource("account")
+            return accountResult(view)
+          }
+          if (view.state === "unavailable")
+            return { kind: "unavailable", message: accountUnavailable }
+          setSource("browser")
+          return readDraft()
+        })
+      : readDraft()
+    void initial.then(result => {
       if (!alive) return
       setLoaded(result)
       if (result.kind === "ready")
@@ -66,6 +116,14 @@ function useEditorState() {
           keepDefaultValues: true
         })
     })
+    return () => {
+      alive = false
+      reloadSequence.current += 1
+    }
+  }, [form, accounts.enabled])
+  useEffect(() => {
+    // Other tabs only signal changes to this browser's own draft.
+    if (source !== "browser") return
     const changed = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY || event.key === null) {
         reloadSequence.current += 1
@@ -73,12 +131,40 @@ function useEditorState() {
       }
     }
     window.addEventListener("storage", changed)
-    return () => {
-      alive = false
-      reloadSequence.current += 1
-      window.removeEventListener("storage", changed)
+    return () => window.removeEventListener("storage", changed)
+  }, [source])
+  /** Reads the saved draft from wherever saves currently go. */
+  async function readCurrent(): Promise<ReadResult> {
+    if (source === "browser") return readDraft()
+    const view = await fetchAccount()
+    if (view.state === "signed_in") {
+      setAccount(view)
+      setSource("account")
+      return accountResult(view)
     }
-  }, [form])
+    if (view.state === "unavailable")
+      return { kind: "unavailable", message: accountUnavailable }
+    // Signed out after a failed check: this is a guest after all.
+    if (source === "checking") {
+      setAccount(view)
+      setSource("browser")
+      return readDraft()
+    }
+    return { kind: "unavailable", message: signInEnded }
+  }
+  async function saveToAccount(
+    candidate: Draft,
+    expectedRevision: string | null
+  ): Promise<SaveResult> {
+    const outcome = await saveAccountDraft(candidate, expectedRevision)
+    if (outcome.kind !== "saved")
+      return { kind: "failed", message: outcome.message }
+    setAccount(outcome.view)
+    const document = outcome.view.profile.document
+    if (!document)
+      return { kind: "failed", message: "Nothing was saved. Try again." }
+    return { kind: "saved", raw: JSON.stringify(document), document }
+  }
   async function save(section: Section) {
     if (saving || imageReading) {
       setNotice(busyNotice(imageReading))
@@ -115,7 +201,10 @@ function useEditorState() {
       section === "links"
         ? { ...saved, links: linksSchema.parse(values.links) }
         : { ...saved, profile: profileSchema.parse(values.profile) }
-    const result = await saveDraft(candidate, loaded.raw)
+    const result =
+      source === "account"
+        ? await saveToAccount(candidate, loaded.document?.revision ?? null)
+        : await saveDraft(candidate, loaded.raw)
     setSaving(false)
     if (result.kind === "failed") {
       setNotice(result.message)
@@ -135,10 +224,9 @@ function useEditorState() {
     )
       form.setFieldValue("profile", result.document.draft.profile)
     setExternalChange(false)
+    const where = source === "account" ? "to your account" : "in this browser"
     setNotice(
-      section === "links"
-        ? "Links saved in this browser."
-        : "Profile saved in this browser."
+      section === "links" ? `Links saved ${where}.` : `Profile saved ${where}.`
     )
   }
   async function reloadSaved() {
@@ -150,7 +238,7 @@ function useEditorState() {
       return
     const sequence = ++reloadSequence.current
     const values = form.state.values
-    const result = await readDraft()
+    const result = await readCurrent()
     if (sequence !== reloadSequence.current) return
     // TanStack replaces its values object on edits. Never apply a decoded snapshot over newer work.
     if (values !== form.state.values) {
@@ -170,7 +258,7 @@ function useEditorState() {
     })
     setExternalChange(false)
     setErrors({})
-    setNotice("Saved draft loaded.")
+    setNotice(source === "account" ? "Saved profile loaded." : "Saved draft loaded.")
   }
   async function resetCorrupt() {
     if (
@@ -203,6 +291,10 @@ function useEditorState() {
     URL.revokeObjectURL(url)
   }
   return {
+    accounts,
+    source,
+    account,
+    setAccount,
     form,
     loaded,
     saved,
@@ -222,8 +314,14 @@ function useEditorState() {
 const EditorContext = createContext<ReturnType<typeof useEditorState> | null>(
   null
 )
-export function EditorProvider({ children }: { children: ReactNode }) {
-  const editor = useEditorState()
+export function EditorProvider({
+  accounts,
+  children
+}: {
+  accounts: AccountsConfig
+  children: ReactNode
+}) {
+  const editor = useEditorState(accounts)
   return (
     <EditorContext.Provider value={editor}>{children}</EditorContext.Provider>
   )
