@@ -10,7 +10,12 @@ export function SavedPreview() {
   const text = useRef<HTMLTextAreaElement>(null)
   async function copy() {
     const value = copyText(editor.saved)
-    if (!value) return
+    // Nothing saved yet: the button stays focusable and says why instead of
+    // going natively disabled.
+    if (!value) {
+      editor.setNotice("Save at least one link in the editor before copying.")
+      return
+    }
     try {
       await navigator.clipboard.writeText(value)
       setFallback(null)
@@ -37,11 +42,19 @@ export function SavedPreview() {
         <button
           className="button"
           onClick={() => void copy()}
-          disabled={!editor.saved.links.length}
+          aria-disabled={!editor.saved.links.length || undefined}
+          aria-describedby={
+            editor.saved.links.length ? undefined : "copy-links-why"
+          }
         >
           Copy links
         </button>
       </div>
+      {!editor.saved.links.length && (
+        <p id="copy-links-why" className="muted">
+          No saved links to copy yet. Add links in the editor and save them.
+        </p>
+      )}
       <h1>Saved preview</h1>
       <p className="muted">
         Only saved changes appear here. This preview belongs to this browser and

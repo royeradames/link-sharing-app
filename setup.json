@@ -1,0 +1,97 @@
+{
+  "app": "link-sharing-app",
+  "explain": "Devlinks is a browser-local editor with no settings; hosted accounts and public profile pages switch on only where all five AUTH_* settings exist (today only as Preview values scoped to the feat/breakthrough-accounts branch, which `check` ignores, so it reports them missing until they move to the unscoped Preview), and installs need a read-only GitHub Packages token.",
+  "vercelProject": "link-sharing-app",
+  "scope": "royer-adames-projects",
+  "env": [
+    {
+      "key": "AUTH_BASE_URL",
+      "target": ["preview"],
+      "kind": "config",
+      "owner": "agent",
+      "why": "This deployment's exact https origin. The issuer only returns sign-ins to the callback registered for it; with any AUTH_* value missing, accounts stay off and the editor is browser-local.",
+      "agentFix": "Set to the Preview deployment's stable https origin, the one registered as the client's callback on accounts-preview.royeradames.com."
+    },
+    {
+      "key": "AUTH_SECRET",
+      "target": ["preview"],
+      "kind": "secret",
+      "owner": "agent",
+      "why": "Signs this app's own session cookies (32 or more characters). Changing it signs everyone out of Devlinks.",
+      "agentFix": "Generate 32 random bytes in memory and add with vercel env add --sensitive, never printed (as royer-auth connect-app.mjs does)."
+    },
+    {
+      "key": "AUTH_ISSUER_URL",
+      "target": ["preview"],
+      "kind": "config",
+      "owner": "agent",
+      "why": "The central Breakthrough sign-in issuer. The app checks it is exactly <origin>/api/auth.",
+      "agentFix": "Set to https://accounts-preview.royeradames.com/api/auth for Preview."
+    },
+    {
+      "key": "AUTH_CLIENT_ID",
+      "target": ["preview"],
+      "kind": "config",
+      "owner": "agent",
+      "why": "Identifies Devlinks to the issuer. Without it, accounts stay off.",
+      "agentFix": "Register the app with royer-auth connect-app.mjs (operator automation token on the Mac), which writes the client ID to Vercel."
+    },
+    {
+      "key": "AUTH_CLIENT_SECRET",
+      "target": ["preview"],
+      "kind": "secret",
+      "owner": "agent",
+      "why": "Proves to the issuer that the token request comes from Devlinks. Without it, sign-in fails at the callback.",
+      "agentFix": "connect-app.mjs mints it at registration and writes it as Sensitive without printing; rotate by re-registering."
+    },
+    {
+      "key": "NPM_TOKEN",
+      "target": ["production", "preview"],
+      "readBy": ".npmrc reads ${NPM_TOKEN} when npm installs @royeradames/auth from GitHub Packages.",
+      "kind": "secret",
+      "owner": "human",
+      "why": "Installs the private @royeradames/auth package from GitHub Packages through the committed .npmrc. Without it, npm ci and every Vercel build fail.",
+      "whyHuman": "GitHub Packages needs a classic personal access token minted inside Royer's GitHub account; agents can't create tokens for him.",
+      "get": {
+        "url": "https://github.com/settings/tokens/new?scopes=read:packages&description=Vercel%20package%20installs",
+        "steps": [
+          "Open the link signed in as royeradames. It preselects read:packages only, because installs need nothing more.",
+          "Set an expiry (90 days) so a leaked token stops working on its own, then Generate token.",
+          "In your own Terminal, run vercel env add NPM_TOKEN production --sensitive and paste it there, then the same for preview. Never paste it in chat."
+        ]
+      },
+      "learn": "Obsidian notes: setup - Secret vs Config; setup - Keys and expiry"
+    }
+  ],
+  "probes": [
+    {
+      "name": "production editor answers",
+      "target": "production",
+      "url": "https://link-sharing-app.royeradames.com/",
+      "expect": [200],
+      "ifFails": "Production isn't serving: check the latest production deployment and the domain on the link-sharing-app project (agent)."
+    }
+  ],
+  "coverage": {
+    "roots": ["app", "components", "lib", "scripts"],
+    "patterns": ["^\\s+\"(AUTH_[A-Z0-9_]+)\",$"],
+    "ignore": [
+      {
+        "key": "POSTGRES_URL_NON_POOLING",
+        "reason": "Provisioned on the project by the existing Postgres (Neon) integration, not set by hand; the doctor reports integration values as info."
+      },
+      {
+        "key": "DATABASE_POOL_MAX",
+        "reason": "Optional tuning with a code default of 3; unset everywhere on purpose."
+      },
+      {
+        "key": "VERCEL",
+        "reason": "Set by Vercel on every deployment."
+      },
+      {
+        "key": "VERCEL_ENV",
+        "reason": "Set by Vercel on every deployment; picks the devlinks or devlinks_preview schema."
+      }
+    ]
+  }
+}

@@ -137,6 +137,38 @@ img {
   color: #5030d6;
   background: #f4f1ff;
 }
+/* Header icons take the link colour through a mask. On phones the labels are
+   visually hidden, so the header keeps one row (design: icon tabs). */
+.site-header nav a,
+.preview-link {
+  gap: 8px;
+}
+.nav-icon {
+  display: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+.icon-links {
+  --icon: url("/assets/icons/link-45deg.svg");
+}
+.icon-profile {
+  --icon: url("/assets/icons/user-circle.svg");
+}
+.icon-account {
+  --icon: url("/assets/icons/lock.svg");
+}
+.icon-preview {
+  --icon: url("/assets/icons/eye.svg");
+}
+.brand-narrow {
+  display: none;
+}
+.preview-link {
+  white-space: nowrap;
+}
 .local-notice {
   margin: 0 24px 24px;
   text-align: center;
@@ -536,19 +568,34 @@ body:has(main > .preview-page) .keyboard-help {
 @media (max-width: 699px) {
   .site-header {
     margin: 0 0 16px;
-    padding: 16px;
-    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 8px;
   }
-  .brand {
-    flex: 1;
+  .brand-wide {
+    display: none;
+  }
+  .brand-narrow {
+    display: block;
   }
   .site-header nav {
-    order: 3;
-    width: 100%;
-    justify-content: center;
+    gap: 4px;
   }
-  .site-header nav a {
-    flex: 1;
+  .site-header nav a,
+  .preview-link {
+    min-width: 52px;
+    padding: 10px 16px;
+  }
+  .nav-icon {
+    display: block;
+  }
+  .nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
   :root {
     --page-gutter: 16px;
@@ -574,8 +621,14 @@ body:has(main > .preview-page) .keyboard-help {
   .save-actions {
     flex-wrap: wrap;
   }
+  /* Rows wrap: the save button drops under the text button instead of
+     squeezing its label. */
   .save-actions .button {
-    flex: 1;
+    flex: 1 1 9rem;
+    white-space: nowrap;
+  }
+  .save-actions .text-button {
+    white-space: nowrap;
   }
   .welcome {
     margin: 20px auto;

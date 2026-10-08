@@ -23,11 +23,19 @@ export function EditorShell({ children }: { children: ReactNode }) {
           className="brand"
         >
           <Image
+            className="brand-wide"
             src="/assets/logo/devlinks.svg"
             width={146}
             height={32}
             alt="Devlinks"
             priority
+          />
+          <Image
+            className="brand-narrow"
+            src="/assets/logo/link-circle-bold.svg"
+            width={32}
+            height={32}
+            alt="Devlinks"
           />
         </Link>
         <nav aria-label="Editor">
@@ -35,7 +43,8 @@ export function EditorShell({ children }: { children: ReactNode }) {
             href="/dashboard/links"
             aria-current={path === "/dashboard/links" ? "page" : undefined}
           >
-            Links
+            <span className="nav-icon icon-links" aria-hidden="true" />
+            <span className="nav-label">Links</span>
           </Link>
           <Link
             href="/dashboard/profile-details"
@@ -43,19 +52,22 @@ export function EditorShell({ children }: { children: ReactNode }) {
               path === "/dashboard/profile-details" ? "page" : undefined
             }
           >
-            Profile details
+            <span className="nav-icon icon-profile" aria-hidden="true" />
+            <span className="nav-label">Profile details</span>
           </Link>
           {editor.accounts.enabled && (
             <Link
               href="/account"
               aria-current={path === "/account" ? "page" : undefined}
             >
-              Account
+              <span className="nav-icon icon-account" aria-hidden="true" />
+              <span className="nav-label">Account</span>
             </Link>
           )}
         </nav>
-        <Link className="button secondary" href="/preview">
-          Saved preview
+        <Link className="button secondary preview-link" href="/preview">
+          <span className="nav-icon icon-preview" aria-hidden="true" />
+          <span className="nav-label">Saved preview</span>
         </Link>
       </header>
       <p className="local-notice">
