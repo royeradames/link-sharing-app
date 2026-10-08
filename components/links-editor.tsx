@@ -118,8 +118,12 @@ export function LinksEditor() {
                       }}
                     >
                       <div className="row-heading">
-                        <h2>Link #{index + 1}</h2>
+                        <h2 id={`heading-${link.id}`}>Link #{index + 1}</h2>
+                        {/* Named from visible text only ("Remove Link #1"), so
+                            no hidden words wrap onto a second line. */}
                         <button
+                          id={`remove-${link.id}`}
+                          aria-labelledby={`remove-${link.id} heading-${link.id}`}
                           type="button"
                           className="text-button"
                           onClick={() => {
@@ -136,7 +140,6 @@ export function LinksEditor() {
                           }}
                         >
                           Remove
-                          <span className="sr-only"> link {index + 1}</span>
                         </button>
                       </div>
                       <div className="reorder-controls">

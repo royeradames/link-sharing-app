@@ -98,7 +98,7 @@ test("five-link capacity, platform search, native reordering and removal preserv
   await expect(page.getByLabel("Link URL").first()).toHaveValue(
     "https://github.com/example"
   )
-  await page.getByRole("button", { name: "Remove link 1", exact: true }).click()
+  await page.getByRole("button", { name: "Remove Link #1", exact: true }).click()
   await expect(
     page.getByRole("button", { name: "Save links", exact: true })
   ).toBeEnabled()
@@ -600,7 +600,7 @@ test("invalid link errors follow stable rows through keyboard reorder and remova
     .getByRole("button", { name: "Move down link 1", exact: true })
     .focus()
   await page.keyboard.press("Space")
-  await page.getByRole("button", { name: "Remove link 1", exact: true }).click()
+  await page.getByRole("button", { name: "Remove Link #1", exact: true }).click()
   await expect(page.getByLabel("Link URL")).toHaveAttribute("id", inputId)
   await expect(page.getByLabel("Link URL")).toHaveAttribute(
     "aria-invalid",
