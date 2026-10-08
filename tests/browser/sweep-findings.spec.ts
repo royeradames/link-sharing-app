@@ -24,9 +24,12 @@ test("item 1: the phone header keeps its controls on one row from 320 to 700px",
             .filter((rect) => rect.width > 0)
             .map((rect) => Math.round(rect.top + rect.height / 2))
         )
-      const rows = new Set(controls.map((middle) => Math.round(middle / 12)))
-      if (rows.size > 1 || (box?.height ?? 0) > 80)
-        findings.push({ route, width, rows: rows.size, height: box?.height })
+      // Controls whose centres are within 12px share a row.
+      const rows = controls
+        .sort((a, b) => a - b)
+        .filter((middle, i, all) => i === 0 || middle - all[i - 1] > 12).length
+      if (rows > 1 || (box?.height ?? 0) > 80)
+        findings.push({ route, width, rows, height: box?.height })
       findings.push(
         ...(await headerRowsDoNotStack(page)).map((f) => ({ route, ...f })),
         ...(await controlsOnOneLine(page, "header")).map((f) => ({ route, ...f }))
@@ -99,4 +102,16 @@ test("item 4: Copy links with nothing saved stays focusable and says why", async
   await page.keyboard.press("Enter")
   await expect(copy).toBeFocused()
   await expect(page.getByRole("status").filter({ hasText: "Save at least one link" })).toBeVisible()
+})
+
+test("item 4: with unreadable saved data, Copy links says why instead of asking to save", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.setItem("devlinks.saved-draft.v1", "{broken"))
+  await page.goto("/preview")
+  const copy = page.getByRole("button", { name: "Copy links", exact: true })
+  await expect(copy).toHaveAttribute("aria-disabled", "true")
+  await expect(copy).toHaveAccessibleDescription(
+    "Saved links can't be read right now. The message above says what to do."
+  )
 })

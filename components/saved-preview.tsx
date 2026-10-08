@@ -8,12 +8,25 @@ export function SavedPreview() {
   const editor = useEditor()
   const [fallback, setFallback] = useState<string | null>(null)
   const text = useRef<HTMLTextAreaElement>(null)
+  // Why Copy links can't run yet, or null when it can. The button stays
+  // focusable and says why instead of going natively disabled.
+  const kind = editor.loaded.kind
+  const why =
+    kind === "loading"
+      ? "Loading your saved links…"
+      : kind !== "ready"
+        ? "Saved links can't be read right now. The message above says what to do."
+        : editor.saved.links.length
+          ? null
+          : "No saved links to copy yet. Add links in the editor and save them."
   async function copy() {
-    const value = copyText(editor.saved)
-    // Nothing saved yet: the button stays focusable and says why instead of
-    // going natively disabled.
+    const value = why ? "" : copyText(editor.saved)
     if (!value) {
-      editor.setNotice("Save at least one link in the editor before copying.")
+      editor.setNotice(
+        kind === "ready"
+          ? "Save at least one link in the editor before copying."
+          : (why ?? "Nothing to copy yet.")
+      )
       return
     }
     try {
@@ -42,17 +55,16 @@ export function SavedPreview() {
         <button
           className="button"
           onClick={() => void copy()}
-          aria-disabled={!editor.saved.links.length || undefined}
-          aria-describedby={
-            editor.saved.links.length ? undefined : "copy-links-why"
-          }
+          aria-disabled={why ? true : undefined}
+          aria-busy={kind === "loading" || undefined}
+          aria-describedby={why ? "copy-links-why" : undefined}
         >
           Copy links
         </button>
       </div>
-      {!editor.saved.links.length && (
+      {why && (
         <p id="copy-links-why" className="muted">
-          No saved links to copy yet. Add links in the editor and save them.
+          {why}
         </p>
       )}
       <h1>Saved preview</h1>
