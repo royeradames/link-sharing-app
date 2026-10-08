@@ -15,7 +15,7 @@ export function SavedPreview() {
     kind === "loading"
       ? "Loading your saved links…"
       : kind !== "ready"
-        ? "Saved links can't be read right now. The message above says what to do."
+        ? "Saved links can't be read right now. The message below the preview says what to do."
         : editor.saved.links.length
           ? null
           : "No saved links to copy yet. Add links in the editor and save them."

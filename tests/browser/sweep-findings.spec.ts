@@ -112,6 +112,6 @@ test("item 4: with unreadable saved data, Copy links says why instead of asking 
   const copy = page.getByRole("button", { name: "Copy links", exact: true })
   await expect(copy).toHaveAttribute("aria-disabled", "true")
   await expect(copy).toHaveAccessibleDescription(
-    "Saved links can't be read right now. The message above says what to do."
+    "Saved links can't be read right now. The message below the preview says what to do."
   )
 })
