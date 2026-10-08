@@ -213,8 +213,13 @@ test("two tabs cannot overwrite a changed saved draft", async ({
   await go(page)
   const other = await context.newPage()
   await go(other)
+  // Chrome pauses animation frames in a background tab, and Playwright waits
+  // for a frame before each click. Bring the tab being used to the front, as a
+  // person would; on a loaded host the background tab otherwise never settles.
+  await page.bringToFront()
   await addLink(page)
   await saveLinks(page)
+  await other.bringToFront()
   await addLink(other, "GitLab", "https://gitlab.com/example")
   await other.getByRole("button", { name: "Save links", exact: true }).click()
   await expect(
@@ -225,6 +230,7 @@ test("two tabs cannot overwrite a changed saved draft", async ({
   await expect(other.getByLabel("Link URL")).toHaveValue(
     "https://gitlab.com/example"
   )
+  await page.bringToFront()
   await page.reload()
   await expect(page.getByLabel("Link URL")).toHaveValue(
     "https://github.com/example"
@@ -910,7 +916,7 @@ test("home declares one site name in its identity, og:site_name and WebSite JSON
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Devlinks",
-    url: "https://link-sharing-app-self.vercel.app/"
+    url: "https://link-sharing-app.royeradames.com/"
   })
   await page.goto("/")
   // Phones show the round mark and wider screens the wordmark; both say Devlinks.
