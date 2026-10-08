@@ -689,8 +689,9 @@ test("link status line spaces its separator in every state and hides it from scr
     await expect(state).toHaveText(text)
     const measured = await statusLine(page)
     expect(measured.text).toBe(text)
-    expect(measured.gapBefore).toBeGreaterThanOrEqual(3)
-    expect(measured.gapAfter).toBeGreaterThanOrEqual(3)
+    // At least half an em of visible ink gap on each side of the dot.
+    expect(measured.gapBefore, `gap before the dot in "${text}"`).toBeGreaterThanOrEqual(8)
+    expect(measured.gapAfter, `gap after the dot in "${text}"`).toBeGreaterThanOrEqual(8)
     await expect(state.locator('[aria-hidden="true"]')).toHaveText("·")
     await expect(state).toMatchAriaSnapshot(`- paragraph: ${spoken}`)
   }

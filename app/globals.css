@@ -264,6 +264,11 @@ main {
   color: var(--muted);
   margin: 24px 0 16px;
 }
+/* Instrument Sans has a narrow space, so the dot also gets its own margin
+   to read as a separator rather than touching the words. */
+.save-state [aria-hidden="true"] {
+  margin-inline: 0.3em;
+}
 .add-link {
   width: 100%;
 }
@@ -502,18 +507,22 @@ body:has(main > .preview-page) .keyboard-help {
   max-width: var(--preview-max);
   margin-inline: auto;
 }
+/* No inset: the disclosure triangle itself sits on the column edge. */
 .keyboard-help summary {
   width: fit-content;
   min-height: 44px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 10px 0;
   color: var(--purple);
 }
 .keyboard-help summary:hover {
-  background: var(--pale);
+  color: #4820cf;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 .keyboard-help p {
-  padding: 16px;
+  max-width: 65ch;
+  padding: 8px 0 16px;
 }
 @media (max-width: 1099px) {
   .editor-layout {
