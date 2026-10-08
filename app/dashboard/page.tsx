@@ -1,16 +1,4 @@
-"use client"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-
+import { redirect } from "next/navigation"
 export default function Page() {
-  const router = useRouter()
-
-  useEffect(() => {
-    // Redirect to /dashboard/links when the component mounts
-    router.push("/dashboard/links")
-  }, [router])
-
-  // return null // or a loading spinner if you want to show something while redirecting
-
-  return null
+  redirect("/dashboard/links")
 }

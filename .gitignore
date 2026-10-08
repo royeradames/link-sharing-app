@@ -36,3 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 shoelace-wrappers
+.env*
+.test-state/
+test-results/
+playwright-report/
