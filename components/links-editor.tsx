@@ -161,24 +161,24 @@ export function LinksEditor() {
                         <button
                           type="button"
                           id={`move-up-${link.id}`}
+                          aria-labelledby={`move-up-${link.id} heading-${link.id}`}
                           disabled={index === 0}
                           onClick={() =>
                             move(link.id, links[index - 1].id, "up")
                           }
                         >
                           Move up
-                          <span className="sr-only"> link {index + 1}</span>
                         </button>
                         <button
                           type="button"
                           id={`move-down-${link.id}`}
+                          aria-labelledby={`move-down-${link.id} heading-${link.id}`}
                           disabled={index === links.length - 1}
                           onClick={() =>
                             move(link.id, links[index + 1].id, "down")
                           }
                         >
                           Move down
-                          <span className="sr-only"> link {index + 1}</span>
                         </button>
                       </div>
                       <form.Field name={`links[${index}].platform`}>
