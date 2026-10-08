@@ -224,6 +224,13 @@ try {
   // session the first one made, not "Sign-in expired" (@royer/auth rc.5, #28).
   assert.ok(bobCallback, "the sign-in passed through the federation callback")
   await bob.page.goto(bobCallback)
+  // Settle on whichever result the app shows, then keep a picture of it.
+  await Promise.any([
+    bob.page.getByText(`Signed in as ${people.bob.name} (${people.bob.email})`).waitFor(),
+    bob.page.getByRole("region", { name: "Sign-in expired" }).waitFor(),
+    bob.page.getByText("That sign-in expired or was already used.").waitFor(),
+  ])
+  await bob.page.screenshot({ path: `${out}/repeat-callback.png` })
   await bob.page.waitForURL(`${APP}/account`)
   await bob.page.getByText(`Signed in as ${people.bob.name} (${people.bob.email})`).waitFor()
   assert.equal(await bob.page.getByRole("region", { name: "Sign-in expired" }).count(), 0)
