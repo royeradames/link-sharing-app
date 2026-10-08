@@ -4,14 +4,17 @@ import { cache } from "react"
 import { PublicPage } from "@/components/public-page"
 import { PublicProfileCard } from "@/components/public-profile-card"
 import { publicProfileFor } from "@/lib/server/profile-store"
+import { openGraphFor } from "@/lib/site"
 
 export const dynamic = "force-dynamic"
 type Props = { params: Promise<{ publicId: string }> }
 const profileFor = cache(publicProfileFor)
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const profile = await profileFor((await params).publicId)
+  const { publicId } = await params
+  const profile = await profileFor(publicId)
   return {
+    openGraph: openGraphFor(`/p/${encodeURIComponent(publicId)}`),
     title: {
       absolute: profile?.name ? `${profile.name} on Devlinks` : "Devlinks profile",
     },

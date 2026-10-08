@@ -74,21 +74,21 @@ test("five-link capacity, platform search, native reordering and removal preserv
   await addLink(page, "YouTube", "https://youtube.com/@example")
   await saveLinks(page)
   await page
-    .getByRole("button", { name: "Move up link 2", exact: true })
+    .getByRole("button", { name: "Move up Link #2", exact: true })
     .focus()
   await page.keyboard.press("Enter")
   await expect(page.getByLabel("Link URL").first()).toHaveValue(
     "https://youtube.com/@example"
   )
   await page
-    .getByRole("button", { name: "Move down link 1", exact: true })
+    .getByRole("button", { name: "Move down Link #1", exact: true })
     .focus()
   await page.keyboard.press("Space")
   await expect(page.getByLabel("Link URL").first()).toHaveValue(
     "https://github.com/example"
   )
   await page
-    .getByRole("button", { name: "Move up link 2", exact: true })
+    .getByRole("button", { name: "Move up Link #2", exact: true })
     .focus()
   await page.keyboard.press("Enter")
   await page.locator(".link-row").nth(1).scrollIntoViewIfNeeded()
@@ -98,7 +98,7 @@ test("five-link capacity, platform search, native reordering and removal preserv
   await expect(page.getByLabel("Link URL").first()).toHaveValue(
     "https://github.com/example"
   )
-  await page.getByRole("button", { name: "Remove link 1", exact: true }).click()
+  await page.getByRole("button", { name: "Remove Link #1", exact: true }).click()
   await expect(
     page.getByRole("button", { name: "Save links", exact: true })
   ).toBeEnabled()
@@ -213,8 +213,13 @@ test("two tabs cannot overwrite a changed saved draft", async ({
   await go(page)
   const other = await context.newPage()
   await go(other)
+  // Chrome pauses animation frames in a background tab, and Playwright waits
+  // for a frame before each click. Bring the tab being used to the front, as a
+  // person would; on a loaded host the background tab otherwise never settles.
+  await page.bringToFront()
   await addLink(page)
   await saveLinks(page)
+  await other.bringToFront()
   await addLink(other, "GitLab", "https://gitlab.com/example")
   await other.getByRole("button", { name: "Save links", exact: true }).click()
   await expect(
@@ -225,6 +230,7 @@ test("two tabs cannot overwrite a changed saved draft", async ({
   await expect(other.getByLabel("Link URL")).toHaveValue(
     "https://gitlab.com/example"
   )
+  await page.bringToFront()
   await page.reload()
   await expect(page.getByLabel("Link URL")).toHaveValue(
     "https://github.com/example"
@@ -575,7 +581,7 @@ test("invalid link errors follow stable rows through keyboard reorder and remova
     "true"
   )
   await page
-    .getByRole("button", { name: "Move up link 2", exact: true })
+    .getByRole("button", { name: "Move up Link #2", exact: true })
     .focus()
   await page.keyboard.press("Enter")
   await expect(page.getByLabel("Link URL").first()).toHaveAttribute(
@@ -597,10 +603,10 @@ test("invalid link errors follow stable rows through keyboard reorder and remova
       .getByText("Use a YouTube URL.", { exact: true })
   ).toBeVisible()
   await page
-    .getByRole("button", { name: "Move down link 1", exact: true })
+    .getByRole("button", { name: "Move down Link #1", exact: true })
     .focus()
   await page.keyboard.press("Space")
-  await page.getByRole("button", { name: "Remove link 1", exact: true }).click()
+  await page.getByRole("button", { name: "Remove Link #1", exact: true }).click()
   await expect(page.getByLabel("Link URL")).toHaveAttribute("id", inputId)
   await expect(page.getByLabel("Link URL")).toHaveAttribute(
     "aria-invalid",
@@ -860,10 +866,10 @@ test("move up and move down keep focus on the moved row and announce its positio
   await addLink(page, "GitLab", "https://gitlab.com/example")
   const status = page.getByRole("status").filter({ hasText: "Link moved" })
   await page
-    .getByRole("button", { name: "Move down link 1", exact: true })
+    .getByRole("button", { name: "Move down Link #1", exact: true })
     .click()
   await expect(
-    page.getByRole("button", { name: "Move down link 2", exact: true })
+    page.getByRole("button", { name: "Move down Link #2", exact: true })
   ).toBeFocused()
   await expect(page.getByLabel("Link URL").nth(1)).toHaveValue(
     "https://github.com/example"
@@ -872,22 +878,22 @@ test("move up and move down keep focus on the moved row and announce its positio
     "Link moved to position 2. Save links to keep this order."
   )
   await page
-    .getByRole("button", { name: "Move down link 2", exact: true })
+    .getByRole("button", { name: "Move down Link #2", exact: true })
     .click()
   // Move down is unavailable on the last row, so focus stays on its Move up.
   await expect(
-    page.getByRole("button", { name: "Move up link 3", exact: true })
+    page.getByRole("button", { name: "Move up Link #3", exact: true })
   ).toBeFocused()
   await expect(status).toHaveText(
     "Link moved to position 3. Save links to keep this order."
   )
-  await page.getByRole("button", { name: "Move up link 3", exact: true }).click()
+  await page.getByRole("button", { name: "Move up Link #3", exact: true }).click()
   await expect(
-    page.getByRole("button", { name: "Move up link 2", exact: true })
+    page.getByRole("button", { name: "Move up Link #2", exact: true })
   ).toBeFocused()
-  await page.getByRole("button", { name: "Move up link 2", exact: true }).click()
+  await page.getByRole("button", { name: "Move up Link #2", exact: true }).click()
   await expect(
-    page.getByRole("button", { name: "Move down link 1", exact: true })
+    page.getByRole("button", { name: "Move down Link #1", exact: true })
   ).toBeFocused()
   await expect(page.getByLabel("Link URL").first()).toHaveValue(
     "https://github.com/example"
@@ -910,10 +916,11 @@ test("home declares one site name in its identity, og:site_name and WebSite JSON
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Devlinks",
-    url: "https://link-sharing-app-self.vercel.app/"
+    url: "https://link-sharing-app.royeradames.com/"
   })
   await page.goto("/")
-  await expect(page.locator(".site-header .brand img")).toHaveAttribute(
+  // Phones show the round mark and wider screens the wordmark; both say Devlinks.
+  await expect(page.locator(".site-header .brand img:visible")).toHaveAttribute(
     "alt",
     "Devlinks"
   )

@@ -8,9 +8,27 @@ export function SavedPreview() {
   const editor = useEditor()
   const [fallback, setFallback] = useState<string | null>(null)
   const text = useRef<HTMLTextAreaElement>(null)
+  // Why Copy links can't run yet, or null when it can. The button stays
+  // focusable and says why instead of going natively disabled.
+  const kind = editor.loaded.kind
+  const why =
+    kind === "loading"
+      ? "Loading your saved links…"
+      : kind !== "ready"
+        ? "Saved links can't be read right now. The message below the preview says what to do."
+        : editor.saved.links.length
+          ? null
+          : "No saved links to copy yet. Add links in the editor and save them."
   async function copy() {
-    const value = copyText(editor.saved)
-    if (!value) return
+    const value = why ? "" : copyText(editor.saved)
+    if (!value) {
+      editor.setNotice(
+        kind === "ready"
+          ? "Save at least one link in the editor before copying."
+          : (why ?? "Nothing to copy yet.")
+      )
+      return
+    }
     try {
       await navigator.clipboard.writeText(value)
       setFallback(null)
@@ -37,11 +55,18 @@ export function SavedPreview() {
         <button
           className="button"
           onClick={() => void copy()}
-          disabled={!editor.saved.links.length}
+          aria-disabled={why ? true : undefined}
+          aria-busy={kind === "loading" || undefined}
+          aria-describedby={why ? "copy-links-why" : undefined}
         >
           Copy links
         </button>
       </div>
+      {why && (
+        <p id="copy-links-why" className="muted">
+          {why}
+        </p>
+      )}
       <h1>Saved preview</h1>
       <p className="muted">
         Only saved changes appear here. This preview belongs to this browser and
