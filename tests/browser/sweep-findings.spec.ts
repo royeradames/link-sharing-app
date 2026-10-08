@@ -81,7 +81,7 @@ test("item 3: every editor route declares og:site_name and one WebSite JSON-LD",
         "@context": "https://schema.org",
         "@type": "WebSite",
         name: "Devlinks",
-        url: "https://link-sharing-app-self.vercel.app/",
+        url: "https://link-sharing-app.royeradames.com/",
       },
     ])
   }
@@ -114,4 +114,18 @@ test("item 4: with unreadable saved data, Copy links says why instead of asking 
   await expect(copy).toHaveAccessibleDescription(
     "Saved links can't be read right now. The message below the preview says what to do."
   )
+})
+
+test("og:url names each route on the production domain", async ({ page }) => {
+  for (const route of routes) {
+    await page.goto(route)
+    const expected = new RegExp(
+      "^https://link-sharing-app\\.royeradames\\.com" +
+        (route === "/" ? "/?$" : route.replaceAll("/", "\\/") + "$")
+    )
+    await expect(page.locator('meta[property="og:url"]'), route).toHaveAttribute(
+      "content",
+      expected
+    )
+  }
 })

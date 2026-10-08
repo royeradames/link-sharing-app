@@ -20,7 +20,7 @@
     "db:migrate": "node scripts/migrate.mjs"
   },
   "dependencies": {
-    "@royer/auth": "npm:@royeradames/auth@0.1.0-rc.4",
+    "@royer/auth": "npm:@royeradames/auth@0.1.0-rc.5",
     "@tanstack/react-form": "1.33.5",
     "@vercel/functions": "3.9.11",
     "next": "16.3.6",

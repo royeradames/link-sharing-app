@@ -138,9 +138,16 @@ try {
     })
     assert.equal(session.status(), 200, "issuer sign-in")
     await page.goto(`${APP}/account`)
+    let callback = null
+    const seen = request => {
+      if (request.url().startsWith(`${APP}/api/auth/federation/callback`)) callback ??= request.url()
+    }
+    page.on("request", seen)
     await page.getByRole("button", { name: "Sign in with Breakthrough", exact: true }).click()
     await page.waitForURL(`${APP}/account`)
     await page.getByText(`Signed in as ${person.name} (${person.email})`).waitFor()
+    page.off("request", seen)
+    return callback
   }
   async function addLink(page, platform, url) {
     await page.getByRole("button", { name: "+ Add new link", exact: true }).click()
@@ -212,7 +219,22 @@ try {
 
   // 3. Bob, in another browser, starts empty and cannot read Alice's data.
   const bob = await open(browsers[1], "bob")
-  await signIn(bob, people.bob)
+  const bobCallback = await signIn(bob, people.bob)
+  // A callback that arrives twice (a double navigation or a prefetch) shows the
+  // session the first one made, not "Sign-in expired" (@royer/auth rc.5, #28).
+  assert.ok(bobCallback, "the sign-in passed through the federation callback")
+  await bob.page.goto(bobCallback)
+  // Settle on whichever result the app shows, then keep a picture of it.
+  await Promise.any([
+    bob.page.getByText(`Signed in as ${people.bob.name} (${people.bob.email})`).waitFor(),
+    bob.page.getByRole("region", { name: "Sign-in expired" }).waitFor(),
+    bob.page.getByText("That sign-in expired or was already used.").waitFor(),
+  ])
+  await bob.page.screenshot({ path: `${out}/repeat-callback.png` })
+  await bob.page.waitForURL(`${APP}/account`)
+  await bob.page.getByText(`Signed in as ${people.bob.name} (${people.bob.email})`).waitFor()
+  assert.equal(await bob.page.getByRole("region", { name: "Sign-in expired" }).count(), 0)
+  log("A repeated sign-in callback keeps Bob's session instead of showing it as expired.")
   await bob.page.goto(`${APP}/dashboard/links`)
   await bob.page.getByRole("heading", { name: "Let’s get you started" }).waitFor()
   const bobAccount = await (await bob.page.request.get(`${APP}/api/account`)).json()
