@@ -66,8 +66,9 @@ export function forgetSignedIn() {
 }
 /** A signed-out answer for a browser that was signed in means the session expired. */
 function classify(view: AccountView): AccountView {
+  // The hint holds the account's email so restored edits go to the same person.
   if (view.state === "signed_in")
-    storageCall(() => localStorage.setItem(SIGNED_IN_HINT, "1"))
+    storageCall(() => localStorage.setItem(SIGNED_IN_HINT, view.user.email))
   if (
     view.state === "signed_out" &&
     storageCall(() => localStorage.getItem(SIGNED_IN_HINT))
@@ -125,11 +126,13 @@ function useEditorState(accounts: AccountsConfig) {
     let alive = true
     // Accounts off: the browser-local editor, exactly as before accounts.
     // Accounts on: ask the server first; a guest falls back to this browser.
+    let signedIn: SignedIn | null = null
     const initial: Promise<ReadResult> = accounts.enabled
       ? fetchAccount().then(classify).then(view => {
           if (!alive) return { kind: "unavailable", message: "" }
           setAccount(view)
           if (view.state === "signed_in") {
+            signedIn = view
             setSource("account")
             return accountResult(view)
           }
@@ -152,10 +155,17 @@ function useEditorState(accounts: AccountsConfig) {
       // Back from signing in again: put the unsaved edits back on top.
       const stashed = storageCall(() => sessionStorage.getItem(REAUTH_EDITS))
       storageCall(() => sessionStorage.removeItem(REAUTH_EDITS))
-      const edits = stashed
-        ? draftSchema.safeParse(storageCall(() => JSON.parse(stashed)))
+      const parsed = stashed
+        ? (storageCall(() => JSON.parse(stashed)) as {
+            email?: unknown
+            draft?: unknown
+          } | null)
         : null
-      if (edits?.success) {
+      const edits = parsed ? draftSchema.safeParse(parsed.draft) : null
+      // Only the person who left these edits gets them back.
+      const person = signedIn as SignedIn | null
+      const sameAccount = !!person && parsed?.email === person.user.email
+      if (edits?.success && sameAccount) {
         form.reset(edits.data, { keepDefaultValues: true })
         setNotice("Your unsaved edits were restored. Save to keep them.")
       }
@@ -203,9 +213,13 @@ function useEditorState(accounts: AccountsConfig) {
    */
   async function reauthenticate() {
     const values = form.state.values
-    if (JSON.stringify(values) !== JSON.stringify(saved))
+    const email = storageCall(() => localStorage.getItem(SIGNED_IN_HINT))
+    if (email && JSON.stringify(values) !== JSON.stringify(saved))
       storageCall(() =>
-        sessionStorage.setItem(REAUTH_EDITS, JSON.stringify(values))
+        sessionStorage.setItem(
+          REAUTH_EDITS,
+          JSON.stringify({ email, draft: values })
+        )
       )
     try {
       window.location.assign(
