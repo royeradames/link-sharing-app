@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEditor } from "./editor-provider"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 
 export function EditorShell({ children }: { children: ReactNode }) {
   const path = usePathname()
@@ -45,31 +45,48 @@ export function EditorShell({ children }: { children: ReactNode }) {
           >
             Profile details
           </Link>
+          {editor.accounts.enabled && (
+            <Link
+              href="/account"
+              aria-current={path === "/account" ? "page" : undefined}
+            >
+              Account
+            </Link>
+          )}
         </nav>
         <Link className="button secondary" href="/preview">
           Saved preview
         </Link>
       </header>
       <p className="local-notice">
-        Local editor preview. Saves stay in this browser. Accounts and public
-        profile pages are not available yet.
+        <SourceNotice />
       </p>
       <main id="main" tabIndex={-1}>
         {waitingForDraft ? (
-          <p className="panel">Loading your local draft…</p>
+          <p className="panel">
+            {editor.accounts.enabled
+              ? "Loading your saved profile…"
+              : "Loading your local draft…"}
+          </p>
         ) : (
           children
         )}
-        {editor.loaded.kind === "unavailable" && (
-          <section className="storage-warning" aria-label="Storage unavailable">
-            <p>{editor.loaded.message} Saving is unavailable.</p>
-            <button
-              className="button secondary"
-              onClick={() => void editor.reloadSaved()}
+        {editor.account?.state === "expired" ? (
+          <ExpiredSignIn />
+        ) : (
+          editor.loaded.kind === "unavailable" && (
+            <section
+              className="storage-warning"
+              aria-label={
+                editor.source === "browser"
+                  ? "Storage unavailable"
+                  : "Account unavailable"
+              }
             >
-              Retry loading saved draft
-            </button>
-          </section>
+              <p>{editor.loaded.message} Saving is unavailable.</p>
+              <RetryButton />
+            </section>
+          )
         )}
         {editor.loaded.kind === "corrupt" && (
           <section className="storage-warning" aria-label="Draft recovery">
@@ -117,5 +134,90 @@ export function EditorShell({ children }: { children: ReactNode }) {
         </details>
       </footer>
     </>
+  )
+}
+
+/** Says where saves go right now. */
+function SourceNotice() {
+  const { accounts, source, account } = useEditor()
+  if (!accounts.enabled)
+    return (
+      <>
+        Local editor preview. Saves stay in this browser. Accounts and public
+        profile pages are coming soon.
+      </>
+    )
+  if (account?.state === "expired")
+    return <>Your sign-in expired. Saving to your account is paused.</>
+  if (account?.state === "unavailable")
+    return <>Your account could not be checked. Saving is paused.</>
+  if (source === "account" && account?.state === "signed_in")
+    return <>Signed in as {account.user.name || account.user.email}. Saves go to your account.</>
+  if (source === "browser")
+    return (
+      <>
+        Guest mode. Saves stay in this browser. Sign in from Account to save to
+        your account and publish a profile page.
+      </>
+    )
+  return <>Checking your account…</>
+}
+
+/** Retries loading; busy, not disabled, while the check runs. */
+function RetryButton() {
+  const editor = useEditor()
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      className="button secondary"
+      aria-busy={busy || undefined}
+      aria-disabled={busy || undefined}
+      onClick={async () => {
+        if (busy) return
+        setBusy(true)
+        await editor.reloadSaved()
+        setBusy(false)
+      }}
+    >
+      {editor.source === "browser"
+        ? "Retry loading saved draft"
+        : "Check my account again"}
+    </button>
+  )
+}
+
+/** An ended session: sign in again (edits kept) or continue as a guest. */
+export function ExpiredSignIn() {
+  const editor = useEditor()
+  const [busy, setBusy] = useState(false)
+  return (
+    <section className="storage-warning" aria-label="Sign-in expired">
+      <p>
+        Your sign-in expired. Sign in again to keep saving to your account;
+        your unsaved edits come back with you. Or continue as a guest in this
+        browser.
+      </p>
+      <button
+        className="button"
+        aria-busy={busy || undefined}
+        aria-disabled={busy || undefined}
+        onClick={async () => {
+          if (busy) return
+          setBusy(true)
+          await editor.reauthenticate().catch(() => setBusy(false))
+        }}
+      >
+        {busy ? "Opening sign-in…" : "Sign in again"}
+      </button>
+      <button
+        className="button secondary"
+        aria-disabled={busy || undefined}
+        onClick={() => {
+          if (!busy) editor.continueAsGuest()
+        }}
+      >
+        Continue as a guest
+      </button>
+    </section>
   )
 }

@@ -10,26 +10,92 @@ import {
 } from "react"
 import { useForm } from "@tanstack/react-form"
 import {
+  draftSchema,
   emptyDraft,
   linksSchema,
   profileSchema,
   STORAGE_KEY,
+  type Draft,
   type Section
 } from "@/lib/draft"
 import {
   readDraft,
   resetDraft,
   saveDraft,
-  type ReadResult
+  type ReadResult,
+  type SaveResult
 } from "@/lib/local-draft"
+import {
+  fetchAccount,
+  saveAccountDraft,
+  startSignIn,
+  type AccountView,
+  type SignedIn
+} from "@/lib/account-client"
+
+/** Whether central accounts exist on this deployment, and their registered origin. */
+export type AccountsConfig = { enabled: boolean; origin: string | null }
+/**
+ * Where saves go. "browser" is the guest editor (and the only source where
+ * accounts are off). "account" is the signed-in person's server profile.
+ * "checking" means the account could not be checked yet: nothing is loaded
+ * from either place, so account data is never mixed with this browser's.
+ */
+export type DraftSource = "browser" | "account" | "checking"
+const accountUnavailable =
+  "Your account could not be checked, so nothing was loaded. Your current edits are still available."
+const signInExpired =
+  "Your sign-in expired. Sign in again to keep editing your account, or continue as a guest in this browser."
+/**
+ * Remembers that this browser was signed in, so an ended session is shown
+ * as expired instead of silently turning into guest mode. Cleared by an
+ * explicit sign-out or "Continue as a guest". It holds no account data.
+ */
+const SIGNED_IN_HINT = "devlinks.signed-in"
+/** Unsaved edits carried across a sign-in round trip, in this tab only. */
+const REAUTH_EDITS = "devlinks.reauth-edits"
+function storageCall<T>(run: () => T): T | null {
+  try {
+    return run()
+  } catch {
+    return null
+  }
+}
+export function forgetSignedIn() {
+  storageCall(() => localStorage.removeItem(SIGNED_IN_HINT))
+}
+/** A signed-out answer for a browser that was signed in means the session expired. */
+function classify(view: AccountView): AccountView {
+  // The hint holds the account's email so restored edits go to the same person.
+  if (view.state === "signed_in")
+    storageCall(() => localStorage.setItem(SIGNED_IN_HINT, view.user.email))
+  if (
+    view.state === "signed_out" &&
+    storageCall(() => localStorage.getItem(SIGNED_IN_HINT))
+  )
+    return { state: "expired" }
+  return view
+}
+function accountResult(view: SignedIn): ReadResult {
+  const document = view.profile.document
+  return {
+    kind: "ready",
+    raw: document ? JSON.stringify(document) : null,
+    document
+  }
+}
 
 function busyNotice(imageReading: boolean) {
   return imageReading
     ? "Still checking the image. Try again when it finishes."
     : "Still saving. Try again when it finishes."
 }
-function useEditorState() {
+function useEditorState(accounts: AccountsConfig) {
   const form = useForm({ defaultValues: emptyDraft() })
+  const [source, setSource] = useState<DraftSource>(
+    accounts.enabled ? "checking" : "browser"
+  )
+  const [account, setAccount] = useState<AccountView | null>(null)
   const [loaded, setLoaded] = useState<ReadResult | { kind: "loading" }>({
     kind: "loading"
   })
@@ -58,14 +124,60 @@ function useEditorState() {
       : emptyDraft()
   useEffect(() => {
     let alive = true
-    void readDraft().then(result => {
+    // Accounts off: the browser-local editor, exactly as before accounts.
+    // Accounts on: ask the server first; a guest falls back to this browser.
+    let signedIn: SignedIn | null = null
+    const initial: Promise<ReadResult> = accounts.enabled
+      ? fetchAccount().then(classify).then(view => {
+          if (!alive) return { kind: "unavailable", message: "" }
+          setAccount(view)
+          if (view.state === "signed_in") {
+            signedIn = view
+            setSource("account")
+            return accountResult(view)
+          }
+          if (view.state === "unavailable")
+            return { kind: "unavailable", message: accountUnavailable }
+          if (view.state === "expired")
+            return { kind: "unavailable", message: signInExpired }
+          setSource("browser")
+          return readDraft()
+        })
+      : readDraft()
+    void initial.then(result => {
       if (!alive) return
       setLoaded(result)
-      if (result.kind === "ready")
-        form.reset(result.document?.draft ?? emptyDraft(), {
-          keepDefaultValues: true
-        })
+      if (result.kind !== "ready") return
+      form.reset(result.document?.draft ?? emptyDraft(), {
+        keepDefaultValues: true
+      })
+      if (!accounts.enabled) return
+      // Back from signing in again: put the unsaved edits back on top.
+      const stashed = storageCall(() => sessionStorage.getItem(REAUTH_EDITS))
+      storageCall(() => sessionStorage.removeItem(REAUTH_EDITS))
+      const parsed = stashed
+        ? (storageCall(() => JSON.parse(stashed)) as {
+            email?: unknown
+            draft?: unknown
+          } | null)
+        : null
+      const edits = parsed ? draftSchema.safeParse(parsed.draft) : null
+      // Only the person who left these edits gets them back.
+      const person = signedIn as SignedIn | null
+      const sameAccount = !!person && parsed?.email === person.user.email
+      if (edits?.success && sameAccount) {
+        form.reset(edits.data, { keepDefaultValues: true })
+        setNotice("Your unsaved edits were restored. Save to keep them.")
+      }
     })
+    return () => {
+      alive = false
+      reloadSequence.current += 1
+    }
+  }, [form, accounts.enabled])
+  useEffect(() => {
+    // Other tabs only signal changes to this browser's own draft.
+    if (source !== "browser") return
     const changed = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY || event.key === null) {
         reloadSequence.current += 1
@@ -73,12 +185,73 @@ function useEditorState() {
       }
     }
     window.addEventListener("storage", changed)
-    return () => {
-      alive = false
-      reloadSequence.current += 1
-      window.removeEventListener("storage", changed)
+    return () => window.removeEventListener("storage", changed)
+  }, [source])
+  /** Reads the saved draft from wherever saves currently go. */
+  async function readCurrent(): Promise<ReadResult> {
+    if (source === "browser") return readDraft()
+    const view = classify(await fetchAccount())
+    if (view.state === "signed_in") {
+      setAccount(view)
+      setSource("account")
+      return accountResult(view)
     }
-  }, [form])
+    if (view.state === "unavailable")
+      return { kind: "unavailable", message: accountUnavailable }
+    // Signed out after a failed check, never signed in here: a guest after all.
+    if (source === "checking" && view.state === "signed_out") {
+      setAccount(view)
+      setSource("browser")
+      return readDraft()
+    }
+    setAccount({ state: "expired" })
+    return { kind: "unavailable", message: signInExpired }
+  }
+  /**
+   * Signs in again through the issuer and returns to this page. Unsaved
+   * edits ride along in this tab's session storage and are restored after.
+   */
+  async function reauthenticate() {
+    const values = form.state.values
+    const email = storageCall(() => localStorage.getItem(SIGNED_IN_HINT))
+    if (email && JSON.stringify(values) !== JSON.stringify(saved))
+      storageCall(() =>
+        sessionStorage.setItem(
+          REAUTH_EDITS,
+          JSON.stringify({ email, draft: values })
+        )
+      )
+    try {
+      window.location.assign(
+        await startSignIn(window.location.pathname + window.location.search)
+      )
+    } catch (error) {
+      storageCall(() => sessionStorage.removeItem(REAUTH_EDITS))
+      setNotice(
+        error instanceof Error ? error.message : "Sign-in is unavailable."
+      )
+      throw error
+    }
+  }
+  /** Leaves an expired account for this browser's guest draft. */
+  function continueAsGuest() {
+    forgetSignedIn()
+    window.location.reload()
+  }
+  async function saveToAccount(
+    candidate: Draft,
+    expectedRevision: string | null
+  ): Promise<SaveResult> {
+    const outcome = await saveAccountDraft(candidate, expectedRevision)
+    if (outcome.kind === "signed_out") setAccount({ state: "expired" })
+    if (outcome.kind !== "saved")
+      return { kind: "failed", message: outcome.message }
+    setAccount(outcome.view)
+    const document = outcome.view.profile.document
+    if (!document)
+      return { kind: "failed", message: "Nothing was saved. Try again." }
+    return { kind: "saved", raw: JSON.stringify(document), document }
+  }
   async function save(section: Section) {
     if (saving || imageReading) {
       setNotice(busyNotice(imageReading))
@@ -115,7 +288,10 @@ function useEditorState() {
       section === "links"
         ? { ...saved, links: linksSchema.parse(values.links) }
         : { ...saved, profile: profileSchema.parse(values.profile) }
-    const result = await saveDraft(candidate, loaded.raw)
+    const result =
+      source === "account"
+        ? await saveToAccount(candidate, loaded.document?.revision ?? null)
+        : await saveDraft(candidate, loaded.raw)
     setSaving(false)
     if (result.kind === "failed") {
       setNotice(result.message)
@@ -135,10 +311,9 @@ function useEditorState() {
     )
       form.setFieldValue("profile", result.document.draft.profile)
     setExternalChange(false)
+    const where = source === "account" ? "to your account" : "in this browser"
     setNotice(
-      section === "links"
-        ? "Links saved in this browser."
-        : "Profile saved in this browser."
+      section === "links" ? `Links saved ${where}.` : `Profile saved ${where}.`
     )
   }
   async function reloadSaved() {
@@ -150,7 +325,7 @@ function useEditorState() {
       return
     const sequence = ++reloadSequence.current
     const values = form.state.values
-    const result = await readDraft()
+    const result = await readCurrent()
     if (sequence !== reloadSequence.current) return
     // TanStack replaces its values object on edits. Never apply a decoded snapshot over newer work.
     if (values !== form.state.values) {
@@ -170,7 +345,7 @@ function useEditorState() {
     })
     setExternalChange(false)
     setErrors({})
-    setNotice("Saved draft loaded.")
+    setNotice(source === "account" ? "Saved profile loaded." : "Saved draft loaded.")
   }
   async function resetCorrupt() {
     if (
@@ -203,6 +378,12 @@ function useEditorState() {
     URL.revokeObjectURL(url)
   }
   return {
+    accounts,
+    source,
+    account,
+    setAccount,
+    reauthenticate,
+    continueAsGuest,
     form,
     loaded,
     saved,
@@ -222,8 +403,14 @@ function useEditorState() {
 const EditorContext = createContext<ReturnType<typeof useEditorState> | null>(
   null
 )
-export function EditorProvider({ children }: { children: ReactNode }) {
-  const editor = useEditorState()
+export function EditorProvider({
+  accounts,
+  children
+}: {
+  accounts: AccountsConfig
+  children: ReactNode
+}) {
+  const editor = useEditorState(accounts)
   return (
     <EditorContext.Provider value={editor}>{children}</EditorContext.Provider>
   )
