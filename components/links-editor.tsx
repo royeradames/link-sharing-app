@@ -98,6 +98,8 @@ export function LinksEditor() {
                       width={250}
                       height={161}
                       alt=""
+                      loading="eager"
+                      fetchPriority="high"
                     />
                     <h2>Let’s get you started</h2>
                     <p>Add your first platform and its HTTPS link.</p>
