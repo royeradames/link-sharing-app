@@ -1,13 +1,14 @@
-import { z } from "zod"
+import * as z from "zod/mini"
 import { json, readJson } from "../../../../lib/server/http.ts"
 import { savePublishing } from "../../../../lib/server/profile-store.ts"
 import { publishingSchema } from "../../../../lib/publishing.ts"
 import { signedIn, signedOwner } from "../session.ts"
 
 export const dynamic = "force-dynamic"
-const body = z
-  .object({ expectedRevision: z.uuid().nullable(), publishing: publishingSchema })
-  .strict()
+const body = z.strictObject({
+  expectedRevision: z.nullable(z.uuid()),
+  publishing: publishingSchema
+})
 
 /** Saves what the signed-in person shows on their public page. */
 export async function PUT(request: Request) {

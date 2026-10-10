@@ -1,19 +1,17 @@
-import { z } from "zod"
+import * as z from "zod/mini"
 import type { Draft } from "./draft.ts"
 
 /**
  * What the owner chose to show on their public page. Nothing is public until
  * `published` is true, and email is private unless the owner turns it on.
  */
-export const publishingSchema = z
-  .object({
-    published: z.boolean(),
-    name: z.boolean(),
-    email: z.boolean(),
-    image: z.boolean(),
-    links: z.boolean(),
-  })
-  .strict()
+export const publishingSchema = z.strictObject({
+  published: z.boolean(),
+  name: z.boolean(),
+  email: z.boolean(),
+  image: z.boolean(),
+  links: z.boolean(),
+})
 export type Publishing = z.infer<typeof publishingSchema>
 export const defaultPublishing: Publishing = {
   published: false,

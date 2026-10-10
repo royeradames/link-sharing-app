@@ -1,4 +1,4 @@
-import { z } from "zod"
+import * as z from "zod/mini"
 
 export const platforms = [
   { id: "github", name: "GitHub", hosts: ["github.com"], color: "#1a1a1a" },
@@ -65,27 +65,34 @@ export const MAX_DOCUMENT_CHARS = 400_000
 export const STORAGE_KEY = "devlinks.saved-draft.v1"
 const name = z
   .string()
-  .trim()
-  .min(1, "Enter your name.")
-  .max(80, "Use 80 characters or fewer.")
-const image = z
-  .string()
-  .max(350_000)
-  .refine(
+  .check(
+    z.trim(),
+    z.minLength(1, "Enter your name."),
+    z.maxLength(80, "Use 80 characters or fewer.")
+  )
+const image = z.string().check(
+  z.maxLength(350_000),
+  z.refine(
     value =>
       value === "" ||
       /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/]+={0,2}$/.test(value),
     "Choose a PNG or JPEG image."
   )
+)
 const profileFields = {
-  firstName: name.or(z.literal("")),
-  lastName: name.or(z.literal("")),
-  email: z.email("Enter a valid email.").max(254).or(z.literal("")),
+  firstName: z.union([name, z.literal("")]),
+  lastName: z.union([name, z.literal("")]),
+  email: z.union([
+    z.email("Enter a valid email.").check(z.maxLength(254)),
+    z.literal("")
+  ]),
   image
 }
-export const profileSchema = z
-  .object({ ...profileFields, firstName: name, lastName: name })
-  .strict()
+export const profileSchema = z.strictObject({
+  ...profileFields,
+  firstName: name,
+  lastName: name
+})
 
 export function destinationError(
   platform: string,
@@ -111,42 +118,50 @@ export function destinationError(
   }
 }
 export const linkSchema = z
-  .object({
+  .strictObject({
     id: z.uuid(),
     platform: z
       .string()
-      .refine(
-        value => platforms.some(platform => platform.id === value),
-        "Choose a supported platform."
+      .check(
+        z.refine(
+          value => platforms.some(platform => platform.id === value),
+          "Choose a supported platform."
+        )
       ),
     url: z
       .string()
-      .trim()
-      .min(1, "Enter a link.")
-      .max(2048, "Use a shorter URL.")
+      .check(
+        z.trim(),
+        z.minLength(1, "Enter a link."),
+        z.maxLength(2048, "Use a shorter URL.")
+      )
   })
-  .strict()
-  .superRefine((link, ctx) => {
-    if (!platforms.some(platform => platform.id === link.platform)) return
-    const error = destinationError(link.platform, link.url)
-    if (error) ctx.addIssue({ code: "custom", path: ["url"], message: error })
-  })
-export const linksSchema = z
-  .array(linkSchema)
-  .max(5, "You can save up to five links.")
-  .superRefine((links, ctx) => {
+  .check(
+    z.superRefine((link, ctx) => {
+      if (!platforms.some(platform => platform.id === link.platform)) return
+      const error = destinationError(link.platform, link.url)
+      if (error) ctx.addIssue({ code: "custom", path: ["url"], message: error })
+    })
+  )
+export const linksSchema = z.array(linkSchema).check(
+  z.maxLength(5, "You can save up to five links."),
+  z.superRefine((links, ctx) => {
     if (new Set(links.map(link => link.id)).size !== links.length)
       ctx.addIssue({
         code: "custom",
         message: "Each link needs a unique identifier."
       })
   })
-export const draftSchema = z
-  .object({ profile: z.object(profileFields).strict(), links: linksSchema })
-  .strict()
-export const documentSchema = z
-  .object({ version: z.literal(1), revision: z.uuid(), draft: draftSchema })
-  .strict()
+)
+export const draftSchema = z.strictObject({
+  profile: z.strictObject(profileFields),
+  links: linksSchema
+})
+export const documentSchema = z.strictObject({
+  version: z.literal(1),
+  revision: z.uuid(),
+  draft: draftSchema
+})
 export type Draft = z.infer<typeof draftSchema>
 export type SavedDocument = z.infer<typeof documentSchema>
 export type Section = "profile" | "links"
