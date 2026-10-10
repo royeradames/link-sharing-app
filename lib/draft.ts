@@ -71,7 +71,7 @@ const name = z
     z.maxLength(80, "Use 80 characters or fewer.")
   )
 const image = z.string().check(
-  z.maxLength(350_000),
+  z.maxLength(350_000, "Choose an image under 256 KB."),
   z.refine(
     value =>
       value === "" ||
@@ -83,7 +83,9 @@ const profileFields = {
   firstName: z.union([name, z.literal("")]),
   lastName: z.union([name, z.literal("")]),
   email: z.union([
-    z.email("Enter a valid email.").check(z.maxLength(254)),
+    z.email("Enter a valid email.").check(
+      z.maxLength(254, "Use 254 characters or fewer.")
+    ),
     z.literal("")
   ]),
   image
