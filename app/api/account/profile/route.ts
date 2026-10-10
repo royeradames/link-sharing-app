@@ -1,13 +1,14 @@
-import { z } from "zod"
+import * as z from "zod/mini"
 import { draftSchema, MAX_DOCUMENT_CHARS } from "../../../../lib/draft.ts"
 import { json, readJson } from "../../../../lib/server/http.ts"
 import { InvalidDraft, saveDraft } from "../../../../lib/server/profile-store.ts"
 import { signedIn, signedOwner } from "../session.ts"
 
 export const dynamic = "force-dynamic"
-const body = z
-  .object({ expectedRevision: z.uuid().nullable(), draft: draftSchema })
-  .strict()
+const body = z.strictObject({
+  expectedRevision: z.nullable(z.uuid()),
+  draft: draftSchema
+})
 
 /** Saves the signed-in person's whole draft as a new revision. */
 export async function PUT(request: Request) {
@@ -34,7 +35,7 @@ export async function PUT(request: Request) {
       )
     return signedIn(signed, result.profile)
   } catch (error) {
-    if (error instanceof InvalidDraft || error instanceof z.ZodError)
+    if (error instanceof InvalidDraft || error instanceof z.core.$ZodError)
       return json({ error: "This profile is too large to save. Choose a smaller image." }, 400)
     console.error(JSON.stringify({ event: "profile_save_failed" }))
     return json({ error: "Your profile was not saved. Try again in a moment; your edits are still here." }, 503)

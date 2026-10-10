@@ -120,3 +120,27 @@ test("an unknown platform is reported on the platform control rather than a vali
     [[0, "platform"]]
   )
 })
+test("an oversized photo or email gets a plain message, not a default one", () => {
+  const profile = {
+    firstName: "Demo",
+    lastName: "Reader",
+    email: "",
+    image: ""
+  }
+  const messages = (value: unknown) => {
+    const result = profileSchema.safeParse(value)
+    return result.success ? [] : result.error.issues.map(issue => issue.message)
+  }
+  assert.deepEqual(
+    messages({
+      ...profile,
+      image: `data:image/png;base64,${"A".repeat(350_000)}`
+    }),
+    ["Choose an image under 256 KB."]
+  )
+  assert.ok(
+    messages({ ...profile, email: `${"a".repeat(250)}@example.com` }).includes(
+      "Use 254 characters or fewer."
+    )
+  )
+})
