@@ -42,3 +42,26 @@ for (const width of [400, 768, 1440]) {
     })
   }
 }
+
+test("the initial links document discovers the illustration before loading a local draft", async ({
+  request,
+  page,
+}, testInfo) => {
+  const response = await request.get("/dashboard/links")
+  expect(response.ok()).toBe(true)
+  const hints = await page.evaluate(markup => {
+    const document = new DOMParser().parseFromString(markup, "text/html")
+    return [...document.querySelectorAll('link[rel="preload"][as="image"]')].map(link => ({
+      href: link.getAttribute("href"),
+      priority: link.getAttribute("fetchpriority"),
+    }))
+  }, await response.text())
+  await testInfo.attach("initial-document-image-hints", {
+    body: JSON.stringify(hints),
+    contentType: "application/json",
+  })
+  expect(hints).toContainEqual({
+    href: "/assets/get-starter-illustration.svg",
+    priority: "high",
+  })
+})

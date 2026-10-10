@@ -25,7 +25,7 @@ Accounts switch on only where every setting in `.env.example` is present: today,
 
 The historical37image assets remain unchanged. Instrument Sans is self-hosted from Google Fonts with its original OFL license. Full premium design stills were not available for this preparation; it retains the historical purple/white editor and preview composition without claiming pixel-exact compliance. The five-link cap is historical behavior, not a new claim about the official brief.
 
-The empty links-editor illustration loads eagerly with a high fetch priority because it is visible in the initial viewport. The image, its dimensions and the editor's save/account behavior stay the same. A browser regression records Chrome's actual initial request priority at 400, 768 and 1440px in both display preferences.
+The empty links-editor illustration loads eagerly with a high fetch priority because it is visible in the initial viewport. The server page also preloads that SVG so its request can start before the local draft finishes loading. The image, its dimensions and the editor's save/account behavior stay the same. Browser regressions check the initial document's preload hint and Chrome's actual initial request priority at 400, 768 and 1440px in both display preferences.
 
 The original exercise notes are retained below. Old Shoelace notes describe the former stack (the unused Docker setup was removed) and are not the current setup instructions.
 
