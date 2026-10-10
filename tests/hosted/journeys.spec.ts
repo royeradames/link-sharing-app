@@ -157,9 +157,16 @@ test("log out: signing out of Devlinks keeps the account; signing out of the acc
   await expect(home).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/login"
   )
-  // Devlinks re-checks the account on its next read, so it is signed out too.
+  // Devlinks re-checks the account on its next read. This browser was signed
+  // in, so it says the sign-in expired and offers to sign in again or go on
+  // as a guest, instead of showing the account.
   await home.goto(appOrigin + "/account")
-  await expect(signedOutHeading(home)).toBeVisible()
+  const expired = home.getByRole("region", { name: "Sign-in expired" })
+  await expect(expired).toBeVisible()
+  await expect(
+    expired.getByRole("button", { name: "Sign in again" })
+  ).toBeVisible()
+  await expect(home.getByText(/^Signed in as /)).toHaveCount(0)
 })
 
 test("log in with a password from a new browser", async ({ browser }) => {
@@ -216,8 +223,13 @@ test("log in with a passkey", async () => {
     url => url.origin === accountsOrigin && url.pathname === "/login"
   )
 
+  // This browser was signed in before, so Devlinks offers "Sign in again".
   await home.goto(appOrigin + "/account")
-  await continueToIssuer(home)
+  await home.getByRole("button", { name: "Sign in again" }).click()
+  await expect(home).toHaveURL(
+    url => url.origin === accountsOrigin && url.pathname === "/login",
+    handoff
+  )
   await home.getByRole("tab", { name: "Passkey", exact: true }).click()
   await home.getByRole("button", { name: "Continue with a passkey" }).click()
   await signedIn(home)
