@@ -34,8 +34,8 @@ export function person(label: string) {
 export type Person = ReturnType<typeof person>
 
 /**
- * Removes this run's accounts from the issuer, then every devlinks-suite-
- * account's principal and profile from Devlinks' Preview schema. One failed
+ * Removes this run's accounts from the issuer, then this run's principals
+ * and profiles from Devlinks' Preview schema, never another run's. One failed
  * removal doesn't stop the rest; failures are reported together at the end.
  */
 export async function removeCreatedAccounts() {
@@ -48,7 +48,7 @@ export async function removeCreatedAccounts() {
     if (status === 200) created.delete(email)
     else failed.push(email.split("@")[0] + " (HTTP " + status + ")")
   }
-  const devlinks = await removeHostedAccounts(previewDatabaseURL).catch(
+  const devlinks = await removeHostedAccounts(previewDatabaseURL, run).catch(
     (error: unknown) => {
       failed.push(error instanceof Error ? error.message : "Devlinks cleanup failed")
       return null
@@ -56,7 +56,7 @@ export async function removeCreatedAccounts() {
   )
   if (devlinks)
     console.log(
-      `Devlinks cleanup: removed ${devlinks.accounts} accounts and ${devlinks.profiles} profiles, remaining ${devlinks.remaining}`
+      `Devlinks cleanup for run ${run}: removed ${devlinks.accounts} accounts and ${devlinks.profiles} profiles, remaining ${devlinks.remaining}`
     )
   if (devlinks && devlinks.remaining !== 0)
     failed.push(`${devlinks.remaining} Devlinks accounts remain`)

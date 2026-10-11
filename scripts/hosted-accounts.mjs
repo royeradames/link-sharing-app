@@ -1,14 +1,27 @@
 // Removes the hosted suite's synthetic accounts from Devlinks' Preview schema:
 // their saved profiles and their local principals (sessions and identities
 // cascade). Only reserved .test sink addresses with the devlinks-suite- prefix
-// are touched. Never logs connection details. The hosted suite calls this in
-// its teardown; scripts/cleanup-hosted-accounts.mjs runs it by hand.
+// are touched, and only those of one run (devlinks-suite-<label>-<run>@…), so
+// two runs at once can't delete each other's accounts. Never logs connection
+// details. The hosted suite calls this in its teardown with its own run id;
+// scripts/cleanup-hosted-accounts.mjs runs it by hand.
 import pg from "pg"
 
-const pattern = "devlinks-suite-%@sink.accounts-preview.test"
+const sink = "@sink.accounts-preview.test"
+/** Every devlinks-suite- account of every run; only for the manual script after interrupted runs. A symbol, so no string run id can mean it. */
+export const everyRun = Symbol("every hosted run")
+
+/** The LIKE pattern for one run's accounts. The run id is lowercase letters and digits, so it can't widen the match. */
+export function runPattern(run) {
+  if (run === everyRun) return "devlinks-suite-%" + sink
+  if (typeof run !== "string" || !/^[a-z0-9]+$/.test(run))
+    throw new Error("A run id is lowercase letters and digits only; nothing was removed")
+  return "devlinks-suite-%-" + run + sink
+}
 
 /** @returns {Promise<{ accounts: number, profiles: number, remaining: number }>} */
-export async function removeHostedAccounts(connectionString) {
+export async function removeHostedAccounts(connectionString, run) {
+  const pattern = runPattern(run)
   if (!connectionString) throw new Error("POSTGRES_URL_NON_POOLING is missing; synthetic accounts were not removed")
   const client = new pg.Client({ connectionString, connectionTimeoutMillis: 10000 })
   try {
