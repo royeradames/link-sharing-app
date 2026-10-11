@@ -56,7 +56,7 @@ export async function removeCreatedAccounts() {
   )
   if (devlinks)
     console.log(
-      `Devlinks cleanup: removed ${devlinks.accounts} accounts and ${devlinks.profiles} profiles, remaining ${devlinks.remaining}`
+      `Devlinks cleanup for run ${run}: removed ${devlinks.accounts} accounts and ${devlinks.profiles} profiles, remaining ${devlinks.remaining}`
     )
   if (devlinks && devlinks.remaining !== 0)
     failed.push(`${devlinks.remaining} Devlinks accounts remain`)

@@ -8,8 +8,8 @@
 import pg from "pg"
 
 const sink = "@sink.accounts-preview.test"
-/** Every devlinks-suite- account of every run; only for the manual script after interrupted runs. */
-export const everyRun = "*"
+/** Every devlinks-suite- account of every run; only for the manual script after interrupted runs. A symbol, so no string run id can mean it. */
+export const everyRun = Symbol("every hosted run")
 
 /** The LIKE pattern for one run's accounts. The run id is lowercase letters and digits, so it can't widen the match. */
 export function runPattern(run) {

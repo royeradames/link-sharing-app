@@ -68,10 +68,20 @@ test("a run id that could widen the match is refused before any delete", async (
 
 test("the manual --all sweep removes every run's accounts and nobody else's", async () => {
   const { everyRun } = await import("../scripts/hosted-accounts.mjs")
-  await seed("devlinks-suite-v-rund4@sink.accounts-preview.test")
+  const person = "another.person@example.com"
+  for (const email of [
+    "devlinks-suite-v-rund4@sink.accounts-preview.test",
+    "devlinks-suite-j-rune5@sink.accounts-preview.test",
+    person,
+  ])
+    await seed(email)
+  // "*" is not the sweep: only the exported symbol is.
+  await assert.rejects(removeHostedAccounts(database.url, "*"), /run id/)
   const before = (await emails()).filter(email => email.startsWith("devlinks-suite-")).length
   const removed = await removeHostedAccounts(database.url, everyRun)
   assert.equal(removed.accounts, before)
   assert.equal(removed.remaining, 0)
-  assert.deepEqual(await emails(), ["someone@example.com"])
+  const left = await emails()
+  assert.ok(left.includes(person))
+  assert.equal(left.filter(email => email.startsWith("devlinks-suite-")).length, 0)
 })
