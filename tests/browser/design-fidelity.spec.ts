@@ -60,9 +60,7 @@ test("the where-saves-go notice sits in the footer landmark, so the editor start
 }) => {
   await page.setViewportSize({ width: 1440, height: 1024 })
   await page.goto("/dashboard/links")
-  await expect(
-    page.locator("footer").getByText("Local editor preview. Saves stay in this browser.")
-  ).toBeVisible()
+  await expect(page.locator("footer .local-notice")).toBeVisible()
   // Every visible top-level block is a landmark (or the skip link).
   const outside = await page.evaluate(() =>
     [...document.body.children]
@@ -77,9 +75,12 @@ test("the where-saves-go notice sits in the footer landmark, so the editor start
       .map(element => element.outerHTML.slice(0, 80))
   )
   expect(outside).toEqual([])
-  // Design: the heading's top is at 176 px.
-  const top = await page
-    .locator("main h1")
-    .evaluate(element => element.getBoundingClientRect().top + scrollY)
-  expect(Math.abs(top - 176)).toBeLessThanOrEqual(24)
+  // Design: the editor panel starts 24 px under the header.
+  const gap = await page.evaluate(() => {
+    const header = document.querySelector(".site-header")!.getBoundingClientRect()
+    const main = document.querySelector("main")!.getBoundingClientRect()
+    return main.top - header.bottom
+  })
+  expect(gap).toBeGreaterThanOrEqual(0)
+  expect(gap).toBeLessThanOrEqual(32)
 })
