@@ -1,9 +1,17 @@
-import { expect, type Browser, type Page } from "@playwright/test"
+import {
+  expect,
+  type Browser,
+  type Locator,
+  type Page,
+  type TestInfo,
+} from "@playwright/test"
 import { randomBytes } from "node:crypto"
 import { z } from "zod"
+import { removeHostedAccounts } from "../../scripts/hosted-accounts.mjs"
 import {
   accountsOrigin,
   authorizePreviews,
+  previewDatabaseURL,
   readSink,
   removeSyntheticAccount,
 } from "./hosted-env.ts"
@@ -25,13 +33,80 @@ export function person(label: string) {
 }
 export type Person = ReturnType<typeof person>
 
-/** Removes every account this run named from the issuer. Devlinks' own rows go in scripts/cleanup-hosted-accounts.mjs. */
+/**
+ * Removes this run's accounts from the issuer, then every devlinks-suite-
+ * account's principal and profile from Devlinks' Preview schema. One failed
+ * removal doesn't stop the rest; failures are reported together at the end.
+ */
 export async function removeCreatedAccounts() {
+  const failed: string[] = []
   for (const email of created) {
-    const response = await removeSyntheticAccount(email)
-    expect(response.status, "The synthetic issuer account is removed").toBe(200)
+    const status = await removeSyntheticAccount(email).then(
+      response => response.status,
+      () => 0
+    )
+    if (status === 200) created.delete(email)
+    else failed.push(email.split("@")[0] + " (HTTP " + status + ")")
   }
-  created.clear()
+  const devlinks = await removeHostedAccounts(previewDatabaseURL).catch(
+    (error: unknown) => {
+      failed.push(error instanceof Error ? error.message : "Devlinks cleanup failed")
+      return null
+    }
+  )
+  if (devlinks)
+    console.log(
+      `Devlinks cleanup: removed ${devlinks.accounts} accounts and ${devlinks.profiles} profiles, remaining ${devlinks.remaining}`
+    )
+  if (devlinks && devlinks.remaining !== 0)
+    failed.push(`${devlinks.remaining} Devlinks accounts remain`)
+  expect(failed, "Synthetic accounts that could not be removed").toEqual([])
+}
+
+// Issuer responses refused with HTTP 429 during the current test. The issuer
+// allows about 100 requests per path per 15 minutes from one address, and a
+// refused request shows the same "expired or unavailable" message as a real
+// failure. A failed test says which it was.
+const issuerRateLimits: string[] = []
+/** For afterEach: a failure that coincides with issuer 429s is named as a rate limit, not a broken update. */
+export function nameIssuerRateLimit(testInfo: TestInfo) {
+  const paths = [...new Set(issuerRateLimits.splice(0))]
+  if (!paths.length) return
+  if (testInfo.status === testInfo.expectedStatus) {
+    testInfo.annotations.push({
+      type: "warning",
+      description: "issuer rate-limited on " + paths.join(", "),
+    })
+    return
+  }
+  throw new Error(
+    "issuer rate-limited on " +
+      paths.join(", ") +
+      " (HTTP 429): this failure is the shared issuer limit, not the update under test. Wait 15 minutes and run again."
+  )
+}
+
+/**
+ * Waits until React has hydrated this control (its props are attached), so a
+ * click or fill reaches the component rather than server HTML. Same check as
+ * royer-ui tests/helpers/hydration.ts.
+ */
+export async function waitForHydrated(locator: Locator) {
+  await expect(locator).toBeVisible()
+  await expect
+    .poll(
+      () =>
+        locator.evaluate(element =>
+          Object.keys(element).some(key => key.startsWith("__reactProps$"))
+        ),
+      { message: "the control hydrated before the test used it", timeout: 20_000 }
+    )
+    .toBe(true)
+  return locator
+}
+/** Clicks a control once React has hydrated it. */
+export async function press(locator: Locator) {
+  await (await waitForHydrated(locator)).click()
 }
 
 /** Cross-site sign-in hops wake cold preview functions on both sides; give them longer. */
@@ -42,6 +117,11 @@ export async function newPage(browser: Browser) {
     viewport: { width: 1440, height: 900 },
   })
   await authorizePreviews(context)
+  context.on("response", response => {
+    const url = new URL(response.url())
+    if (response.status() === 429 && url.origin === accountsOrigin)
+      issuerRateLimits.push(url.pathname)
+  })
   return context.newPage()
 }
 
@@ -94,7 +174,9 @@ export function sixDigitCode(text: string) {
 
 /** Fills the issuer's sign-up form on the current page and submits it. */
 export async function fillSignUp(page: Page, account: Person) {
-  await page.getByLabel("Name", { exact: true }).fill(account.name)
+  await (
+    await waitForHydrated(page.getByLabel("Name", { exact: true }))
+  ).fill(account.name)
   await page.getByLabel("Username", { exact: true }).fill(account.username)
   await page.getByLabel("Email", { exact: true }).fill(account.email)
   await page
@@ -135,7 +217,9 @@ export async function openVerification(page: Page, account: Person) {
  */
 export async function passwordOnIssuer(page: Page, account: Person) {
   const seen = await mailMark(account.email)
-  await page.getByLabel("Username or email").fill(account.username)
+  await (await waitForHydrated(page.getByLabel("Username or email"))).fill(
+    account.username
+  )
   await page
     .locator("input")
     .and(page.getByLabel("Password", { exact: true }))
@@ -161,7 +245,9 @@ export async function passwordOnIssuer(page: Page, account: Person) {
       seen
     )
   )
-  await page.getByLabel("Email code", { exact: true }).fill(code)
+  await (
+    await waitForHydrated(page.getByLabel("Email code", { exact: true }))
+  ).fill(code)
   await page
     .getByRole("button", { name: "Confirm and sign in", exact: true })
     .click()

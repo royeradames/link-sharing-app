@@ -20,9 +20,25 @@ const secrets = new Map([
   [accountsOrigin, process.env.ACCOUNTS_PREVIEW_BYPASS ?? ""],
 ])
 const sinkToken = process.env.AUTH_PREVIEW_SINK_TOKEN ?? ""
-if (!sinkToken || [...secrets.values()].some(value => !value))
+// Optional (royer-auth #41): the preview issuer gives a run that proves this
+// token its own rate-limit budget, so runs on one Mac don't spend each
+// other's. Sent only to the issuer, with a fresh run id per run.
+const testToken = process.env.AUTH_PREVIEW_TEST_TOKEN ?? ""
+const issuerTestHeaders: Record<string, string> = testToken
+  ? {
+      "x-preview-test-token": testToken,
+      "x-preview-test-run": "run-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    }
+  : {}
+// The Preview database, so the teardown removes Devlinks' own rows too.
+export const previewDatabaseURL = process.env.POSTGRES_URL_NON_POOLING ?? ""
+if (
+  !sinkToken ||
+  !previewDatabaseURL ||
+  [...secrets.values()].some(value => !value)
+)
   throw new Error(
-    "Set DEVLINKS_PREVIEW_BYPASS, ACCOUNTS_PREVIEW_BYPASS and AUTH_PREVIEW_SINK_TOKEN for the hosted suite"
+    "Set DEVLINKS_PREVIEW_BYPASS, ACCOUNTS_PREVIEW_BYPASS, AUTH_PREVIEW_SINK_TOKEN and the Preview POSTGRES_URL_NON_POOLING for the hosted suite"
   )
 
 /**
@@ -40,6 +56,7 @@ export async function authorizePreviews(context: BrowserContext) {
           ...route.request().headers(),
           "x-vercel-protection-bypass": bypass,
           "x-vercel-set-bypass-cookie": "true",
+          ...(new URL(route.request().url()).origin === accountsOrigin ? issuerTestHeaders : {}),
         },
       })
     }
@@ -65,6 +82,7 @@ async function sink(address: string, method: "GET" | "DELETE") {
       headers: {
         "x-vercel-protection-bypass": secrets.get(accountsOrigin) ?? "",
         authorization: "Bearer " + sinkToken,
+        ...issuerTestHeaders,
       },
       redirect: "manual",
       signal: AbortSignal.timeout(15000),

@@ -7,13 +7,16 @@ import {
   fillSignUp,
   handoff,
   mailMark,
+  nameIssuerRateLimit,
   newPage,
   openVerification,
   passwordOnIssuer,
   person,
+  press,
   readMail,
   removeCreatedAccounts,
   sixDigitCode,
+  waitForHydrated,
   type Person,
 } from "./accounts.ts"
 
@@ -21,6 +24,7 @@ import {
 // previews: sign-up, sign-out, and each sign-in option the Breakthrough
 // account offers. One synthetic account per run; it is removed afterwards.
 test.describe.configure({ mode: "serial" })
+test.afterEach(({}, testInfo) => nameIssuerRateLimit(testInfo))
 test.afterAll(removeCreatedAccounts)
 
 let member: Person
@@ -40,7 +44,7 @@ async function signedIn(page: Page) {
 }
 /** From Devlinks' Account page to the issuer's sign-in page. */
 async function continueToIssuer(page: Page) {
-  await signInButton(page).click()
+  await press(signInButton(page))
   await expect(page).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/login",
     handoff
@@ -88,7 +92,7 @@ test("sign up: a new visitor creates a Breakthrough account from Devlinks", asyn
   member = person("j")
   home = await newPage(browser)
   await home.goto(appOrigin + "/")
-  await home.getByRole("link", { name: "Account", exact: true }).click()
+  await press(home.getByRole("link", { name: "Account", exact: true }))
   await expect(home).toHaveURL(appOrigin + "/account")
   await expect(signedOutHeading(home)).toBeVisible()
   await home.screenshot({
@@ -104,7 +108,7 @@ test("sign up: a new visitor creates a Breakthrough account from Devlinks", asyn
       "reportSignInBusy",
       (state: { text: string; disabled: boolean }) => busy.push(state)
     )
-    await signInButton(home).evaluate((button: HTMLButtonElement) => {
+    await (await waitForHydrated(signInButton(home))).evaluate((button: HTMLButtonElement) => {
       const report = (
         window as unknown as {
           reportSignInBusy: (state: { text: string; disabled: boolean }) => void
@@ -125,7 +129,7 @@ test("sign up: a new visitor creates a Breakthrough account from Devlinks", asyn
     expect(busy[0]).toEqual({ text: "Opening sign-in…", disabled: false })
   })
 
-  await home.getByRole("link", { name: "Create an account" }).click()
+  await press(home.getByRole("link", { name: "Create an account" }))
   await expect(home).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/create-account"
   )
@@ -141,19 +145,57 @@ test("sign up: a new visitor creates a Breakthrough account from Devlinks", asyn
     path: "test-results-hosted/journey-signed-in-1440.png",
     fullPage: true,
   })
+
+  await test.step("signed in, sign-in routes never paint and Account never shows signed out", async () => {
+    // Pitfall SI1. /login redirects on the server, so no /login document commits.
+    const painted: string[] = []
+    const record = (frame: import("@playwright/test").Frame) => {
+      if (frame === home.mainFrame()) painted.push(new URL(frame.url()).pathname)
+    }
+    home.on("framenavigated", record)
+    const response = await home.goto(appOrigin + "/login")
+    home.off("framenavigated", record)
+    const hop = response?.request().redirectedFrom()
+    expect(
+      hop && new URL(hop.url()).pathname,
+      "the first response for /login is an HTTP redirect"
+    ).toBe("/login")
+    expect(painted, "no document for /login was committed").not.toContain("/login")
+    // Account waits for the account check, so the signed-out offer never flashes.
+    await home.evaluate(() => {
+      const flag = window as unknown as { sawSignedOut?: boolean }
+      flag.sawSignedOut = false
+    })
+    await home.addInitScript(() => {
+      const flag = window as unknown as { sawSignedOut?: boolean }
+      flag.sawSignedOut = false
+      new MutationObserver(() => {
+        if (document.body?.innerText.includes("Save your profile to your account"))
+          flag.sawSignedOut = true
+      }).observe(document, { childList: true, subtree: true, characterData: true })
+    })
+    await home.goto(appOrigin + "/account")
+    await signedIn(home)
+    expect(
+      await home.evaluate(
+        () => (window as unknown as { sawSignedOut?: boolean }).sawSignedOut
+      ),
+      "Account showed the signed-out offer while signed in"
+    ).toBe(false)
+  })
 })
 
 test("log out: signing out of Devlinks keeps the account; signing out of the account ends Devlinks too", async () => {
-  await home
-    .getByRole("button", { name: "Sign out of Devlinks", exact: true })
-    .click()
+  await press(
+    home.getByRole("button", { name: "Sign out of Devlinks", exact: true })
+  )
   await expect(signedOutHeading(home)).toBeVisible()
   // The Breakthrough account is still signed in, so returning takes one press.
-  await signInButton(home).click()
+  await press(signInButton(home))
   await signedIn(home)
 
   await home.goto(accountsOrigin + "/account")
-  await home.getByRole("button", { name: "Sign out", exact: true }).click()
+  await press(home.getByRole("button", { name: "Sign out", exact: true }))
   await expect(home).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/login"
   )
@@ -179,8 +221,10 @@ test("log in with a password from a new browser", async ({ browser }) => {
 
 test("log in with an emailed sign-in code", async ({ browser }) => {
   const page = await freshAtSignIn(browser)
-  await page.getByRole("tab", { name: "Email code", exact: true }).click()
-  await page.getByLabel("Account email", { exact: true }).fill(member.email)
+  await press(page.getByRole("tab", { name: "Email code", exact: true }))
+  await (
+    await waitForHydrated(page.getByLabel("Account email", { exact: true }))
+  ).fill(member.email)
   const seen = await mailMark(member.email)
   await page
     .getByRole("button", { name: "Send sign-in code", exact: true })
@@ -216,22 +260,22 @@ test("log in with a passkey", async () => {
       automaticPresenceSimulation: true,
     },
   })
-  await home.getByRole("button", { name: "Add a passkey" }).click()
+  await press(home.getByRole("button", { name: "Add a passkey" }))
   await expect(home.getByText("Your passkey is ready to use.")).toBeVisible()
-  await home.getByRole("button", { name: "Sign out", exact: true }).click()
+  await press(home.getByRole("button", { name: "Sign out", exact: true }))
   await expect(home).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/login"
   )
 
   // This browser was signed in before, so Devlinks offers "Sign in again".
   await home.goto(appOrigin + "/account")
-  await home.getByRole("button", { name: "Sign in again" }).click()
+  await press(home.getByRole("button", { name: "Sign in again" }))
   await expect(home).toHaveURL(
     url => url.origin === accountsOrigin && url.pathname === "/login",
     handoff
   )
-  await home.getByRole("tab", { name: "Passkey", exact: true }).click()
-  await home.getByRole("button", { name: "Continue with a passkey" }).click()
+  await press(home.getByRole("tab", { name: "Passkey", exact: true }))
+  await press(home.getByRole("button", { name: "Continue with a passkey" }))
   await signedIn(home)
 })
 
@@ -240,17 +284,17 @@ test("log in by approving the request on a signed-in phone", async ({
 }) => {
   // `home` is signed in to the account (passkey); it plays the phone.
   const page = await freshAtSignIn(browser)
-  await page.getByRole("tab", { name: "Phone approval", exact: true }).click()
-  await page.getByRole("button", { name: "Create approval code" }).click()
+  await press(page.getByRole("tab", { name: "Phone approval", exact: true }))
+  await press(page.getByRole("button", { name: "Create approval code" }))
   const code = (await page.getByTestId("device-code").innerText()).trim()
   await home.goto(await scanApprovalQr(page, code))
-  await home.getByRole("button", { name: "Review request" }).click()
+  await press(home.getByRole("button", { name: "Review request" }))
   await expect(
     home.getByRole("heading", { name: "Is this your request?" })
   ).toBeVisible()
-  await home
-    .getByLabel("Number shown on the other device")
-    .fill((await page.getByTestId("match-number").innerText()).trim())
+  await (
+    await waitForHydrated(home.getByLabel("Number shown on the other device"))
+  ).fill((await page.getByTestId("match-number").innerText()).trim())
   await home.getByRole("button", { name: "Approve sign-in" }).click()
   await expect(
     home.getByRole("heading", { name: "You can return to the other device." })
@@ -263,7 +307,9 @@ test("log in with a password and an authenticator code", async ({
   browser,
 }) => {
   await home.goto(accountsOrigin + "/account")
-  await home.getByLabel("Confirm current password").fill(member.password)
+  await (
+    await waitForHydrated(home.getByLabel("Confirm current password"))
+  ).fill(member.password)
   await home.getByRole("button", { name: "Set up authenticator" }).click()
   await home.getByText("Cannot scan? Show setup key").click()
   const secret = await home.getByTestId("totp-secret").innerText()
@@ -292,9 +338,9 @@ test("log in with a password and an authenticator code", async ({
   await expect
     .poll(() => totp.generate(), { timeout: 35_000, intervals: [250] })
     .not.toBe(enrollment)
-  await page
-    .getByLabel("Authenticator code", { exact: true })
-    .fill(totp.generate())
+  await (
+    await waitForHydrated(page.getByLabel("Authenticator code", { exact: true }))
+  ).fill(totp.generate())
   await page.getByRole("button", { name: "Verify and sign in" }).click()
   await signedIn(page)
   await page.context().close()
