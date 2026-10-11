@@ -1,0 +1,44 @@
+/* Generated from library-source.json. Only prefixed tokens and control classes. */
+:where(:root) {
+  --rui-canvas: #eef5f3;
+  --rui-surface: #ffffff;
+  --rui-ink: #122221;
+  --rui-muted: #536563;
+  --rui-line: #c4d4cf;
+  --rui-control-line: #71847e;
+  --rui-brand: #075d58;
+  --rui-on-brand: #ffffff;
+  --rui-soft: #dcecea;
+  --rui-danger: #a43d32;
+  --rui-on-danger: #ffffff;
+  --rui-success: #176347;
+  --rui-success-soft: #e0f1e8;
+  --rui-warning: #805311;
+  --rui-warning-soft: #fff0cd;
+  --rui-radius: 0.625rem;
+}
+:where(.dark, [data-mode="dark"]) {
+  --rui-canvas: #101817;
+  --rui-surface: #182422;
+  --rui-ink: #f1f7f5;
+  --rui-muted: #b7c7c4;
+  --rui-line: #536a64;
+  --rui-control-line: #71847e;
+  --rui-brand: #63c8bf;
+  --rui-on-brand: #000000;
+  --rui-soft: #253e3b;
+  --rui-danger: #ff9e91;
+  --rui-on-danger: #000000;
+  --rui-success: #a0dfbc;
+  --rui-success-soft: #203d2b;
+  --rui-warning: #f4d080;
+  --rui-warning-soft: #41341a;
+  --rui-radius: 0.625rem;
+}
+
+.rui-control { font-family: inherit; cursor: pointer; }
+.rui-control:focus-visible { outline: 3px solid var(--rui-brand); outline-offset: 3px; }
+input.rui-control, textarea.rui-control { cursor: text; }
+.rui-control:disabled { cursor: not-allowed; }
+.rui-field { background: var(--rui-field-background, var(--rui-surface)); box-shadow: var(--rui-field-shadow, none); }
+@media (prefers-reduced-motion: reduce) { .rui-control { transition: none; } }

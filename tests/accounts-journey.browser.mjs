@@ -152,9 +152,10 @@ try {
   async function addLink(page, platform, url) {
     await page.getByRole("button", { name: "+ Add new link", exact: true }).click()
     const row = page.locator(".link-row").last()
-    await row.locator("summary").click()
-    await row.getByLabel("Search platforms").fill(platform)
-    await row.getByRole("button", { name: platform, exact: true }).click()
+    const platformField = row.getByRole("combobox", { name: "Platform" })
+    await platformField.click()
+    await platformField.fill(platform)
+    await row.getByRole("option", { name: platform, exact: true }).click()
     await row.getByLabel("Link URL").fill(url)
   }
   async function status(page, text) {

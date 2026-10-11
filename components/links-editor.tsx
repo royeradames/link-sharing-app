@@ -5,6 +5,7 @@ import { moveLink } from "@/lib/draft"
 import { useEditor } from "./editor-provider"
 import { PlatformPicker } from "./platform-picker"
 import { ProfileCard } from "./profile-card"
+import { Input } from "./royer/input"
 export function LinksEditor() {
   const editor = useEditor()
   const { form } = editor
@@ -187,10 +188,10 @@ export function LinksEditor() {
                         {field => (
                           <PlatformPicker
                             id={link.id}
-                            index={index}
                             value={field.state.value}
                             onChange={field.handleChange}
                             error={editor.errors[`links.${link.id}.platform`]}
+                            blocked={editor.saving}
                           />
                         )}
                       </form.Field>
@@ -198,7 +199,7 @@ export function LinksEditor() {
                         {field => (
                           <div className="field">
                             <label htmlFor={`url-${link.id}`}>Link URL</label>
-                            <input
+                            <Input
                               id={`url-${link.id}`}
                               type="url"
                               inputMode="url"

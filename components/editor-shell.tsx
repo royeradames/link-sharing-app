@@ -140,8 +140,9 @@ export function EditorShell({ children }: { children: ReactNode }) {
           <summary>Keyboard help</summary>
           <p>
             Tab moves between controls. Enter or Space activates a button. Use
-            Move up and Move down to reorder links. Escape closes a platform
-            picker. Your browser’s shortcuts keep working.
+            Move up and Move down to reorder links. In a Platform field, type to
+            search, use the arrow keys and Enter to choose, and Escape to close
+            the list. Your browser’s shortcuts keep working.
           </p>
         </details>
       </footer>
