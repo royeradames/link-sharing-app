@@ -13,7 +13,7 @@ for (const width of [400, 768, 1440]) {
       await network.send("Network.enable")
       await network.send("Network.setCacheDisabled", { cacheDisabled: true })
       network.on("Network.requestWillBeSent", event => {
-        if (event.request.url.includes("/assets/get-starter-illustration.svg")) {
+        if (event.request.url.includes("/assets/empty-links.svg")) {
           requests.push({
             url: event.request.url,
             priority: event.request.initialPriority,
@@ -61,7 +61,7 @@ test("the initial links document discovers the illustration before loading a loc
     contentType: "application/json",
   })
   expect(hints).toContainEqual({
-    href: "/assets/get-starter-illustration.svg",
+    href: "/assets/empty-links.svg",
     priority: "high",
   })
 })

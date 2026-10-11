@@ -1,10 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
-// The links editor follows the Frontend Mentor design's copy, type sizes and
-// colours (Figma "Desktop - Empty", "Tablet - Empty" and "Mobile - Empty").
+// The links editor keeps the Frontend Mentor layout's type sizes and colours
+// (Figma "Desktop - Empty", "Tablet - Empty" and "Mobile - Empty"); the words
+// are our own, because Devlinks serves a real shared account.
 const intro =
-  "Add/edit/remove links below and then share all your profiles with the world!"
+  "Add up to five links, put them in the order you want, then save."
 const emptyBody =
-  "Use the “Add new link” button to get started. Once you have more than one link, you can reorder and edit them. We’re here to help you share your profiles with everyone!"
+  "Press “Add new link” to add your first one. With two or more links, drag them or use Move up and Move down to set the order."
 
 const px = (page: Page, selector: string, property: string) =>
   page
@@ -20,18 +21,18 @@ for (const { width, heading } of [
   { width: 768, heading: "32px" },
   { width: 375, heading: "24px" }
 ]) {
-  test(`the empty links editor uses the design's copy and ${heading} headings at ${width}px`, async ({
+  test(`the empty links editor uses our copy and ${heading} headings at ${width}px`, async ({
     page
   }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/dashboard/links")
     const main = page.locator("main")
     await expect(main.getByRole("heading", { level: 1 })).toHaveText(
-      "Customize your links"
+      "Your links"
     )
     await expect(main.getByText(intro, { exact: true })).toBeVisible()
     await expect(
-      main.getByRole("heading", { name: "Let’s get you started" })
+      main.getByRole("heading", { name: "No links yet" })
     ).toBeVisible()
     await expect(main.getByText(emptyBody, { exact: true })).toBeVisible()
     expect(await px(page, "main h1", "font-size")).toBe(heading)

@@ -18,7 +18,7 @@ async function addLink(
 async function go(page: Page) {
   await page.goto("/dashboard/links")
   await expect(
-    page.getByRole("heading", { name: "Customize your links" })
+    page.getByRole("heading", { name: "Your links" })
   ).toBeVisible()
 }
 async function saveLinks(page: Page) {
@@ -932,9 +932,12 @@ test("home declares one site name in its identity, og:site_name and WebSite JSON
     url: "https://link-sharing-app.royeradames.com/"
   })
   await page.goto("/")
-  // Phones show the round mark and wider screens the wordmark; both say Devlinks.
-  await expect(page.locator(".site-header .brand img:visible")).toHaveAttribute(
-    "alt",
+  // Wider screens show our mark and the name as text; phones show the mark,
+  // and the home link's name still starts with Devlinks.
+  await expect(page.locator(".site-header .brand .brand-name")).toHaveText(
     "Devlinks"
+  )
+  await expect(page.locator(".site-header .brand")).toHaveAccessibleName(
+    /^Devlinks/
   )
 })

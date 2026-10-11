@@ -48,10 +48,9 @@ export function LinksEditor() {
         <ProfileCard draft={editor.saved} />
       </aside>
       <section className="panel">
-        <h1>Customize your links</h1>
+        <h1>Your links</h1>
         <p className="muted">
-          Add/edit/remove links below and then share all your profiles with the
-          world!
+          Add up to five links, put them in the order you want, then save.
         </p>
         <form
           onSubmit={event => {
@@ -95,18 +94,18 @@ export function LinksEditor() {
                 {!links.length && (
                   <div className="empty-state">
                     <Image
-                      src="/assets/get-starter-illustration.svg"
+                      src="/assets/empty-links.svg"
                       width={250}
                       height={161}
                       alt=""
                       loading="eager"
                       fetchPriority="high"
                     />
-                    <h2>Let’s get you started</h2>
+                    <h2>No links yet</h2>
                     <p>
-                      Use the “Add new link” button to get started. Once you
-                      have more than one link, you can reorder and edit them.
-                      We’re here to help you share your profiles with everyone!
+                      Press “Add new link” to add your first one. With two or
+                      more links, drag them or use Move up and Move down to set
+                      the order.
                     </p>
                   </div>
                 )}

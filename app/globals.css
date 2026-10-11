@@ -125,6 +125,18 @@ img {
 .brand:hover {
   opacity: 0.8;
 }
+/* Our own mark, then the product name as live text. */
+.brand {
+  gap: 8px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
 .site-header nav {
   display: flex;
   gap: 8px;
@@ -163,19 +175,16 @@ img {
   mask: var(--icon) center / contain no-repeat;
 }
 .icon-links {
-  --icon: url("/assets/icons/link-45deg.svg");
+  --icon: url("/assets/icons/link.svg");
 }
 .icon-profile {
   --icon: url("/assets/icons/user-circle.svg");
 }
 .icon-account {
-  --icon: url("/assets/icons/lock.svg");
+  --icon: url("/assets/icons/lock-key.svg");
 }
 .icon-preview {
   --icon: url("/assets/icons/eye.svg");
-}
-.brand-narrow {
-  display: none;
 }
 .preview-link {
   white-space: nowrap;
@@ -556,9 +565,6 @@ body:has(main > .preview-page) .local-notice {
   }
   .brand-wide {
     display: none;
-  }
-  .brand-narrow {
-    display: block;
   }
   .site-header nav {
     gap: 4px;

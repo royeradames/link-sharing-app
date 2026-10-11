@@ -23,20 +23,13 @@ export function EditorShell({ children }: { children: ReactNode }) {
           className="brand"
         >
           <Image
-            className="brand-wide"
-            src="/assets/logo/devlinks.svg"
-            width={146}
-            height={32}
-            alt="Devlinks"
-            priority
-          />
-          <Image
-            className="brand-narrow"
-            src="/assets/logo/link-circle-bold.svg"
+            src="/assets/logo/mark.svg"
             width={32}
             height={32}
-            alt="Devlinks"
+            alt=""
+            priority
           />
+          <span className="brand-name brand-wide">Devlinks</span>
         </Link>
         <nav aria-label="Editor">
           <Link

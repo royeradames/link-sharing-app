@@ -8,12 +8,13 @@ export function PublicPage({ children }: { children: React.ReactNode }) {
       <header className="public-header">
         <Link href="/" aria-label="Devlinks home" className="brand">
           <Image
-            src="/assets/logo/devlinks.svg"
-            width={146}
+            src="/assets/logo/mark.svg"
+            width={32}
             height={32}
-            alt="Devlinks"
+            alt=""
             priority
           />
+          <span className="brand-name">Devlinks</span>
         </Link>
       </header>
       <main id="main" className="public-page">

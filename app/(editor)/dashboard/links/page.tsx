@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: openGraphFor("/dashboard/links"),
 }
 export default function Page() {
-  preload("/assets/get-starter-illustration.svg", {
+  preload("/assets/empty-links.svg", {
     as: "image",
     fetchPriority: "high",
   })
