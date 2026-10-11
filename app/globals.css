@@ -362,8 +362,9 @@ label {
   display: block;
 }
 /* Native text controls only. Royer UI fields (.rui-control) size and pad
-   themselves from their own classes and the --rui-* tokens above. */
-input:not([type="file"]):not(.rui-control),
+   themselves from their own classes and the --rui-* tokens above. :where()
+   keeps this rule's specificity, so .check input still wins for checkboxes. */
+input:not([type="file"]):where(:not(.rui-control)),
 textarea {
   width: 100%;
   min-height: 48px;
