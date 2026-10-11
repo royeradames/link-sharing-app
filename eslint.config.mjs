@@ -10,6 +10,7 @@ export default defineConfig([
     ".test-state/**",
     "playwright-report/**",
     "test-results/**",
+    "test-results-hosted/**",
     "next-env.d.ts",
     "scripts/**",
   ]),
