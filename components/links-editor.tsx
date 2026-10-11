@@ -50,8 +50,8 @@ export function LinksEditor() {
       <section className="panel">
         <h1>Customize your links</h1>
         <p className="muted">
-          Add, edit and reorder up to five links. Save them here, then copy your
-          saved list.
+          Add/edit/remove links below and then share all your profiles with the
+          world!
         </p>
         <form
           onSubmit={event => {
@@ -103,7 +103,11 @@ export function LinksEditor() {
                       fetchPriority="high"
                     />
                     <h2>Let’s get you started</h2>
-                    <p>Add your first platform and its HTTPS link.</p>
+                    <p>
+                      Use the “Add new link” button to get started. Once you
+                      have more than one link, you can reorder and edit them.
+                      We’re here to help you share your profiles with everyone!
+                    </p>
                   </div>
                 )}
                 <ol className="link-rows">

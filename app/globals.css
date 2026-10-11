@@ -78,7 +78,7 @@ button[aria-disabled="true"] {
   outline-offset: 4px;
 }
 h1 {
-  font-size: clamp(1.65rem, 3vw, 2rem);
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
   margin: 0 0 12px;
@@ -136,16 +136,16 @@ img {
   padding: 10px 16px;
   min-height: 44px;
   text-decoration: none;
-  color: var(--muted);
+  color: #737373;
   border-radius: 8px;
   font-weight: 600;
 }
 .site-header nav a[aria-current] {
   background: var(--pale);
-  color: #5030d6;
+  color: var(--purple);
 }
 .site-header nav a:hover {
-  color: #5030d6;
+  color: var(--purple);
   background: #f4f1ff;
 }
 /* Header icons take the link colour through a mask. On phones the labels are
@@ -181,8 +181,7 @@ img {
   white-space: nowrap;
 }
 .local-notice {
-  margin: 0 24px 24px;
-  text-align: center;
+  margin: 0;
   color: var(--muted);
 }
 main {
@@ -284,7 +283,7 @@ main {
   background: #4820cf;
 }
 .button.secondary {
-  color: #5330db;
+  color: var(--purple);
   background: white;
 }
 .button.secondary:hover:not(:disabled, [aria-disabled="true"]) {
@@ -413,6 +412,19 @@ textarea:hover {
 .empty-state img {
   height: auto;
 }
+.empty-state h2 {
+  font-size: 2rem;
+}
+/* The design's #737373 grey: 4.7:1 on the white panel, 4.5:1 on the paper
+   empty state. --muted stays darker for the pale purple surfaces. */
+.panel > h1 + .muted,
+.empty-state p {
+  color: #737373;
+}
+.empty-state p {
+  max-width: 488px;
+  margin: 0;
+}
 .save-actions {
   border-top: 1px solid var(--line);
   padding-top: 24px;
@@ -499,12 +511,15 @@ footer {
   margin: 20px auto 40px;
   padding: 0 var(--page-gutter);
 }
-body:has(main > .welcome) .keyboard-help {
+body:has(main > .welcome) .keyboard-help,
+body:has(main > .welcome) .local-notice {
   max-width: var(--welcome-max);
   margin-inline: auto;
 }
 body:has(main > .account) .keyboard-help,
-body:has(main > .preview-page) .keyboard-help {
+body:has(main > .account) .local-notice,
+body:has(main > .preview-page) .keyboard-help,
+body:has(main > .preview-page) .local-notice {
   max-width: var(--preview-max);
   margin-inline: auto;
 }
@@ -568,9 +583,9 @@ body:has(main > .preview-page) .keyboard-help {
   :root {
     --page-gutter: 16px;
   }
-  .local-notice {
-    margin: 0 16px 20px;
-    text-align: left;
+  h1,
+  .empty-state h2 {
+    font-size: 1.5rem;
   }
   .panel {
     padding: 24px;
