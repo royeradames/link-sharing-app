@@ -361,7 +361,9 @@ main {
 label {
   display: block;
 }
-input:not([type="file"]),
+/* Native text controls only. Royer UI fields (.rui-control) size and pad
+   themselves from their own classes and the --rui-* tokens above. */
+input:not([type="file"]):not(.rui-control),
 textarea {
   width: 100%;
   min-height: 48px;
@@ -392,33 +394,6 @@ input[type="file"]::file-selector-button {
 input:hover,
 textarea:hover {
   border-color: var(--purple);
-}
-/* TEMPORARY: the platform-field overrides below (16px text, caret, list
-   colours) cover gaps in Royer UI's combobox. They are being fixed upstream in
-   royer-ui branch fix/ui-combobox-gaps-20261011 (PR not open yet); remove on
-   reinstall of the unmodified combobox. */
-/* Royer UI Combobox for the platform field. Its label and options use
-   Tailwind's text-sm (14px); this app keeps body text at 16px. The caret
-   says the field opens a list, and sits 16px from the right edge. */
-.platform-field label,
-.platform-field [role="option"],
-.platform-field [role="status"] {
-  font-size: 1rem;
-}
-.platform-field [role="combobox"] {
-  padding-right: 48px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 12px 8px;
-}
-.platform-field [role="listbox"] {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.platform-field [role="option"][aria-selected="true"] {
-  color: #5330db;
 }
 .error {
   color: #b32020;

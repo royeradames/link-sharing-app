@@ -114,7 +114,7 @@ test("five-link capacity, platform search, native reordering and removal preserv
   const picker = page.getByRole("combobox", { name: "Platform" }).first()
   await picker.click()
   await picker.fill("zzzz")
-  await expect(page.getByText("No matching options.")).toBeVisible()
+  await expect(page.getByText("No matching platforms.")).toBeVisible()
   await page.keyboard.press("Escape")
   await expect(picker).toBeFocused()
   await expect(picker).toHaveValue("YouTube")
@@ -764,21 +764,21 @@ test("keyboard help and platform caret align with the layout at family widths", 
     await page
       .getByRole("button", { name: "+ Add new link", exact: true })
       .click()
-    // The caret is a background image placed "right <gap>px center",
-    // which Chrome computes as calc(100% - <gap>px).
-    const gap = await page
+    // The Royer UI caret sits inside the field's end edge, and the field's
+    // end padding keeps typed text clear of it.
+    const { gap, textClear } = await page
       .getByRole("combobox", { name: "Platform" })
       .first()
       .evaluate(element => {
-        const style = getComputedStyle(element)
-        if (style.backgroundImage === "none")
-          throw new Error("Platform caret is missing")
-        const offset = /(?:right |calc\(100% - )(\d+(?:\.\d+)?)px/.exec(
-          style.backgroundPositionX
-        )
-        if (!offset) throw new Error(style.backgroundPositionX)
-        return Number(offset[1])
+        const caret = element.parentElement?.querySelector("svg")
+        if (!caret) throw new Error("Platform caret is missing")
+        const field = element.getBoundingClientRect()
+        const icon = caret.getBoundingClientRect()
+        const textEnd =
+          field.right - parseFloat(getComputedStyle(element).paddingRight)
+        return { gap: field.right - icon.right, textClear: icon.left - textEnd }
       })
+    expect(textClear, `platform text clears the caret at ${width}`).toBeGreaterThanOrEqual(0)
     expect(gap, `platform caret gap at ${width}`).toBeGreaterThanOrEqual(12)
   }
 })

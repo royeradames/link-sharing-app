@@ -28,8 +28,9 @@ export function PlatformPicker({
         value={value}
         onValueChange={onChange}
         blocked={blocked}
+        emptyText="No matching platforms."
         invalid={!!error}
-        describedBy={error ? `platform-error-${id}` : undefined}
+        aria-describedby={error ? `platform-error-${id}` : undefined}
       />
       {error && (
         <p className="error" id={`platform-error-${id}`}>
