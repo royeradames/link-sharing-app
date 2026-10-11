@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { readProfileImage } from "@/lib/profile-image"
 import { useEditor } from "./editor-provider"
 import { ProfileCard } from "./profile-card"
+import { Input } from "./royer/input"
 export function ProfileEditor() {
   const editor = useEditor()
   const { form, setImageReading } = editor
@@ -132,7 +133,7 @@ export function ProfileEditor() {
                       {item.label}
                       {item.required ? " (required)" : " (optional)"}
                     </label>
-                    <input
+                    <Input
                       id={item.name}
                       value={field.state.value}
                       type={item.name === "email" ? "email" : "text"}

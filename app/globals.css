@@ -13,6 +13,17 @@
   --page-gutter: 24px;
   --welcome-max: 650px;
   --preview-max: 800px;
+  /* Royer UI controls (components/royer) read these tokens; map them to
+     this app's palette so the shared fields look native here. */
+  --rui-surface: white;
+  --rui-ink: var(--ink);
+  --rui-muted: var(--muted);
+  --rui-line: var(--line);
+  --rui-control-line: #909090;
+  --rui-brand: #261367;
+  --rui-soft: var(--pale);
+  --rui-danger: #b32020;
+  --rui-radius: 8px;
 }
 * {
   box-sizing: border-box;
@@ -350,9 +361,11 @@ main {
 label {
   display: block;
 }
-input:not([type="file"]),
-textarea,
-.platform-picker summary {
+/* Native text controls only. Royer UI fields (.rui-control) size and pad
+   themselves from their own classes and the --rui-* tokens above. :where()
+   keeps this rule's specificity, so .check input still wins for checkboxes. */
+input:not([type="file"]):where(:not(.rui-control)),
+textarea {
   width: 100%;
   min-height: 48px;
   padding: 12px 16px;
@@ -380,53 +393,8 @@ input[type="file"]::file-selector-button {
   cursor: pointer;
 }
 input:hover,
-textarea:hover,
-.platform-picker summary:hover {
+textarea:hover {
   border-color: var(--purple);
-}
-.platform-picker {
-  position: relative;
-}
-.platform-picker summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  list-style: none;
-}
-.platform-picker summary::-webkit-details-marker {
-  display: none;
-}
-.platform-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  width: 100%;
-  z-index: 5;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: white;
-  padding: 12px;
-  box-shadow: 0 10px 32px #0002;
-}
-.platform-menu ul {
-  max-height: 240px;
-  overflow: auto;
-  padding: 0;
-  margin: 8px 0 0;
-  list-style: none;
-}
-.platform-menu button {
-  display: block;
-  text-align: left;
-  width: 100%;
-  min-height: 44px;
-  padding: 10px;
-  border: 0;
-  background: white;
-}
-.platform-menu button:hover,
-.platform-menu button[aria-pressed="true"] {
-  color: #5330db;
-  background: var(--pale);
 }
 .error {
   color: #b32020;

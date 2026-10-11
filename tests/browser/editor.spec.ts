@@ -9,9 +9,10 @@ async function addLink(
     .getByRole("button", { name: "+ Add new link", exact: true })
     .click()
   const row = page.locator(".link-row").last()
-  await row.locator("summary").click()
-  await row.getByLabel("Search platforms").fill(platform)
-  await row.getByRole("button", { name: platform, exact: true }).click()
+  const platformField = row.getByRole("combobox", { name: "Platform" })
+  await platformField.click()
+  await platformField.fill(platform)
+  await row.getByRole("option", { name: platform, exact: true }).click()
   await row.getByLabel("Link URL").fill(url)
 }
 async function go(page: Page) {
@@ -110,13 +111,13 @@ test("five-link capacity, platform search, native reordering and removal preserv
   await expect(
     page.getByRole("button", { name: "+ Add new link", exact: true })
   ).toBeDisabled()
-  const picker = page.locator(".platform-picker").first()
-  await picker.locator("summary").click()
-  await picker.getByLabel("Search platforms").fill("zzzz")
-  await expect(picker.getByText("No matching platforms.")).toBeVisible()
+  const picker = page.getByRole("combobox", { name: "Platform" }).first()
+  await picker.click()
+  await picker.fill("zzzz")
+  await expect(page.getByText("No matching platforms.")).toBeVisible()
   await page.keyboard.press("Escape")
-  await expect(picker.locator("summary")).toBeFocused()
-  await expect(picker.locator("summary")).toContainText("YouTube")
+  await expect(picker).toBeFocused()
+  await expect(picker).toHaveValue("YouTube")
 })
 test("URL errors are visible and cannot replace saved content", async ({
   page
@@ -444,14 +445,15 @@ test("layouts remain readable, keyboard usable and contained at family widths", 
     .getByRole("button", { name: "+ Add new link", exact: true })
     .focus()
   await page.keyboard.press("Enter")
-  await expect(page.locator(".platform-picker summary")).toBeFocused()
-  await page.keyboard.press("Enter")
-  await page.keyboard.press("Tab")
-  await expect(page.getByLabel("Search platforms")).toBeFocused()
+  const platformField = page.getByRole("combobox", { name: "Platform" })
+  await expect(platformField).toBeFocused()
+  // Focus alone keeps the list closed; typing opens it filtered.
+  await expect(platformField).toHaveAttribute("aria-expanded", "false")
   await page.keyboard.type("github")
-  await page.keyboard.press("Tab")
+  await expect(platformField).toHaveAttribute("aria-expanded", "true")
   await page.keyboard.press("Enter")
-  await expect(page.locator(".platform-picker summary")).toContainText("GitHub")
+  await expect(platformField).toHaveValue("GitHub")
+  await expect(platformField).toHaveAttribute("aria-expanded", "false")
   expect(failures).toEqual([])
 })
 
@@ -633,10 +635,13 @@ test("missing platform with a valid URL identifies the chooser, not the URL", as
     .getByRole("button", { name: "+ Add new link", exact: true })
     .click()
   const row = page.locator(".link-row").last()
+  // Adding a link focuses its Platform field on the next frame; wait for it
+  // so that move cannot land in the middle of typing the URL.
+  await expect(row.getByRole("combobox")).toBeFocused()
   await row.getByLabel("Link URL").fill("https://github.com/example")
   await page.getByRole("button", { name: "Save links", exact: true }).click()
-  await expect(row.locator("summary")).toHaveAttribute("aria-invalid", "true")
-  await expect(row.locator("summary")).toHaveAccessibleDescription(
+  await expect(row.getByRole("combobox")).toHaveAttribute("aria-invalid", "true")
+  await expect(row.getByRole("combobox")).toHaveAccessibleDescription(
     "Choose a supported platform."
   )
   await expect(
@@ -759,16 +764,21 @@ test("keyboard help and platform caret align with the layout at family widths", 
     await page
       .getByRole("button", { name: "+ Add new link", exact: true })
       .click()
-    const summary = page.locator(".platform-picker summary").first()
-    const caret = summary.locator('[aria-hidden="true"]')
-    const gap = await caret.evaluate(element => {
-      const control = element.closest("summary")
-      if (!control) throw new Error("Platform control is missing")
-      return (
-        control.getBoundingClientRect().right -
-        element.getBoundingClientRect().right
-      )
-    })
+    // The Royer UI caret sits inside the field's end edge, and the field's
+    // end padding keeps typed text clear of it.
+    const { gap, textClear } = await page
+      .getByRole("combobox", { name: "Platform" })
+      .first()
+      .evaluate(element => {
+        const caret = element.parentElement?.querySelector("svg")
+        if (!caret) throw new Error("Platform caret is missing")
+        const field = element.getBoundingClientRect()
+        const icon = caret.getBoundingClientRect()
+        const textEnd =
+          field.right - parseFloat(getComputedStyle(element).paddingRight)
+        return { gap: field.right - icon.right, textClear: icon.left - textEnd }
+      })
+    expect(textClear, `platform text clears the caret at ${width}`).toBeGreaterThanOrEqual(0)
     expect(gap, `platform caret gap at ${width}`).toBeGreaterThanOrEqual(12)
   }
 })
@@ -838,13 +848,16 @@ test("failed saves move focus to the first invalid field", async ({ page }) => {
     .getByRole("button", { name: "+ Add new link", exact: true })
     .click()
   const missing = page.locator(".link-row").last()
+  // Adding a link focuses its Platform field on the next frame; wait for it
+  // so that move cannot land in the middle of typing the URL.
+  await expect(missing.getByRole("combobox")).toBeFocused()
   await missing.getByLabel("Link URL").fill("https://github.com/example")
   await page.getByRole("button", { name: "Save links", exact: true }).click()
   // The YouTube URL comes first in the form, so it keeps the focus.
   await expect(page.getByLabel("Link URL").nth(1)).toBeFocused()
   await page.getByLabel("Link URL").nth(1).fill("https://youtube.com/@example")
   await page.getByRole("button", { name: "Save links", exact: true }).click()
-  await expect(missing.locator("summary")).toBeFocused()
+  await expect(missing.getByRole("combobox")).toBeFocused()
 
   await page.getByRole("link", { name: "Profile details", exact: true }).click()
   await page.getByRole("button", { name: "Save profile", exact: true }).click()
