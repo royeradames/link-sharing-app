@@ -116,20 +116,18 @@ img {
   justify-content: space-between;
   gap: 16px;
 }
+/* Our own mark, then the product name as live text. */
 .brand {
   display: flex;
   min-width: 44px;
   min-height: 44px;
   align-items: center;
-}
-.brand:hover {
-  opacity: 0.8;
-}
-/* Our own mark, then the product name as live text. */
-.brand {
   gap: 8px;
   color: var(--ink);
   text-decoration: none;
+}
+.brand:hover {
+  opacity: 0.8;
 }
 .brand-name {
   font-size: 1.75rem;

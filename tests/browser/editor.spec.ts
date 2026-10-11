@@ -940,4 +940,7 @@ test("home declares one site name in its identity, og:site_name and WebSite JSON
   await expect(page.locator(".site-header .brand")).toHaveAccessibleName(
     /^Devlinks/
   )
+  await page.setViewportSize({ width: 375, height: 800 })
+  await expect(page.locator(".site-header .brand img")).toBeVisible()
+  await expect(page.locator(".site-header .brand .brand-name")).toBeHidden()
 })

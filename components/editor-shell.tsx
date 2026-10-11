@@ -19,7 +19,7 @@ export function EditorShell({ children }: { children: ReactNode }) {
       <header className="site-header">
         <Link
           href="/"
-          aria-label="Devlinks local editor home"
+          aria-label="Devlinks home"
           className="brand"
         >
           <Image

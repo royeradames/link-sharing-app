@@ -28,21 +28,29 @@ function files(dir: string): string[] {
   })
 }
 
+const code = /\.(tsx?|css|mjs|js|md)$/
 test("every served image, icon and font is listed with its source", () => {
   const found = [
     ...files(join(root, "public")),
-    ...files(join(root, "app")).filter(path =>
-      /\.(ico|png|jpe?g|svg|webp)$/.test(path)
-    )
+    ...["app", "components", "lib"]
+      .flatMap(dir => files(join(root, dir)))
+      .filter(path => !code.test(path))
   ]
     .map(path => relative(root, path))
     .sort()
   assert.deepEqual(found, Object.keys(served).sort())
 })
 
-// Path data from the Frontend Mentor design's exports (wordmark, logo mark,
-// empty-editor illustration, phone mockup) and its sentences.
+// Path data from the Frontend Mentor starter's SVGs and from the design's
+// Figma exports (wordmark, logo mark, empty-editor illustration, phone
+// mockup), and the design's sentences.
 const starter = [
+  "M48.694 15.421",
+  "M5.774 34.225",
+  "M1 54.5C1 24.953 24.953 1",
+  "create a personal touch",
+  "The link has been copied to your clipboard",
+  "Your changes have been successfully saved",
   "M13.9972 26.15V22.195",
   "M6.5235 34.2252",
   "M24.3466 7.96062",
