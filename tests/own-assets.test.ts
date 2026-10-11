@@ -10,6 +10,7 @@ const root = join(import.meta.dirname, "..")
 const served: Record<string, string> = {
   "app/icon.svg": "our own mark",
   "app/apple-icon.png": "our own mark, rendered at 180 px",
+  "app/favicon.ico": "our own mark, rendered at 16, 32 and 48 px",
   "public/assets/logo/mark.svg": "our own mark",
   "public/assets/empty-links.svg": "our own empty-editor drawing",
   "public/assets/icons/link.svg": "Phosphor Icons link-bold, MIT",
