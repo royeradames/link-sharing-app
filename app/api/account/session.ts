@@ -28,7 +28,9 @@ export async function signedOwner(
   if (write && request.headers.get("origin") !== runtime.origin)
     return json({ error: "This change must come from Devlinks itself." }, 403)
   const account = await currentAccount(runtime, request.headers)
-  if (account.state === "signed_out") return json({ state: "signed_out" }, 401)
+  if (account.state === "signed_out")
+    // The account issuer sets this cookie after a failed silent try or a Devlinks-only sign-out.
+    return json({ state: "signed_out", silent: !/(?:^|;\s*)(?:__Host-)?royer-devlinks\.quiet=/.test(request.headers.get("cookie") ?? "") }, 401)
   const unavailable = json(
     {
       state: "unavailable",

@@ -1,7 +1,10 @@
-// Central account settings. Accounts switch on only where every setting is
-// present: today that is the protected Preview after its client is registered
-// on the issuer. Production has none, so it shows "accounts coming soon".
-// This module reads the environment only; it never loads the auth package.
+// Central account settings. On Vercel with its database, Devlinks is a suite app:
+// its origin is its client ID and Vercel's OIDC token is its credential, so it
+// needs no AUTH_* setting (royer-auth suite clients, October 2026). An operator
+// registration (every AUTH_* setting) still wins, as the fallback and for local
+// development. Without a database, accounts are off ("coming soon").
+// This module reads the environment only; it never opens a connection.
+import { vercelSuiteSettings } from "@royer/auth/suite"
 
 const loopbackHosts = ["localhost", "127.0.0.1", "[::1]"]
 const names = [
@@ -31,19 +34,27 @@ function exactOrigin(value: string) {
   return url
 }
 
-export type AccountSettings = {
-  baseURL: string
-  secret: string
-  issuerURL: string
-  clientId: string
-  clientSecret: string
-  databaseURL: string
-}
+export type AccountSettings =
+  | {
+      mode: "registered"
+      baseURL: string
+      secret: string
+      issuerURL: string
+      clientId: string
+      clientSecret: string
+      databaseURL: string
+    }
+  | { mode: "suite"; baseURL: string; issuerURL: string; databaseURL: string }
 
 /** The settings, null when accounts are not configured here, or a thrown error when they are broken. */
 export function accountSettings(env = process.env): AccountSettings | null {
   const databaseURL = env.POSTGRES_URL_NON_POOLING?.trim()
-  if (!databaseURL || names.some(name => !env[name]?.trim())) return null
+  if (!databaseURL) return null
+  if (names.every(name => !env[name]?.trim())) {
+    const suite = vercelSuiteSettings(env)
+    return suite ? { mode: "suite", baseURL: suite.baseURL, issuerURL: suite.issuerURL, databaseURL } : null
+  }
+  if (names.some(name => !env[name]?.trim())) return null
   const base = exactOrigin(env.AUTH_BASE_URL!)
   const issuer = exactOrigin(env.AUTH_ISSUER_URL!)
   if (base.pathname !== "/" || env.AUTH_SECRET!.length < 32)
@@ -53,6 +64,7 @@ export function accountSettings(env = process.env): AccountSettings | null {
       "The account issuer must be its exact origin plus /api/auth."
     )
   return {
+    mode: "registered",
     baseURL: base.origin,
     secret: env.AUTH_SECRET!,
     issuerURL: issuer.href,

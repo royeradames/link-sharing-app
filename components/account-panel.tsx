@@ -149,8 +149,14 @@ export function AccountPanel() {
               aria-disabled={busy !== null || undefined}
               onClick={() => void signOut()}
             >
-              {busy === "sign-out" ? "Signing out…" : "Sign out of Devlinks"}
+              {busy === "sign-out" ? "Signing out…" : "Sign out of Devlinks only"}
             </button>
+            {/* A top-level post: Devlinks signs out, then the Breakthrough account ends, which signs out every app. */}
+            <form method="post" action="/api/auth/federation/sign-out">
+              <button type="submit" className="button secondary">
+                Sign out of all apps
+              </button>
+            </form>
           </div>
           <PublishingForm
             key={account.profile.publicId ?? "none"}

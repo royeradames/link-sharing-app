@@ -14,7 +14,8 @@ export type SignedIn = {
 }
 export type AccountView =
   | SignedIn
-  | { state: "signed_out" }
+  /** `silent`: the Breakthrough account may already be signed in; try it with no click. */
+  | { state: "signed_out"; silent?: boolean }
   /** Signed in earlier in this browser, but the session has ended. */
   | { state: "expired" }
   | { state: "unavailable" }
@@ -77,6 +78,14 @@ export function saveAccountPublishing(
   expectedRevision: string | null
 ) {
   return write("/api/account/publishing", { expectedRevision, publishing })
+}
+
+/**
+ * Silent sign-in: a top-level visit that comes straight back signed in when the Breakthrough
+ * account already is, or comes back signed out (and quiet) when it is not. Never loops.
+ */
+export function silentSignInURL(returnPath: string) {
+  return "/api/auth/federation/silent?returnPath=" + encodeURIComponent(returnPath)
 }
 
 /** Starts central sign-in and returns the issuer address to open. */

@@ -4,6 +4,7 @@ import {
   type FederatedAuth,
 } from "@royer/auth/federation"
 import { getVercelOidcToken } from "@vercel/functions/oidc"
+import { vercelSuiteSettings } from "@royer/auth/suite"
 import type pg from "pg"
 import { accountSettings, type AccountSettings } from "./accounts.ts"
 import { getDatabase } from "./database.ts"
@@ -32,6 +33,12 @@ async function trustedSourceHeaders() {
 
 function configure(db: pg.Pool, settings: AccountSettings) {
   const onVercel = process.env.VERCEL === "1"
+  if (settings.mode === "suite") {
+    const suite = vercelSuiteSettings()
+    if (!suite) throw new AuthenticationUnavailableError()
+    // No client ID, client secret or AUTH_SECRET: the local key lives in Devlinks' own database.
+    return createFederatedAuth({ appId: "devlinks", appName: "Devlinks", database: db, ...suite })
+  }
   return createFederatedAuth({
     appId: "devlinks",
     appName: "Devlinks",

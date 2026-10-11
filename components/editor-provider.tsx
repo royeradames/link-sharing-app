@@ -28,6 +28,7 @@ import {
 import {
   fetchAccount,
   saveAccountDraft,
+  silentSignInURL,
   startSignIn,
   type AccountView,
   type SignedIn
@@ -128,7 +129,14 @@ function useEditorState(accounts: AccountsConfig) {
     // Accounts on: ask the server first; a guest falls back to this browser.
     let signedIn: SignedIn | null = null
     const initial: Promise<ReadResult> = accounts.enabled
-      ? fetchAccount().then(classify).then(view => {
+      ? fetchAccount().then(view => {
+          // Signed in once at the Breakthrough account: come back signed in with no click.
+          if (view.state === "signed_out" && view.silent) {
+            window.location.assign(silentSignInURL(window.location.pathname + window.location.search))
+            return new Promise<AccountView>(() => {})
+          }
+          return classify(view)
+        }).then(view => {
           if (!alive) return { kind: "unavailable", message: "" }
           setAccount(view)
           if (view.state === "signed_in") {
