@@ -1,4 +1,10 @@
 "use client";
+// TEMPORARY local modification of Royer UI's combobox: the id, invalid and
+// describedBy props and the removed open-on-focus below. They are being fixed
+// upstream in royer-ui branch fix/ui-combobox-gaps-20261011 (its PR is not
+// open yet). When that lands, remove on reinstall: run
+// `npx shadcn@4.21.3 add https://ui.royeradames.com/r/combobox.json` and keep
+// the file unmodified.
 import { useEffect, useId, useRef, useState } from "react";
 import { Input } from "./input";
 export function Combobox({
