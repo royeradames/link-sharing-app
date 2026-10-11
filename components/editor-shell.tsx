@@ -70,9 +70,6 @@ export function EditorShell({ children }: { children: ReactNode }) {
           <span className="nav-label">Saved preview</span>
         </Link>
       </header>
-      <p className="local-notice">
-        <SourceNotice />
-      </p>
       <main id="main" tabIndex={-1}>
         {waitingForDraft ? (
           <p className="panel">
@@ -136,6 +133,11 @@ export function EditorShell({ children }: { children: ReactNode }) {
         </p>
       </main>
       <footer>
+        {/* In the footer landmark, so the editor starts right under the
+            header as in the design. */}
+        <p className="local-notice">
+          <SourceNotice />
+        </p>
         <details className="keyboard-help">
           <summary>Keyboard help</summary>
           <p>
