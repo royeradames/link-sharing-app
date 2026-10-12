@@ -1,10 +1,10 @@
 // Copy buttons give new feedback on every press (catalog CPY1).
 import test from "node:test"
 import assert from "node:assert/strict"
-import { createCopyFeedback, writeToClipboard } from "../lib/copy-feedback.ts"
+import { createCopyFeedback, writeToClipboard, type CopySnapshot } from "../lib/copy-feedback.ts"
 
 const make = (ok = true) => {
-  const seen: unknown[] = []
+  const seen: CopySnapshot[] = []
   const feedback = createCopyFeedback({ onChange: (snapshot) => seen.push(snapshot), write: async () => ok })
   return { feedback, seen }
 }
