@@ -1,7 +1,5 @@
 # Third-party notices
 
-Everything else Devlinks serves (the mark, the app icon and the empty-editor drawing) is our own work. `components/royer/THIRD_PARTY_NOTICES.md` covers the Button and Input components.
-
 ## Phosphor Icons
 
 `public/assets/icons/link.svg`, `user-circle.svg`, `lock-key.svg` and `eye.svg` are the bold weights of Phosphor Icons 2.1.1 (`@phosphor-icons/core`), the icon set Royer UI uses.
@@ -31,3 +29,7 @@ SOFTWARE.
 ## Instrument Sans
 
 `public/fonts/InstrumentSans.ttf`, Copyright 2022 The Instrument Sans Project Authors, is licensed under the SIL Open Font License 1.1. The full licence is in `public/fonts/OFL.txt`.
+
+## Our own work
+
+Everything else Devlinks serves (the mark, the app icon and the empty-editor drawing) is our own work. `components/royer/THIRD_PARTY_NOTICES.md` covers the Button and Input components.

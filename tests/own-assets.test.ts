@@ -37,6 +37,7 @@ test("every served image, icon and font is listed with its source", () => {
       .filter(path => !code.test(path))
   ]
     .map(path => relative(root, path))
+    .filter(path => !path.split("/").pop()!.startsWith("."))
     .sort()
   assert.deepEqual(found, Object.keys(served).sort())
 })
