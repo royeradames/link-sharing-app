@@ -12,16 +12,19 @@ export function SavedPreview() {
   // Every press changes the button and the shared notice, so a repeat is seen
   // and announced (catalog CPY1).
   const linksCopy = useCopyFeedback()
-  const pressed = useRef(false)
+  // The notice this button set last, so clearing it never wipes another notice.
+  const copyNotice = useRef("")
   const { setNotice } = editor
   useEffect(() => {
-    if (!pressed.current) return
-    setNotice(
-      linksCopy.message && !linksCopy.message.startsWith("Couldn't")
+    const previous = copyNotice.current
+    const next =
+      linksCopy.message && linksCopy.state !== "failed"
         ? `${linksCopy.message} This is a list of URLs, not a public profile page.`
         : linksCopy.message
-    )
-  }, [linksCopy.message, setNotice])
+    if (!previous && !next) return
+    copyNotice.current = next
+    setNotice((current) => (next || current === previous ? next : current))
+  }, [linksCopy.message, linksCopy.state, setNotice])
   // Why Copy links can't run yet, or null when it can. The button stays
   // focusable and says why instead of going natively disabled.
   const kind = editor.loaded.kind
@@ -43,7 +46,6 @@ export function SavedPreview() {
       )
       return
     }
-    pressed.current = true
     if (await linksCopy.copy(value, "the saved links")) {
       setFallback(null)
     } else {
