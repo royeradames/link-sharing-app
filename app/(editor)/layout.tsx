@@ -1,12 +1,11 @@
 import { EditorProvider } from "@/components/editor-provider"
 import { EditorShell } from "@/components/editor-shell"
-import { accountsConfig } from "@/lib/server/accounts"
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <EditorProvider accounts={accountsConfig()}>
+      <EditorProvider>
         <EditorShell>{children}</EditorShell>
       </EditorProvider>
       <noscript>

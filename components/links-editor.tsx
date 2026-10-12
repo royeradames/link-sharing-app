@@ -248,9 +248,7 @@ export function LinksEditor() {
               aria-disabled={busy || undefined}
               onClick={() => void editor.reloadSaved()}
             >
-              {editor.source === "account"
-                ? "Load saved profile"
-                : "Load saved draft"}
+              Load saved draft
             </button>
             <button
               className="button"
