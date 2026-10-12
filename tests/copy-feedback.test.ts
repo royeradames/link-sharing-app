@@ -44,7 +44,7 @@ test("a rejected clipboard says so, never shows Copied, and the message stays", 
   await feedback.copy("t", "the token")
   t.mock.timers.tick(100)
   assert.equal(feedback.snapshot().label, "Copy failed")
-  assert.equal(feedback.snapshot().message, "Couldn't copy the token. Select it and copy it by hand.")
+  assert.equal(feedback.snapshot().message, "Couldn't copy the token. Select the text and copy it by hand.")
   assert.equal(seen.some((snapshot) => /Copied/.test(snapshot.label + snapshot.message)), false)
   t.mock.timers.tick(10000)
   assert.match(feedback.snapshot().message, /Couldn't copy/)

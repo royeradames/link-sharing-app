@@ -1,13 +1,27 @@
 "use client"
 import Link from "next/link"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { copyText } from "@/lib/draft"
+import { useCopyFeedback } from "@/lib/use-copy-feedback"
 import { ProfileCard } from "./profile-card"
 import { useEditor } from "./editor-provider"
 export function SavedPreview() {
   const editor = useEditor()
   const [fallback, setFallback] = useState<string | null>(null)
   const text = useRef<HTMLTextAreaElement>(null)
+  // Every press changes the button and the shared notice, so a repeat is seen
+  // and announced (catalog CPY1).
+  const linksCopy = useCopyFeedback()
+  const pressed = useRef(false)
+  const { setNotice } = editor
+  useEffect(() => {
+    if (!pressed.current) return
+    setNotice(
+      linksCopy.message && !linksCopy.message.startsWith("Couldn't")
+        ? `${linksCopy.message} This is a list of URLs, not a public profile page.`
+        : linksCopy.message
+    )
+  }, [linksCopy.message, setNotice])
   // Why Copy links can't run yet, or null when it can. The button stays
   // focusable and says why instead of going natively disabled.
   const kind = editor.loaded.kind
@@ -29,17 +43,11 @@ export function SavedPreview() {
       )
       return
     }
-    try {
-      await navigator.clipboard.writeText(value)
+    pressed.current = true
+    if (await linksCopy.copy(value, "the saved links")) {
       setFallback(null)
-      editor.setNotice(
-        "Saved links copied. This is a list of URLs, not a public profile page."
-      )
-    } catch {
+    } else {
       setFallback(value)
-      editor.setNotice(
-        "Clipboard access was unavailable. Select and copy the saved links below."
-      )
       requestAnimationFrame(() => {
         text.current?.focus()
         text.current?.select()
@@ -58,8 +66,9 @@ export function SavedPreview() {
           aria-disabled={why ? true : undefined}
           aria-busy={kind === "loading" || undefined}
           aria-describedby={why ? "copy-links-why" : undefined}
+          data-copy-state={linksCopy.state}
         >
-          Copy links
+          {linksCopy.state === "idle" ? "Copy links" : linksCopy.label}
         </button>
       </div>
       {why && (
