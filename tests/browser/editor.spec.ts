@@ -166,8 +166,10 @@ test("clipboard copies only saved URLs and denial provides a selected plaintext 
         throw new DOMException("Denied", "NotAllowedError")
       }
     })
+    // The copy also falls back to execCommand; deny that too, so this is a full refusal.
+    document.execCommand = () => false
   })
-  await page.getByRole("button", { name: "Copy links", exact: true }).click()
+  await page.locator("button[data-copy-state]").click()
   await expect(page.getByLabel("Saved links to copy")).toHaveValue(
     "https://github.com/example"
   )
