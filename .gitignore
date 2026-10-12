@@ -39,7 +39,4 @@ shoelace-wrappers
 .env*
 .test-state/
 test-results/
-test-results-hosted/
 playwright-report/
-.next-journey/
-!.env.example
