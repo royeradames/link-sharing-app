@@ -141,6 +141,8 @@ export const linkSchema = z
   .check(
     z.superRefine((link, ctx) => {
       if (!platforms.some(platform => platform.id === link.platform)) return
+      // An empty URL already has "Enter a link."; don't add a format error.
+      if (!link.url.trim()) return
       const error = destinationError(link.platform, link.url)
       if (error) ctx.addIssue({ code: "custom", path: ["url"], message: error })
     })
