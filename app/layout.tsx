@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   openGraph: openGraphFor("/"),
   description:
     "Prepare and save a profile and up to five links in this browser. This intermediate editor does not publish profiles or provide accounts.",
-  robots: { index: false, follow: false },
 }
 export default function Layout({
   children,
