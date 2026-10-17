@@ -1,476 +1,103 @@
-# Devlinks
+# Frontend Mentor - Link-sharing app solution
 
-My public solution to the Frontend Mentor link-sharing app challenge: a guest editor that saves a profile and up to five links in this browser. It keeps the challenge's design and copy, and it has no accounts. The daily-use Devlinks, with sign-in and my own content, is a separate private suite app.
+This is a solution to the [Link-sharing app challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/linksharing-app-Fbt7yweGsT). The app lets you edit a profile, save an ordered list of links in your browser, and copy the saved URLs.
 
-## Local workflow
+## Table of contents
 
-Use Node24. Run `npm ci`, then `npm run dev`. Installs need no token. `/dashboard/links` edits up to five platform URLs; `/dashboard/profile-details` edits a name, optional email and picture. Each section saves independently. The preview and Copy links use only saved values. Changing pages retains unsaved edits; reloading restores the saved version. `/login` and `/create-account` return to the welcome page instead of collecting credentials.
+- [Overview](#overview)
+  - [The challenge](#the-challenge)
+  - [Screenshot](#screenshot)
+  - [Links](#links)
+- [My process](#my-process)
+  - [Built with](#built-with)
+  - [What I learned](#what-i-learned)
+  - [Continued development](#continued-development)
+- [Run it locally](#run-it-locally)
+- [Author](#author)
 
-## Saved in this browser
+## Overview
 
-Saved data stays under `devlinks.saved-draft.v1` in this browser origin. PNG/JPEG pictures must decode and be at most256KB and1024×1024pixels. Web Locks serialize saves and an expected stored revision rejects stale tabs. If locking or storage is unavailable, saving fails visibly. Malformed drafts remain untouched until the person downloads a backup and explicitly resets that one key. Saved drafts are not encrypted; anyone with access to this browser profile may read them.
+### The challenge
 
-## Verification
+Users should be able to:
 
-`npm test` runs the validation, serialization, reorder and copy-feedback tests, plus `tests/fm-solution-only.test.ts`, which keeps this solution free of the sign-in package and AUTH_* settings. `npm run lint`, `npm run typecheck` and `npm run build` check the candidate. After building, `npm run test:browser` starts its own production server at127.0.0.1:4392 and exercises the guest editor (persistence, keyboard/pointer behavior, storage failure and conflict, image decode, clipboard denial and400/768/1440layouts). All data is synthetic.
+- Add, edit, and remove links, choosing a platform for each one.
+- Reorder links by dragging or using the Move up and Move down buttons.
+- See validation errors for missing fields, invalid URLs, and URLs for the wrong platform.
+- Add a first name, last name, optional email, and profile picture.
+- Save profile details and links separately, then preview and copy saved links.
+- Restore saved data after a reload and use the editor on mobile and desktop.
+- Use the platform picker and reorder controls with a keyboard.
 
-The historical37image assets remain unchanged. Instrument Sans is self-hosted from Google Fonts with its original OFL license. Full premium design stills were not available for this preparation; it retains the historical purple/white editor and preview composition without claiming pixel-exact compliance. The five-link cap is historical behavior, not a new claim about the official brief.
+### Screenshot
 
-The empty links-editor illustration loads eagerly with a high fetch priority because it is visible in the initial viewport. The server page also preloads that SVG so its request can start before the local draft finishes loading. The image, its dimensions and the editor's save behavior stay the same. Browser regressions check the initial document's preload hint and Chrome's actual initial request priority at 400, 768 and 1440px in both display preferences.
+![Devlinks at 1440 px](./docs/screenshot.jpg)
 
-The original exercise notes are retained below. Old Shoelace notes describe the former stack (the unused Docker setup was removed) and are not the current setup instructions.
+### Links
 
----
+- Solution URL: [My Frontend Mentor solution](https://www.frontendmentor.io/solutions/link-sharing-app-with-nextjs-typescript-and-tailwind--EtbqDnlqi)
+- Live Site URL: [Devlinks local editor](https://link-sharing-app.royeradames.com)
 
-# Issues
+## My process
 
-## 404 on .svg. Next js tries to get them from the public file
+### Built with
 
-cannot fix it with 
+- Next.js App Router and React
+- TypeScript
+- Tailwind CSS and custom CSS
+- TanStack Form
+- Zod Mini for validation
+- Royer UI Input and Combobox fields
+- Browser localStorage and Web Locks
+- Playwright for browser tests
 
-```tsx
-// @ts-ignore
-// import { setBasePath } from "@shoelace-style/shoelace/cdn/utilities/base-path.js"
-import {
-  getBasePath,
-  setBasePath,
-} from "@shoelace-style/shoelace/dist/utilities/base-path.js"
-// import { setBasePath } from "@shoelace-style/shoelace/dist/assets/icons"
+### What I learned
 
-setBasePath("/@shoelace-style/shoelace/dist")
-console.log(getBasePath())
-// setBasePath("@/node_modules/@shoelace-style/shoelace/dist")
-// setBasePath("@shoelace-style/shoelace/dist")
-// setBasePath("https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/")
-```
+I started with a Shoelace mock in May 2024. The old notes show how much time I spent on imports, SVG paths, and styling through the shadow DOM. The current app uses React fields and keeps its saved draft in the browser.
 
-https://shoelace.style/getting-started/installation/#setting-the-base-path
+This was my first app to use the Royer UI Input and Combobox fields from my registry. I use Input for URLs and profile fields, and Combobox for the platform picker. I set the app's colours through CSS tokens and pass field errors into the shared controls.
 
-## Imports of sl elements are causing issues
+I learned to keep saved values separate from the form draft. Each section saves on its own. Switching pages keeps unsaved edits, but the preview and Copy links use saved values. Web Locks serialize writes, and checking the stored draft before saving stops another tab from overwriting newer data.
 
-If I'm able to copy and paste the elements into my project then I would have full access to them. That and the working solution for svg assets will be good enough for me to work. I can manually add them to my project. They would still be more than good enough and I can add the fixes I need. So they can work like a template more than anything else.
+Platform-specific URL validation is still my weakest part. I now require HTTPS and check the hostname against the selected platform. That catches the wrong platform and misleading domains, but it does not check whether the URL path points to a profile.
 
-This means that every time I can the latest one I could be getting a improve one with bug fixes included or I can continue to use my old implementations. The main advantage is that I don't have to created from scratch for every new project, and things are standardized. 
+### Continued development
 
-## How can we change the select current option without using css variables in tailwind? #2042
+- Tighten platform-specific URL path checks beyond the current hostname validation.
+- Compare the editor and preview against the full premium design stills when available. I cannot claim an exact visual match from the references I had.
 
-https://github.com/shoelace-style/shoelace/discussions/2042
+## Run it locally
 
-## SL issues with importing
-
-digest: "2262742997"
-⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
-GET / 500 in 1500ms
-
-Next js hard reloads on every update
-
-
-## Icon component not working
-
-Nothing displays
-```tsx
-"use client"
-import {
-  SlIcon
-} from "@/node_modules/@shoelace-style/shoelace/cdn/react"
-export default function IconText(){
-  return <SlIcon name="github"></SlIcon>
-}
-
-```
-
-# Interesting
-
-## Editing links is much nicer and easier than editing sl-buttons
-
-sl-button has many moving pieces. I didn't like that padding didn't work as expected. So I don't know how to manually increase the size without the size property.
-
-Link works great with tailwind but I have to write all functionality from scratch.
-
-The best case for me would be if sl-button had local css variables with state that could be overwritten dynamically. 
-
-I'm noticing the limited value sl-elements bring. So far:
-- a select that I can style
-- a button with 90% of its functionality and styles finish. Now it just needs branding.
-
-Styling with ::part is harder to read than normal css classes.
-
-## package json settings 
-```json
-"compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@shoelace-style/shoelace/*": [
-        "dist/react/*"
-      ]
-    },
-    "typeRoots": [
-      "./node_modules/@types",
-      "./dist/react"
-    ]
-  },
-  "include": [
-    "src",
-    "dist/react"
-  ],
-```
-
-## Interesting way to style for ::part
-`<sl-option class="&[aria-selected=“true”]:[&::part(base)]:bg-blue-500"></sl-option>`
-
-[link to discussion](https://github.com/shoelace-style/shoelace/discussions/1969#discussioncomment-9584276)
-# Lesson learns
-
-## use shoelace in react
-
-use a wrapper so that react can support custom elements
-
-create `scripts/make-wrappers.js`
-
-`make-wrappers.js`
-```js
-import { generateReactWrappers } from "custom-element-react-wrappers"
-import manifest from "@shoelace-style/shoelace/dist/custom-elements.json" assert { type: "json" }
-
-generateReactWrappers(manifest, {
-  outdir: "shoelace-wrappers",
-  modulePath: (className, tagName) =>
-    `@shoelace-style/shoelace/dist/components/${tagName.replace("sl-", "")}/${tagName.replace("sl-", "")}.js`,
-  defaultExport: true,
-  /**
-   * not true.
-   * Causes lag on reload. You don't event have to use them in 'use client' files just like any other tag.
-   * An important note is that in order to mkae this work, the wrapper generation configuration must have the `ssrSafe` property set to `true`. This will allow the components to register and execute when the client is ready.
-   */
-  // ssrSafe: true,
-  // todo: fix SlTreeItem auto build issue. For now skip it.
-  exclude: ["SlTreeItem"],
-})
-
-```
-
-`package.json`
-Enable type module and run the make-wrappers in the prepare script
-```json
-{
-  "type": "module",
-  "scripts": {
-    "prepare": "node scripts/make-wrappers.js"
-  }
-}
-
-```
-
-The prepare script is a npm life cycle hook that run automatically after each install.
-
-## default npm install to include --legacy-peer-deps 
-
-create `.npmrc` file
-
-add `legacy-peer-deps=true`
-
-
-## for now I'm getting 404 on images and I cannot set the base path to the correct path
-
-I have to manually add the svg to next.js
-
-I can get the images from the npm package assets icons
-```tsx
-import "@shoelace-style/shoelace/dist/assets/icons"
-```
-## setting font family
-
-next.js way doesn't work due to the shadow dom but it can get all other normal tags.
-
-Components need font family need to overwritten by :part or css variable
-
-`[&::part(base)]:font-instrument-sans`
-
-```tsx
-
-/*
-.button--large {
-    height: auto;
-    min-height: var(--sl-input-height-large);
-    font-size: var(--sl-button-font-size-large);
-    line-height: calc(var(--sl-input-height-large) - var(--sl-input-border-width) * 2);
-    border-radius: var(--sl-input-border-radius-large);
-}
-
-.button {
-    display: inline-flex;
-    align-items: stretch;
-    justify-content: center;
-    width: 100%;
-    border-style: solid;
-    border-width: var(--sl-input-border-width);
-    font-family: var(--sl-input-font-family);
-    font-weight: var(--sl-font-weight-semibold);
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    white-space: nowrap;
-    vertical-align: middle;
-    padding: 0;
-    transition: var(--sl-transition-x-fast) styles-color,
-      var(--sl-transition-x-fast) color,
-      var(--sl-transition-x-fast) border,
-      var(--sl-transition-x-fast) box-shadow;
-    cursor: inherit;
-}
-
-[--sl-input-font-family:'__Instrument_Sans_8f8cb2','__Instrument_Sans_Fallback_8f8cb2']
-[&::part(base)]:[${instrumentSans.style}]
-[&::part(base)]:font-instrument-sans
- */
-```
-```css
-:root body {
-    --sl-font-sans: 'Instrument Sans', "sans-serif";
-}
-```
-https://shoelace.style/tokens/typography/
-## best way to style sl-elements?
-
-With tailwind and [] to run css
-
-When the css variables become state and style name bound then they would be the best. Right now there name doesn't match what they do. Make it hard to look back at it again and know what its changing. Also not all properties have css variables.
-
-```tsx
-
-// css variables are not well enough implemented to only use them
-// they are not state and style specific
-// some styles don't even have css variables
-// the css variables don't let you know what they do so it's hard to maintain
-// tailwind is not enough. I need to have the :not so that active classes don't activate when the button is disabled. I don't seem to be able to do that with default tailwind but I can do it with css
-// this none helpful css variables names makes styling to hard. I'm keeping tailwind easier name, and I'm just going to overwrite everything. I have to find a solution for :not
-// solution: [&:not(:disabled)]:
-// its extremely difficult to chain state like :active:enable
-// it appears that the buttons are not enable they are using classes instead
-
-/*
-     styles-color: var(--sl-color-primary-600);
-   border-color: var(--sl-color-primary-600);
-   color: var(--sl-color-neutral-0);
-   border-radius: var(--sl-input-border-radius-large);
-
-       height: auto;
-   min-height: var(--sl-input-height-large);
-   font-size: var(--sl-button-font-size-large);
-   line-height: calc(var(--sl-input-height-large) - var(--sl-input-border-width) * 2);
-
-
-.button--standard.button--primary {
-   styles-color: var(--sl-color-primary-600);
-   border-color: var(--sl-color-primary-600);
-   color: var(--sl-color-neutral-0);
-}
-
-   .button--standard.button--primary:active:not(.button--disabled) {
-   styles-color: #43386c;
-   border-color: var(--sl-color-primary-600);
-   color: var(--sl-color-neutral-0);
-
-   .button--standard.button--primary:hover:not(.button--disabled) {
-   styles-color: var(--sl-color-primary-500);
-   border-color: var(--sl-color-primary-500);
-   color: var(--sl-color-neutral-0);
-}
-
-[&::part(base):active:not(.button--disabled)]:bg-purple-hover
-[&::part(base):active:enabled]:bg-purple-hover
-}
-  */
-// export function Button({
-//   children,
-//   disabled,
-//   className = "",
-//   type = "button",
-//   variant = "primary",
-//   size = "large",
-// }: TButton) {
-//
-//   return (
-//     <SlButton
-//       variant="primary"
-//       disabled={disabled}
-//       outline={variant === "secondary"}
-//       size={size}
-//       type={type}
-//       className={clsx(
-//         "[--sl-input-border-radius-large:0.5rem] [--sl-color-primary-600:var(--purple)] [----sl-color-neutral-0:var(--white)] [--sl-color-primary-500:var(--purple)] group [&::part(base):active]:bg-purple-hover [&::part(base):disabled]:bg-purple",
-//         {
-//           "  ": variant === "primary",
-//           [styles.radixSecondary]: variant === "secondary",
-//           [className]: className,
-//         }
-//       )}
-//     >
-//       {children}
-//     </SlButton>
-//   )
-// }
-
-// note that using tailwind classes over overwritting css variables is causing the functionality to break. so the dynamic classes are completely overwritting and its making me having to remake more styles that I normally want. When it comes to handling the states like hover active and disabled
-```
-
-## For some reason the sl-button are not activating the :enable
-
-run the disabled style base on the sl-button disabled attribute
-
-`[&[disabled]::part(base)]:bg-purple/25`
-
-https://github.com/shoelace-style/shoelace/discussions/2049
-
-## The correct way to import shoelace component is next.js
-
-> SlTab can be replace with the React name of the sl element
-```tsx
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react").then(mod => mod.SlIcon),
-  {
-    ssr: false,
-  }
-)
-```
-
-> Avoid build issues.
-https://github.com/shoelace-style/shoelace/discussions/2047
-https://nextjs.org/docs/pages/building-your-application/optimizing/lazy-loading#with-no-ssr
-## Fix sl npm package imports
-
-Just make sure you are importing from dist instead of cdn
-
-```tsx
-//do
-import { SlButton, SlSelect } from "@shoelace-style/shoelace/dist/react"
-//don't
-import { SlButton, SlSelect } from "@shoelace-style/shoelace/cdn/react"
-
-```
-
-Also solves the issues with the SlIcon.
-
-## Loading icon svg
-
-https://github.com/shoelace-style/shoelace/discussions/2043
-
-## previous demo page
-
-```tsx
- <FormDemo />
-<Heading as="h1">Royer Adames</Heading>
-<Heading as="h1" size="small">
-  Royer Adames
-</Heading>
-<Text>Body Medium Royer Adames</Text>
-<Text size="small">Body small Royer Adames</Text>
-<ButtonRadix>Primary ButtonRadix</ButtonRadix>
-<ButtonRadix disabled>Primary disable ButtonRadix</ButtonRadix>
-<ButtonRadix variant="secondary">Secondary ButtonRadix</ButtonRadix>
-<ButtonRadix variant="secondary" disabled>
-  Secondary disable ButtonRadix
-</ButtonRadix>
-<Nav></Nav>
-<Nav></Nav>
-```
-
-## First translate to css then tailwind 
-
-Due to it being more support for css and having to use arbitrary values
-
-## DropdownOld
-
-### tailwind using ::part
-
-Using arbitrary 
-
-```
-[&::part(base)]
-```
-
-With plugin (for tailwind config)
-```
-plugins: [
-    plugin(function ({ matchVariant, e }) {
-    matchVariant("part", placeholder => `&::part(${placeholder})`)
-    }),
-],
-```
-
-
-### Styling
-
-We can style things through tailwind with after content but we cannot connect the after with :part.
-
-Fail try: Trying to add text base when the item aria-label-selected true adds the text in the item and the select group box. 
-Learn: We can style other elements base on other elements props. [Tailwind additional details](https://tailwindcss.com/docs/hover-focus-and-other-states#before-and-after)
-```tsx
-// aria-selected:after:content-['(selected)']
-// aria-selected:after:content-['(selected2)']:part-[base]
-// flex
-// items-center
-// aria-selected:after:text-purple
-<SlOption
-  key={i}
-  placeholder={option.placeholder}
-  className="
-            part-[checked-icon]:hidden
-            part-[base]:[--sl-color-primary-600:none]
-            part-[base]:[--sl-color-neutral-0:var(--dark-grey)]
-            aria-selected:part-[base]:[--sl-color-neutral-0:var(--purple)]
-            group
-            "
->
-  {option.label}
-  <span className="hidden group-aria-selected:inline">
-              (Selected)
-            </span>
-</SlOption>
-```
-
-Others notes about it:
-// incorrect css doesn't load with part-[]
-// you are not notify in any way
-// you can overwrite with tailwind classes and attribute and state on and off the elements
-// for some reason I cannot reach the svg part
-// normally select the shadow dom child element through the parent (use attribute and state to style it different) and style it with tailwind first. If it fails then overwrite the css variables
-
----- Default docs
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+Use Node.js 24. Installs need no token.
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The development server runs at [http://127.0.0.1:3000](http://127.0.0.1:3000). Edit links at `/dashboard/links` and profile details at `/dashboard/profile-details`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+For checks:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm run test:browser
+```
 
-## Learn More
+`npm test` checks validation, saved drafts, reordering, copy feedback, and the solution's dependency restrictions. After building, `npm run test:browser` starts its own production server at `127.0.0.1:4392`. It uses Chrome and covers persistence, keyboard and pointer actions, storage failures, conflicting tabs, images, clipboard failures, and responsive layouts. Set `PW_PORT` to use another port. Test data is synthetic.
 
-To learn more about Next.js, take a look at the following resources:
+This is a browser-local demo. Saved data stays under `devlinks.saved-draft.v1` on this browser origin. Changing pages keeps unsaved edits; reloading restores the saved version. Copy links copies saved URLs. Do not use this demo as your only copy of important information. Saved drafts are not encrypted, so anyone with access to this browser profile may read them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Pictures must be valid PNG or JPEG files, at most 256 KB and 1024 × 1024 pixels. Saving reports an error if storage or Web Locks are unavailable. If a saved draft is unreadable, download its backup before explicitly resetting that one storage key.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+I keep the historical five-link limit. It is an implementation limit, not a requirement I can confirm from the official brief. I retain the purple and white editor and preview layout, with a 16 px text floor. Full premium design stills were unavailable, so I do not claim an exact visual match.
 
-## Deploy on Vercel
+The 37 historical image assets remain unchanged. I self-host Instrument Sans from Google Fonts with its original [OFL licence](./public/fonts/OFL.txt). The shared Input derives from shadcn/ui through Raul Gym; its MIT notice is in [Third party notices](./components/royer/THIRD_PARTY_NOTICES.md).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Website - [Royer Adames](https://royeradames.com)
+- Frontend Mentor - [@royeradames](https://www.frontendmentor.io/profile/royeradames)
