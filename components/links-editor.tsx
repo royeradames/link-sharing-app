@@ -216,6 +216,7 @@ export function LinksEditor() {
                                 field.handleChange(event.target.value)
                               }
                               onBlur={field.handleBlur}
+                              aria-required="true"
                               aria-invalid={
                                 !!editor.errors[`links.${link.id}.url`]
                               }
