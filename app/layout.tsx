@@ -2,7 +2,10 @@ import type { Metadata } from "next"
 import localFont from "next/font/local"
 import { SITE_URL, openGraphFor, websiteJsonLd } from "@/lib/site"
 import "./globals.css"
+// Fonts aren't preloaded: text paints at once in next/font's size-matched fallback (display: swap), so the
+// font files needn't compete with the first paint.
 const instrument = localFont({
+  preload: false,
   src: "../public/fonts/InstrumentSans.woff2",
   display: "swap",
   variable: "--font-instrument",
