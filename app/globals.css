@@ -505,9 +505,12 @@ textarea:hover {
    card column on the welcome and saved preview pages. */
 /* While the local draft loads, the short loading panel would pull the footer up, and
    the real editor would then push it down again (a layout shift). Keep it hidden until
-   the draft is in place; it then appears once, where it belongs. */
-body:has(.draft-loading) > footer {
-  visibility: hidden;
+   the draft is in place; it then appears once, where it belongs. Without JavaScript the
+   panel never resolves, so the footer stays visible there. */
+@media (scripting: enabled) {
+  body:has(.draft-loading) > footer {
+    visibility: hidden;
+  }
 }
 footer {
   max-width: var(--page-max);
