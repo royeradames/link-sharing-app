@@ -186,6 +186,11 @@ main {
   margin: 0 auto;
   padding: 0 var(--page-gutter);
 }
+/* The draft loads from this browser after hydration. Holding a screen's height keeps the footer below the fold
+   until the editor replaces this panel, so the swap doesn't shift the page. */
+.draft-loading {
+  min-height: 100svh;
+}
 .editor-layout {
   display: grid;
   grid-template-columns: minmax(300px, 40%) minmax(0, 1fr);
