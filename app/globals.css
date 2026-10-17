@@ -503,6 +503,15 @@ textarea:hover {
 /* Keyboard help starts on the same left edge as the page's content column:
    the full editor column on Links and Profile details, and the centered
    card column on the welcome and saved preview pages. */
+/* While the local draft loads, the short loading panel would pull the footer up, and
+   the real editor would then push it down again (a layout shift). Keep it hidden until
+   the draft is in place; it then appears once, where it belongs. Without JavaScript the
+   panel never resolves, so the footer stays visible there. */
+@media (scripting: enabled) {
+  body:has(.draft-loading) > footer {
+    visibility: hidden;
+  }
+}
 footer {
   max-width: var(--page-max);
   margin: 20px auto 40px;

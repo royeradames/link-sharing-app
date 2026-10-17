@@ -66,7 +66,7 @@ export function EditorShell({ children }: { children: ReactNode }) {
       </header>
       <main id="main" tabIndex={-1}>
         {waitingForDraft ? (
-          <p className="panel">Loading your local draft…</p>
+          <p className="panel draft-loading">Loading your local draft…</p>
         ) : (
           children
         )}
