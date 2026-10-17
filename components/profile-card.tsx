@@ -1,17 +1,18 @@
-import Image from "next/image"
+/* eslint-disable @next/next/no-img-element -- next/image added client JavaScript here without optimizing anything (SVGs, data URLs or unoptimized files). */
 import { platforms, type Draft } from "@/lib/draft"
 export function ProfileCard({ draft }: { draft: Draft }) {
   const { profile, links } = draft
   return (
     <section className="profile-card" aria-label="Saved profile">
       {profile.image ? (
-        <Image
-          unoptimized
+        <img
           src={profile.image}
           width={96}
           height={96}
           className="avatar"
           alt="Saved profile picture"
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <div className="avatar placeholder" aria-hidden="true" />

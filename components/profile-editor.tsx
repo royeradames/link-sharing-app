@@ -1,5 +1,5 @@
 "use client"
-import Image from "next/image"
+/* eslint-disable @next/next/no-img-element -- next/image added client JavaScript here without optimizing anything (SVGs, data URLs or unoptimized files). */
 import { useEffect, useRef, useState } from "react"
 import { readProfileImage } from "@/lib/profile-image"
 import { useEditor } from "./editor-provider"
@@ -69,13 +69,14 @@ export function ProfileEditor() {
                 </p>
                 <div className="image-field">
                   {profile.image && (
-                    <Image
+                    <img
                       src={profile.image}
-                      unoptimized
                       width={96}
                       height={96}
                       className="avatar"
                       alt="Selected profile picture"
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                   <div>

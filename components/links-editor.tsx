@@ -1,5 +1,5 @@
 "use client"
-import Image from "next/image"
+/* eslint-disable @next/next/no-img-element -- next/image added client JavaScript here without optimizing anything (SVGs, data URLs or unoptimized files). */
 import { useRef } from "react"
 import { moveLink } from "@/lib/draft"
 import { useEditor } from "./editor-provider"
@@ -94,13 +94,14 @@ export function LinksEditor() {
                 </button>
                 {!links.length && (
                   <div className="empty-state">
-                    <Image
+                    <img
                       src="/assets/get-starter-illustration.svg"
                       width={250}
                       height={161}
                       alt=""
                       loading="eager"
                       fetchPriority="high"
+                      decoding="async"
                     />
                     <h2>Let’s get you started</h2>
                     <p>
