@@ -1,6 +1,6 @@
 "use client"
+/* eslint-disable @next/next/no-img-element -- next/image added client JavaScript here without optimizing anything (SVGs, data URLs or unoptimized files). */
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEditor } from "./editor-provider"
 import { useState, type ReactNode } from "react"
@@ -22,20 +22,23 @@ export function EditorShell({ children }: { children: ReactNode }) {
           aria-label="Devlinks local editor home"
           className="brand"
         >
-          <Image
+          <img
             className="brand-wide"
             src="/assets/logo/devlinks.svg"
             width={146}
             height={32}
             alt="Devlinks"
-            priority
+            fetchPriority="high"
+            decoding="async"
           />
-          <Image
+          <img
             className="brand-narrow"
             src="/assets/logo/link-circle-bold.svg"
             width={32}
             height={32}
             alt="Devlinks"
+            loading="lazy"
+            decoding="async"
           />
         </Link>
         <nav aria-label="Editor">
