@@ -3,7 +3,7 @@ import localFont from "next/font/local"
 import { SITE_URL, openGraphFor, websiteJsonLd } from "@/lib/site"
 import "./globals.css"
 const instrument = localFont({
-  src: "../public/fonts/InstrumentSans.ttf",
+  src: "../public/fonts/InstrumentSans.woff2",
   display: "swap",
   variable: "--font-instrument",
 })
