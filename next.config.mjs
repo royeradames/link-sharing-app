@@ -2,7 +2,7 @@
 const config = {
   // turbopackFileSystemCacheForBuild off: on October 8, 2026 Vercel restored a
   // Turbopack build cache for Todo and Markdown and shipped the previous CSS.
-  experimental: { cpus: 2, turbopackFileSystemCacheForBuild: false },
+  experimental: { inlineCss: true, cpus: 2, turbopackFileSystemCacheForBuild: false },
   // This solution has no sign-in. The design's Login and Create Account
   // routes answer with an HTTP redirect to the welcome page, so no sign-in
   // page ever paints (pitfall SI1). A page-level redirect() was prerendered
