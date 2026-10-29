@@ -144,3 +144,17 @@ test("an oversized photo or email gets a plain message, not a default one", () =
     )
   )
 })
+test("an empty link URL gets one plain message, not a second URL-format one", () => {
+  // Frontend Mentor solution report, October 13, 2026: an empty URL showed
+  // "Enter a complete HTTPS URL." because the format check ran on it too.
+  for (const url of ["", "   "]) {
+    const result = linksSchema.safeParse([
+      { id: crypto.randomUUID(), platform: "github", url }
+    ])
+    assert.equal(result.success, false)
+    assert.deepEqual(
+      result.error?.issues.map(issue => issue.message),
+      ["Enter a link."]
+    )
+  }
+})

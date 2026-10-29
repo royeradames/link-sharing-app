@@ -118,8 +118,20 @@ function useEditorState() {
       section === "links"
         ? { ...saved, links: linksSchema.parse(values.links) }
         : { ...saved, profile: profileSchema.parse(values.profile) }
-    const result = await saveDraft(candidate, loaded.raw)
-    setSaving(false)
+    // saveDraft reports its own failures, but "Saving…" must never outlive
+    // the attempt, even if something unexpected throws.
+    let result: Awaited<ReturnType<typeof saveDraft>>
+    try {
+      result = await saveDraft(candidate, loaded.raw)
+    } catch {
+      result = {
+        kind: "failed",
+        message:
+          "The draft was not saved. Your previous saved draft and current edits are unchanged."
+      }
+    } finally {
+      setSaving(false)
+    }
     if (result.kind === "failed") {
       setNotice(result.message)
       return

@@ -148,6 +148,7 @@ export function ProfileEditor() {
                       }
                       onChange={event => field.handleChange(event.target.value)}
                       onBlur={field.handleBlur}
+                      aria-required={item.required || undefined}
                       aria-invalid={!!editor.errors[`profile.${item.name}`]}
                       aria-describedby={
                         editor.errors[`profile.${item.name}`]
