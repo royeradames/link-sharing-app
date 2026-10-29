@@ -13,7 +13,7 @@ test("no @royer/auth dependency in package.json or the lockfile", () => {
   const manifest = json("package.json")
   const declared = { ...manifest.dependencies, ...manifest.devDependencies }
   assert.equal(declared["@royer/auth"], undefined)
-  const lock = readFileSync("package-lock.json", "utf8")
+  const lock = readFileSync("bun.lock", "utf8")
   assert.doesNotMatch(lock, /@royer\/auth|@royeradames\/auth/)
 })
 
