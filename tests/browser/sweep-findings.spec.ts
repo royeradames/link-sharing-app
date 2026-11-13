@@ -89,7 +89,8 @@ test("item 4: Copy links with nothing saved stays focusable and says why", async
 }) => {
   await page.goto("/preview")
   const copy = page.getByRole("button", { name: "Copy links", exact: true })
-  await expect(copy).toBeEnabled()
+  // Not natively disabled: it stays in the tab order and announces why.
+  expect(await copy.evaluate((button) => (button as HTMLButtonElement).disabled)).toBe(false)
   await expect(copy).toHaveAttribute("aria-disabled", "true")
   await expect(copy).toHaveAccessibleDescription(
     "No saved links to copy yet. Add links in the editor and save them."

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import localFont from "next/font/local"
-import { SITE_NAME, SITE_URL } from "@/lib/site"
+import { SITE_NAME, SITE_URL, websiteJsonLd } from "@/lib/site"
 import "./globals.css"
 const instrument = localFont({
   src: "../public/fonts/InstrumentSans.ttf",
@@ -20,7 +20,17 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={instrument.variable}>
-      <body>{children}</body>
+      <body>
+        {/* One WebSite identity on every route, matching og:site_name.
+            Static, trusted object; "<" is escaped so the JSON cannot close the tag. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+        {children}
+      </body>
     </html>
   )
 }

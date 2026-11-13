@@ -913,7 +913,7 @@ test("home declares one site name in its identity, og:site_name and WebSite JSON
     url: "https://link-sharing-app-self.vercel.app/"
   })
   await page.goto("/")
-  await expect(page.locator(".site-header .brand img")).toHaveAttribute(
+  await expect(page.locator(".site-header .brand img.brand-wide")).toHaveAttribute(
     "alt",
     "Devlinks"
   )
