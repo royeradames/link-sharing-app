@@ -170,7 +170,9 @@ export function ProfileEditor() {
               aria-disabled={busy || undefined}
               onClick={() => void editor.reloadSaved()}
             >
-              Load saved draft
+              {editor.source === "account"
+                ? "Load saved profile"
+                : "Load saved draft"}
             </button>
             <button
               className="button"
